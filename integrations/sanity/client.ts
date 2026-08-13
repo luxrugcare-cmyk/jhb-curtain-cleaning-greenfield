@@ -3,11 +3,15 @@ import { sanityEnv, isSanityConfigured } from "./env";
 
 const readToken = process.env.SANITY_API_READ_TOKEN;
 const projectId = "g5y9wcb1";
+const dataset = "production";
+const apiVersion = "2026-08-13";
 
 export const sanityClient = isSanityConfigured
   ? createClient({
       ...sanityEnv,
       projectId,
+      dataset,
+      apiVersion,
       useCdn: !readToken,
       perspective: "published",
       token: readToken || undefined,
