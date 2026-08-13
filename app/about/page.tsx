@@ -1,3 +1,14 @@
 import { Hero } from "@/components/Hero";
-export const metadata={title:"About"};
-export default function About(){return <><Hero eyebrow="About" title="A specialist service should show how it earns trust." body="The production page will document verified experience, training, process, insurance, certifications and service standards rather than relying on unsupported superlatives."/><section className="section"><div className="shell content-grid"><article><h2>Proof inventory required before launch</h2><ul className="check-list"><li>Verified business history</li><li>Technician credentials</li><li>Insurance documentation</li><li>Applicable certifications</li><li>Real project photography</li><li>Verified customer reviews</li></ul></article><aside className="info-panel"><h3>Clean-room content rule</h3><p>Previous claims are not automatically carried forward. They must be independently validated before entering the production CMS.</p></aside></div></section></>}
+import { ProcessSteps } from "@/components/ProcessSteps";
+import { CTASection } from "@/components/CTASection";
+
+export const metadata = { title: "About" };
+
+export default function About() {
+  return <>
+    <Hero eyebrow="About" title="A specialist service built around assessment and fabric care." body="JHB Curtain Cleaning provides residential and commercial textile-care services with an assessment-led process designed around the fabric, installation and property requirements." />
+    <section className="section"><div className="shell content-grid"><article><p className="eyebrow">Our approach</p><h2>Start with the textile and the environment.</h2><p>Different fabrics, linings, fittings, access conditions and operating environments require different treatment decisions. Our service pathway starts by understanding those variables before work is planned.</p><p>For commercial properties, the assessment also considers operating hours, access, scope and scheduling so the service can be planned around the site.</p></article><aside className="info-panel"><h3>What we do not assume</h3><p>Suitability, treatment method and service scope are assessed for the specific item and property rather than treated as one-size-fits-all.</p></aside></div></section>
+    <ProcessSteps />
+    <CTASection />
+  </>;
+}
