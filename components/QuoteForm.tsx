@@ -36,8 +36,11 @@ export function QuoteForm() {
     const response = await fetch("/api/leads", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ requestId, kind: "residential", ...data, ...attribution(), sourcePath: "/quote", privacyNoticeVersion: "2026-08-v1" }) });
     const body = await response.json().catch(() => ({}));
     setStatus(response.ok ? "success" : "error");
-    if (response.ok) trackEvent("quote_submit", { has_photos: Boolean(data.photos.length) });
-    else setErrorMessage(body.error || "We could not accept the request.");
+    if (response.ok) {
+      const params = { lead_type: "residential", service: data.service || "unspecified", has_photos: Boolean(data.photos.length) };
+      trackEvent("quote_submit", params);
+      trackEvent("generate_lead", params);
+    } else setErrorMessage(body.error || "We could not accept the request.");
   }
 
   if (status === "success") return <div className="form-success"><h2>Assessment request received.</h2><p>Your request has been recorded. We’ll respond using your preferred contact method.</p><p className="request-id">Reference: {requestId}</p></div>;
