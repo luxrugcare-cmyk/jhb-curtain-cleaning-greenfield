@@ -1,3 +1,7 @@
 import { CommercialAssessmentForm } from "@/components/CommercialAssessmentForm";
-export const metadata={title:"Commercial Site Assessment"};
-export default function CommercialAssessment(){return <section className="form-page commercial-page"><div className="shell form-page-grid"><div><p className="eyebrow">Commercial</p><h1>Request a site assessment.</h1><p>Designed for facilities, hospitality, corporate and property decision-makers who need scope, scheduling and operational fit evaluated first.</p><div className="info-panel"><h3>CRM outcome</h3><p>Submission creates a commercial lead/deal pathway rather than mixing business enquiries into the residential quote flow.</p></div></div><CommercialAssessmentForm/></div></section>}
+
+export const metadata = { title: "Commercial Site Assessment" };
+
+export default function CommercialAssessment() {
+  return <section className="form-page commercial-page"><div className="shell form-page-grid"><div><p className="eyebrow">Commercial</p><h1>Request a site assessment.</h1><p>For facilities, hospitality, corporate and property decision-makers who need scope, scheduling and operational requirements considered before service is planned.</p><div className="info-panel"><h3>Before we follow up</h3><p>Tell us about the property, operating environment, location and scope so the enquiry can be routed appropriately.</p></div></div><CommercialAssessmentForm /></div></section>;
+}

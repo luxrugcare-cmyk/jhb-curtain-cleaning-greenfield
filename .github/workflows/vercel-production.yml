@@ -8,6 +8,13 @@ on:
     paths:
       - ".vercel-deploy-trigger"
       - ".github/workflows/vercel-production.yml"
+      - "app/**"
+      - "components/**"
+      - "integrations/**"
+      - "lib/**"
+      - "types/**"
+      - "package.json"
+      - "package-lock.json"
 
 permissions:
   contents: read
