@@ -1,0 +1,47 @@
+name: Materialize v0.5 source
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/materialize-v05.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct and verify source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .release/small-* | tr -d '\n' | base64 -d > /tmp/source.zip
+          echo "09a764e21803647b225e016ad314e5866b910fc59be5c15f4e60d9503a1d237b  /tmp/source.zip" | sha256sum -c -
+
+      - name: Materialize source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source
+          unzip -q /tmp/source.zip -d /tmp/source
+          rsync -a --exclude '.git/' /tmp/source/ ./
+          rm -rf .release
+
+      - name: Commit application source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JHB Greenfield Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "feat: materialize JHB Curtain Cleaning greenfield v0.5"
+          git push
