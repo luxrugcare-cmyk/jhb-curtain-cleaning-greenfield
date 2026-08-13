@@ -1,0 +1,2 @@
+import type { LeadPayload } from "@/types/lead";
+export async function dispatchLeadAutomation(payload:LeadPayload,crm:unknown){const url=process.env.N8N_LEAD_WEBHOOK_URL;if(!url)return {ok:true,mode:"not-configured"};const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json",...(process.env.N8N_WEBHOOK_SECRET?{"x-jhb-webhook-secret":process.env.N8N_WEBHOOK_SECRET}:{})},body:JSON.stringify({event:"lead.accepted",payload,crm,sentAt:new Date().toISOString()})});if(!r.ok)throw new Error(`n8n webhook failed (${r.status})`);return {ok:true,mode:"live"};}

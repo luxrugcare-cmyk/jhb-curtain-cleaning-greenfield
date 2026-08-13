@@ -1,0 +1,3 @@
+import { QuoteForm } from "@/components/QuoteForm";
+export const metadata={title:"Residential Assessment"};
+export default function QuotePage(){return <section className="form-page"><div className="shell form-page-grid"><div><p className="eyebrow">Residential</p><h1>Request an assessment.</h1><p>Structured qualification keeps the enquiry concise while collecting the information needed for a useful response.</p><div className="info-panel"><h3>Design intent</h3><p>Photo upload will be added through the selected production form/storage path. Marketing consent remains separate from service-contact permission.</p></div></div><QuoteForm/></div></section>}

@@ -1,0 +1,5 @@
+import Link from "next/link";
+
+export function AudienceSplit() {
+  return <section className="section surface"><div className="shell audience-grid"><article><p className="eyebrow">Residential</p><h2>Care for premium homes</h2><p>Specialist service journeys for fitted curtains, blinds, upholstery and related textiles.</p><ul className="check-list"><li>On-site assessment</li><li>Fabric-sensitive method</li><li>Photo-assisted enquiry</li><li>Direct WhatsApp pathway</li></ul><Link className="button button-primary" href="/residential">Residential services</Link></article><article className="dark-card"><p className="eyebrow">Commercial</p><h2>Operational textile care</h2><p>Structured assessment and service for hospitality, corporate, healthcare, education and venues.</p><ul className="check-list"><li>Site assessment</li><li>Scope and scheduling</li><li>Decision-maker workflow</li><li>Commercial CRM pipeline</li></ul><Link className="button button-light" href="/commercial">Commercial capability</Link></article></div></section>;
+}

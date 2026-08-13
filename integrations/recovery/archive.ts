@@ -1,0 +1,3 @@
+import { put } from "@vercel/blob";
+import type { LeadPayload } from "@/types/lead";
+export async function archiveFailedLead(payload:LeadPayload,failures:string[]){if(process.env.ENABLE_FAILURE_ARCHIVE!=="true"||!process.env.BLOB_READ_WRITE_TOKEN){console.error("lead_delivery_failure",{requestId:payload.requestId,failures});return {archived:false,mode:"log-only"};}const day=new Date().toISOString().slice(0,10);const blob=await put(`recovery/${day}/${payload.requestId||crypto.randomUUID()}.json`,JSON.stringify({payload,failures,archivedAt:new Date().toISOString()}),{access:"private",addRandomSuffix:false,contentType:"application/json"});return {archived:true,pathname:blob.pathname};}

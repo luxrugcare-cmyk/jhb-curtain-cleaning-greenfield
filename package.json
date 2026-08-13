@@ -1,0 +1,29 @@
+{
+  "name": "jhb-curtain-cleaning-greenfield",
+  "version": "0.4.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "audit:imports": "node scripts/audit-imports.mjs",
+    "sanity:dev": "sanity dev",
+    "sanity:deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "@vercel/blob": "^2.6.1",
+    "next-sanity": "^13.2.1",
+    "sanity": "^6.7.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
