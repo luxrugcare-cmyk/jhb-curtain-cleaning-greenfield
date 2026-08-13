@@ -144,3 +144,26 @@ jobs:
             exit 1
           fi
           echo "PASS /api/leads invalid payload validation (400)"
+
+          webhook_unsigned_code=$(curl --location --silent --show-error --output /tmp/resend-webhook-unsigned.json --write-out "%{http_code}" \
+            -X POST -H "Content-Type: application/json" -d '{}' "$BASE/api/webhooks/resend")
+          if [ "$webhook_unsigned_code" != "400" ]; then
+            echo "Unsigned Resend webhook validation failed: expected HTTP 400, got $webhook_unsigned_code"
+            cat /tmp/resend-webhook-unsigned.json
+            exit 1
+          fi
+          echo "PASS /api/webhooks/resend unsigned request rejected (400)"
+
+          webhook_bad_signature_code=$(curl --location --silent --show-error --output /tmp/resend-webhook-bad-signature.json --write-out "%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "svix-id: smoke-test" \
+            -H "svix-timestamp: $(date +%s)" \
+            -H "svix-signature: v1,bad" \
+            -d '{}' "$BASE/api/webhooks/resend")
+          if [ "$webhook_bad_signature_code" != "401" ]; then
+            echo "Bad-signature Resend webhook validation failed: expected HTTP 401, got $webhook_bad_signature_code"
+            cat /tmp/resend-webhook-bad-signature.json
+            exit 1
+          fi
+          echo "PASS /api/webhooks/resend bad signature rejected (401)"
