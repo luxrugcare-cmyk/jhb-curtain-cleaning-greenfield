@@ -50,6 +50,15 @@ export async function sendLeadAcknowledgement(payload: LeadPayload) {
   }, `lead-ack-${requestId}`);
 }
 
+function internalFallbackBody(payload: LeadPayload, from: string, to: string, requestId: string) {
+  return sendEmail({
+    from,
+    to: [to],
+    subject: `New ${payload.kind} website lead — ${payload.name}`,
+    html: `<h2>New website lead</h2><p><strong>Reference:</strong> ${escapeHtml(requestId)}</p><p><strong>Name:</strong> ${escapeHtml(payload.name)}</p><p><strong>Mobile:</strong> ${escapeHtml(payload.mobile)}</p><p><strong>Email:</strong> ${escapeHtml(payload.email || "")}</p><p><strong>Service:</strong> ${escapeHtml(payload.service || "")}</p><p><strong>Sector:</strong> ${escapeHtml(payload.sector || "")}</p><p><strong>Location:</strong> ${escapeHtml(payload.location || "")}</p><p><strong>Scope:</strong><br>${escapeHtml(payload.scope || "")}</p><p><strong>Source:</strong> ${escapeHtml(payload.sourcePath || payload.utmSource || payload.sourceUrl || "Website")}</p>`,
+  }, `lead-internal-fallback-${requestId}`);
+}
+
 export async function sendInternalLeadNotification(payload: LeadPayload) {
   const from = process.env.RESEND_FROM_EMAIL;
   const to = process.env.LEAD_NOTIFICATION_EMAIL;
@@ -57,27 +66,27 @@ export async function sendInternalLeadNotification(payload: LeadPayload) {
   const requestId = payload.requestId || `${Date.now()}-${payload.mobile}`;
   const templateId = process.env.RESEND_TEMPLATE_INTERNAL_LEAD;
   if (templateId) {
-    return sendEmail({
-      from,
-      to: [to],
-      template: {
-        id: templateId,
-        variables: {
-          REQUEST_ID: requestId,
-          LEAD_TYPE: payload.kind,
-          CUSTOMER_NAME: payload.name,
-          CONTACT: [payload.mobile, payload.email].filter(Boolean).join(" / "),
-          SERVICE_OR_SECTOR: payload.service || payload.sector || "Unspecified",
-          LOCATION: payload.location || "Johannesburg",
-          SOURCE: payload.sourcePath || payload.utmSource || payload.sourceUrl || "Website",
+    try {
+      return await sendEmail({
+        from,
+        to: [to],
+        template: {
+          id: templateId,
+          variables: {
+            REQUEST_ID: requestId,
+            LEAD_TYPE: payload.kind,
+            CUSTOMER_NAME: payload.name,
+            CONTACT: [payload.mobile, payload.email].filter(Boolean).join(" / "),
+            SERVICE_OR_SECTOR: payload.service || payload.sector || "Unspecified",
+            LOCATION: payload.location || "Johannesburg",
+            SOURCE: payload.sourcePath || payload.utmSource || payload.sourceUrl || "Website",
+          },
         },
-      },
-    }, `lead-internal-${requestId}`);
+      }, `lead-internal-${requestId}`);
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes("(422)")) throw error;
+      return internalFallbackBody(payload, from, to, requestId);
+    }
   }
-  return sendEmail({
-    from,
-    to: [to],
-    subject: `New ${payload.kind} website lead — ${payload.name}`,
-    html: `<h2>New website lead</h2><p><strong>Name:</strong> ${escapeHtml(payload.name)}</p><p><strong>Mobile:</strong> ${escapeHtml(payload.mobile)}</p><p><strong>Email:</strong> ${escapeHtml(payload.email || "")}</p><p><strong>Service:</strong> ${escapeHtml(payload.service || "")}</p><p><strong>Sector:</strong> ${escapeHtml(payload.sector || "")}</p><p><strong>Location:</strong> ${escapeHtml(payload.location || "")}</p><p><strong>Scope:</strong><br>${escapeHtml(payload.scope || "")}</p>`,
-  }, `lead-internal-${requestId}`);
+  return internalFallbackBody(payload, from, to, requestId);
 }
