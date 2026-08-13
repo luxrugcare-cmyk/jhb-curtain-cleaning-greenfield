@@ -1,4 +1,22 @@
 import { createClient } from "next-sanity";
 import { sanityEnv, isSanityConfigured } from "./env";
-export const sanityClient = isSanityConfigured ? createClient({ ...sanityEnv, useCdn: true, perspective: "published" }) : null;
-export async function sanityFetch<T>(query:string, params:Record<string,unknown>={}){ return sanityClient ? sanityClient.fetch<T>(query, params, { next:{revalidate:300} }) : null; }
+
+const readToken = process.env.SANITY_API_READ_TOKEN;
+
+export const sanityClient = isSanityConfigured
+  ? createClient({
+      ...sanityEnv,
+      useCdn: !readToken,
+      perspective: "published",
+      token: readToken || undefined,
+    })
+  : null;
+
+export async function sanityFetch<T>(
+  query: string,
+  params: Record<string, unknown> = {},
+) {
+  return sanityClient
+    ? sanityClient.fetch<T>(query, params, { next: { revalidate: 300 } })
+    : null;
+}
