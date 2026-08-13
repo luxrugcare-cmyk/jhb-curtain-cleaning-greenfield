@@ -115,9 +115,10 @@ jobs:
           JSON
           code=$(curl --silent --show-error --output /tmp/lead-response.json --write-out "%{http_code}" \
             -X POST -H "Content-Type: application/json" --data-binary @/tmp/lead.json "$BASE_URL/api/leads")
+          echo "HTTP $code"
+          jq '{ok, requestId, leadId, crm:{ok:.crm.ok,mode:.crm.mode}, acknowledgement:{ok:.acknowledgement.ok,mode:.acknowledgement.mode}, internalNotification:{ok:.internalNotification.ok,mode:.internalNotification.mode}, warnings}' /tmp/lead-response.json
           if [ "$code" != "201" ]; then
             echo "FAIL controlled lead expected 201, got $code"
-            cat /tmp/lead-response.json
             exit 1
           fi
           jq -e '.ok == true' /tmp/lead-response.json >/dev/null
@@ -126,4 +127,3 @@ jobs:
           jq -e '.internalNotification.ok == true and .internalNotification.mode == "live"' /tmp/lead-response.json >/dev/null
           jq -e '(.warnings | length) == 0' /tmp/lead-response.json >/dev/null
           echo "PASS controlled lead accepted (201)"
-          jq '{requestId, leadId, crmMode:.crm.mode, acknowledgementMode:.acknowledgement.mode, internalNotificationMode:.internalNotification.mode, warnings}' /tmp/lead-response.json
