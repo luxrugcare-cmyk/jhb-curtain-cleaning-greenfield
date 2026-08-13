@@ -35,9 +35,28 @@ export function PhotoUpload({ requestId, value, onChange }: { requestId: string;
     }
   }
 
+  async function removePhoto(photo: LeadPhoto) {
+    setStatus("Removing…");
+    try {
+      const response = await fetch("/api/uploads", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ requestId, pathname: photo.pathname }),
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error || "Photo could not be removed.");
+      }
+      onChange(value.filter(item => item.pathname !== photo.pathname));
+      setStatus("Photo removed.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Photo could not be removed.");
+    }
+  }
+
   return <div className="upload-panel">
     <label className="upload-drop">{label}<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={!remaining} onChange={e => choose(e.target.files)} /></label>
-    {value.length > 0 && <ul className="upload-list">{value.map(photo => <li key={photo.pathname}>{photo.pathname.split("/").at(-1)} <button type="button" onClick={() => onChange(value.filter(item => item.pathname !== photo.pathname))}>Remove</button></li>)}</ul>}
+    {value.length > 0 && <ul className="upload-list">{value.map(photo => <li key={photo.pathname}>{photo.pathname.split("/").at(-1)} <button type="button" onClick={() => removePhoto(photo)}>Remove</button></li>)}</ul>}
     {status && <p className="upload-status">{status}</p>}
     <small>Customer photos are intended for private storage and are not published on the website.</small>
   </div>;
