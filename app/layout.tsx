@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Analytics } from "@/components/analytics/Analytics";
+import { TrackedContactLink } from "@/components/analytics/TrackedContactLink";
 import { JsonLd } from "@/components/JsonLd";
 import { localBusinessJsonLd } from "@/lib/seo/jsonld";
 import { siteConfig } from "@/lib/site-config";
@@ -17,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><Analytics/><JsonLd data={localBusinessJsonLd()}/><Header/><main>{children}</main><Footer/><div className="mobile-cta"><a href={`tel:${siteConfig.phoneE164}`}>Call</a><a href={`https://wa.me/${siteConfig.whatsappE164}`}>WhatsApp</a><a href="/quote">Quote</a></div></body></html>;
+  return <html lang="en"><body><Analytics/><JsonLd data={localBusinessJsonLd()}/><Header/><main>{children}</main><Footer/><div className="mobile-cta"><TrackedContactLink event="call_click" placement="mobile_cta" href={`tel:${siteConfig.phoneE164}`}>Call</TrackedContactLink><TrackedContactLink event="whatsapp_click" placement="mobile_cta" href={`https://wa.me/${siteConfig.whatsappE164}`}>WhatsApp</TrackedContactLink><a href="/quote">Quote</a></div></body></html>;
 }
