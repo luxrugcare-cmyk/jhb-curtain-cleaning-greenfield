@@ -1,0 +1,29 @@
+name: Sanity Content Seed
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sanity-seed.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SANITY_CONTENT_WRITE_TOKEN: ${{ secrets.SANITY_CONTENT_WRITE_TOKEN }}
+    steps:
+      - name: Check content write credential
+        shell: bash
+        run: test -n "$SANITY_CONTENT_WRITE_TOKEN"
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Seed verified structural content
+        run: node scripts/seed-sanity.mjs
