@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { trackEvent } from "@/integrations/analytics/events";
 
-type FunnelStartTrackerProps = {
-  event: "quote_start" | "commercial_start";
-  leadType: "residential" | "commercial";
-};
+export function FunnelStartTracker() {
+  const pathname = usePathname();
 
-export function FunnelStartTracker({ event, leadType }: FunnelStartTrackerProps) {
   useEffect(() => {
-    trackEvent(event, { lead_type: leadType });
-  }, [event, leadType]);
+    if (pathname === "/quote") {
+      trackEvent("quote_start", { lead_type: "residential" });
+      return;
+    }
+
+    if (pathname === "/commercial-assessment") {
+      trackEvent("commercial_start", { lead_type: "commercial" });
+    }
+  }, [pathname]);
 
   return null;
 }
