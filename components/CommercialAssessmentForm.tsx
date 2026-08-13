@@ -23,7 +23,12 @@ export function CommercialAssessmentForm() {
     e.preventDefault(); setStatus("sending"); setErrorMessage("");
     const r = await fetch("/api/leads", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ requestId, kind: "commercial", ...data, ...attribution(), sourcePath: "/commercial-assessment", privacyNoticeVersion: "2026-08-v1" }) });
     const body = await r.json().catch(() => ({}));
-    setStatus(r.ok ? "success" : "error"); if (r.ok) trackEvent("commercial_submit", { has_photos: Boolean(data.photos.length) }); else setErrorMessage(body.error || "Unable to submit.");
+    setStatus(r.ok ? "success" : "error");
+    if (r.ok) {
+      const params = { lead_type: "commercial", sector: data.sector || "unspecified", has_photos: Boolean(data.photos.length) };
+      trackEvent("commercial_submit", params);
+      trackEvent("generate_lead", params);
+    } else setErrorMessage(body.error || "Unable to submit.");
   }
 
   if (status === "success") return <div className="form-success"><h2>Commercial assessment request received.</h2><p>Your request has been recorded for commercial follow-up.</p><p className="request-id">Reference: {requestId}</p></div>;
