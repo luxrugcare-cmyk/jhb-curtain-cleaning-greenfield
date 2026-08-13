@@ -11,62 +11,34 @@ The repository keeps:
 - `sanity.config.ts`
 - `sanity/schemaTypes/*`
 - `integrations/sanity/*`
-- `next-sanity` published-content client
+- `next-sanity` content delivery
 
-The public `/studio` route is intentionally absent.
+The public `/studio` route has been removed.
 
-## Project to create
+## Production project settings
 
-- Project name: `JHB Curtain Cleaning`
+Create one Sanity project with:
+
+- Project name: `JHB Curtain Cleaning Content`
 - Dataset: `production`
-- Dataset purpose: published website content
+- Dataset visibility: **private**
+- API version: `2026-08-13`
 
-Create the project while authenticated to the intended Sanity account. Current Sanity CLI supports:
+Create a read-only API token for the production website. Do not paste the token into chat or commit it to Git.
 
-```bash
-npx sanity@latest projects create "JHB Curtain Cleaning" --dataset=production
-```
-
-Choose dataset visibility deliberately during project creation. If the production dataset is public, the website can fetch published documents through the CDN without a read token. If it is private, configure a server-side read token before enabling CMS-backed page rendering.
-
-## Website environment variables
-
-Required:
+## Required Vercel Production variables
 
 ```text
-NEXT_PUBLIC_SANITY_PROJECT_ID=<project-id>
+NEXT_PUBLIC_SANITY_PROJECT_ID=<project id>
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2026-08-13
+SANITY_API_READ_TOKEN=<read-only token>
 ```
 
-Only if a private dataset or authenticated server-side reads are introduced:
-
-```text
-SANITY_API_READ_TOKEN=<secret-read-token>
-```
-
-Never expose `SANITY_API_READ_TOKEN` through a `NEXT_PUBLIC_` variable.
+`SANITY_API_READ_TOKEN` is server-only. The production Sanity client automatically uses authenticated non-CDN reads when this token is configured.
 
 ## Studio deployment
 
-After the real project ID is installed in the environment, use the repository's existing `sanity.config.ts` and schemas and deploy the Studio separately:
+Authenticate the Sanity CLI with the correct Sanity account, then deploy the Studio using the repository schema/configuration. Use Sanity-hosted Studio rather than re-adding `/studio` to the public Vercel application.
 
-```bash
-npx sanity@latest deploy
-```
-
-Choose a dedicated hostname such as `jhb-curtain-cleaning.sanity.studio` if available.
-
-For automated Studio deployments, use a Sanity authorization token stored as a CI secret; never commit it.
-
-## Activation gate
-
-Do not switch public pages from code seed data to Sanity-backed content until:
-
-1. Project and `production` dataset exist.
-2. Schema deploy succeeds.
-3. Studio login works.
-4. Required documents are created and reviewed.
-5. Website environment variables are configured.
-6. Preview and published-content behavior are tested.
-7. No unverified business claim is promoted from seed content into published CMS content.
+For CI-based Studio deployment, use a dedicated Sanity deployment token with the minimum required permissions. Never expose that token through `NEXT_PUBLIC_*` variables.
