@@ -69,9 +69,8 @@ const mutation = await mutateResponse.json();
 console.log(`Seed transaction: ${mutation.transactionId}`);
 console.log(`Seed mutations accepted: ${mutation.results?.length ?? 0}`);
 
-const query = encodeURIComponent('*[_id in $ids]{_id,_type,title,"slug":slug.current} | order(_id asc)');
-const params = encodeURIComponent(JSON.stringify({ ids: docs.map((doc) => doc._id) }));
-const queryUrl = `https://${projectId}.api.sanity.io/${apiVersion}/data/query/${dataset}?query=${query}&$ids=${params}`;
+const query = encodeURIComponent('*[_id match "seed.*"]{_id,_type,title,"slug":slug.current} | order(_id asc)');
+const queryUrl = `https://${projectId}.api.sanity.io/${apiVersion}/data/query/${dataset}?query=${query}`;
 const queryResponse = await fetch(queryUrl, {
   headers: { Authorization: `Bearer ${token}` },
 });
@@ -80,11 +79,11 @@ if (!queryResponse.ok) {
 }
 const queryBody = await queryResponse.json();
 const found = Array.isArray(queryBody.result) ? queryBody.result : [];
-if (found.length !== docs.length) {
-  throw new Error(`Sanity seed verification failed: expected ${docs.length} docs, found ${found.length}`);
-}
 const counts = found.reduce((acc, doc) => {
   acc[doc._type] = (acc[doc._type] || 0) + 1;
   return acc;
 }, {});
+if (found.length !== 20 || counts.service !== 8 || counts.sector !== 6 || counts.area !== 6) {
+  throw new Error(`Sanity seed verification failed: total=${found.length}, counts=${JSON.stringify(counts)}`);
+}
 console.log(`Verified ${found.length} seeded documents: ${JSON.stringify(counts)}`);
