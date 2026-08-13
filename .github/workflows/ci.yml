@@ -12,18 +12,17 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: package.json
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Audit internal imports
         run: npm run audit:imports
@@ -33,3 +32,40 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Smoke test built server
+        shell: bash
+        run: |
+          npm start > /tmp/jhb-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true; cat /tmp/jhb-next.log' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/health >/tmp/health.json; then
+              break
+            fi
+            sleep 1
+          done
+
+          cat /tmp/health.json
+          grep -q '"ok":true' /tmp/health.json
+
+          for path in \
+            / \
+            /quote \
+            /commercial-assessment \
+            /services/curtain-cleaning \
+            /commercial/hotels-hospitality \
+            /areas/johannesburg \
+            /robots.txt \
+            /sitemap.xml; do
+            echo "Checking $path"
+            curl --fail --silent --show-error "http://127.0.0.1:3000$path" >/dev/null
+          done
+
+          STATUS=$(curl --silent --output /tmp/invalid-lead.json --write-out '%{http_code}' \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -d '{}' \
+            http://127.0.0.1:3000/api/leads)
+          test "$STATUS" = "400"
