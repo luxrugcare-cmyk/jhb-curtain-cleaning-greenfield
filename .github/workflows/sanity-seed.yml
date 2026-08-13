@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/sanity-seed.yml"
+      - "scripts/seed-sanity.mjs"
 
 permissions:
   contents: read
