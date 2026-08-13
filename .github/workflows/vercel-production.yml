@@ -85,10 +85,12 @@ jobs:
           )
           for name in "${vars[@]}"; do
             if [ -f "$ENV_FILE" ] && grep -Eq "^${name}=.+" "$ENV_FILE"; then
-              echo "- ${name}: configured" >> "$GITHUB_STEP_SUMMARY"
+              status="configured"
             else
-              echo "- ${name}: missing/empty" >> "$GITHUB_STEP_SUMMARY"
+              status="missing/empty"
             fi
+            echo "${name}: ${status}"
+            echo "- ${name}: ${status}" >> "$GITHUB_STEP_SUMMARY"
           done
 
       - name: Build with Vercel
@@ -105,11 +107,11 @@ jobs:
           echo "### Vercel production deployment" >> "$GITHUB_STEP_SUMMARY"
           echo "$URL" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Smoke test production routes and APIs
+      - name: Smoke test public production routes and APIs
         shell: bash
         run: |
           set -euo pipefail
-          BASE="${{ steps.deploy.outputs.url }}"
+          BASE="https://jhb-curtain-cleaning-greenfield.vercel.app"
           routes=(
             "/"
             "/quote"
@@ -130,6 +132,7 @@ jobs:
           done
 
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
+          echo "Health response: $health"
           echo "$health" | grep -q '"ok":true'
           echo "PASS /api/health JSON"
 
