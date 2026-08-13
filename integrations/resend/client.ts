@@ -69,7 +69,7 @@ export async function sendInternalLeadNotification(payload: LeadPayload) {
           CONTACT: [payload.mobile, payload.email].filter(Boolean).join(" / "),
           SERVICE_OR_SECTOR: payload.service || payload.sector || "Unspecified",
           LOCATION: payload.location || "Johannesburg",
-          SOURCE: payload.sourcePath || payload.source || "Website",
+          SOURCE: payload.sourcePath || payload.utmSource || payload.sourceUrl || "Website",
         },
       },
     }, `lead-internal-${requestId}`);
