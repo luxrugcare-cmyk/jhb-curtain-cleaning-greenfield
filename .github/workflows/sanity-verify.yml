@@ -1,0 +1,41 @@
+name: Sanity Content Verify
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sanity-verify.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+    steps:
+      - name: Verify seeded published documents
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          const projectId = 'g5y9wcb1';
+          const dataset = 'production';
+          const token = process.env.SANITY_API_READ_TOKEN;
+          if (!token) throw new Error('SANITY_API_READ_TOKEN is required');
+          const query = encodeURIComponent('*[_id match "seed.*"]{_id,_type,title,"slug":slug.current} | order(_id asc)');
+          const url = `https://${projectId}.api.sanity.io/v2026-08-13/data/query/${dataset}?query=${query}`;
+          const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+          if (!response.ok) throw new Error(`Sanity query failed ${response.status}: ${await response.text()}`);
+          const body = await response.json();
+          const docs = Array.isArray(body.result) ? body.result : [];
+          const counts = docs.reduce((acc, doc) => { acc[doc._type] = (acc[doc._type] || 0) + 1; return acc; }, {});
+          console.log(`Seeded published documents: ${docs.length}`);
+          console.log(`Counts: ${JSON.stringify(counts)}`);
+          if (docs.length !== 20 || counts.service !== 8 || counts.sector !== 6 || counts.area !== 6) {
+            throw new Error(`Unexpected seed counts: ${JSON.stringify(counts)} total=${docs.length}`);
+          }
+          console.log('Sanity seed verification passed.');
+          NODE
