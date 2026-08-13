@@ -19,13 +19,37 @@ async function attioFetch(path: string, init: RequestInit) {
   return response.json();
 }
 
+async function upsertCompany(payload: LeadPayload) {
+  if (!payload.organisationDomain) return null;
+
+  const values: Record<string, unknown> = {
+    domains: [payload.organisationDomain],
+  };
+  if (payload.organisation) values.name = payload.organisation;
+  if (payload.location) values.primary_location = payload.location;
+  values.description = [
+    "Website commercial lead organisation",
+    payload.sector && `Sector: ${payload.sector}`,
+    payload.service && `Service: ${payload.service}`,
+    payload.scope && `Requirement: ${payload.scope}`,
+  ].filter(Boolean).join("\n");
+
+  const result = await attioFetch("/objects/companies/records", {
+    method: "PUT",
+    body: JSON.stringify({ data: { values } }),
+  });
+  return result?.data?.id?.record_id as string | undefined;
+}
+
 export async function upsertLeadInAttio(payload: LeadPayload) {
   const apiKey = process.env.ATTIO_API_KEY;
   if (!apiKey) return { ok: true, mode: "stub", externalId: `stub-${Date.now()}` };
 
+  const companyRecordId = payload.kind === "commercial" ? await upsertCompany(payload) : null;
   const { firstName, lastName } = splitName(payload.name);
   const description = [
     `Website ${payload.kind} lead`,
+    payload.requestId && `Request ID: ${payload.requestId}`,
     payload.service && `Service: ${payload.service}`,
     payload.propertyType && `Property: ${payload.propertyType}`,
     payload.sector && `Sector: ${payload.sector}`,
@@ -44,12 +68,21 @@ export async function upsertLeadInAttio(payload: LeadPayload) {
   };
   if (payload.email) values.email_addresses = [payload.email];
   if (payload.location) values.primary_location = payload.location;
+  if (companyRecordId) {
+    values.company = [{ target_object: "companies", target_record_id: companyRecordId }];
+  }
 
-  // Attio's PUT endpoint upserts against unique attributes such as email_addresses.
-  // Leads without email are created as new People records because phone is not unique in this workspace.
+  // Attio's PUT endpoint upserts against a unique attribute when one is supplied.
+  // In this workspace email_addresses is unique; phone_numbers is not.
   const method = payload.email ? "PUT" : "POST";
   const result = await attioFetch("/objects/people/records", {
-    method, body: JSON.stringify({ data: { values } }),
+    method,
+    body: JSON.stringify({ data: { values } }),
   });
-  return { ok: true, mode: payload.email ? "live-upsert" : "live-create", externalId: result?.data?.id?.record_id || payload.email || payload.mobile };
+  return {
+    ok: true,
+    mode: payload.email ? "live-upsert" : "live-create",
+    externalId: result?.data?.id?.record_id || payload.email || payload.mobile,
+    companyRecordId: companyRecordId || undefined,
+  };
 }
