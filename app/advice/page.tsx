@@ -1,3 +1,7 @@
 import { Hero } from "@/components/Hero";
-export const metadata={title:"Advice & Guides"};
-export default function Advice(){return <><Hero eyebrow="Advice" title="Useful fabric-care guidance, not SEO filler." body="Guides will answer real service questions around fabrics, cleaning methods, costs, risks and commercial maintenance."/><section className="section"><div className="shell feature-grid"><article><h3>Curtain care</h3><p>Cleaning frequency, dust, stains and fabric-specific guidance.</p></article><article><h3>Fabric guides</h3><p>Sheers, blackout linings, delicate and designer textiles.</p></article><article><h3>Commercial maintenance</h3><p>Scheduling, operational planning and property maintenance.</p></article><article><h3>Pricing guidance</h3><p>Explain scope and quote variables without invented fixed prices.</p></article></div></section></>}
+
+export const metadata = { title: "Advice & Guides" };
+
+export default function Advice() {
+  return <><Hero eyebrow="Advice" title="Practical curtain and textile-care guidance." body="Guidance on fabrics, cleaning decisions, maintenance planning and the factors that can affect service scope."/><section className="section"><div className="shell feature-grid"><article><h3>Curtain care</h3><p>Cleaning frequency, dust, stains and fabric-specific considerations.</p></article><article><h3>Fabric guides</h3><p>Sheers, blackout linings, delicate and designer textiles.</p></article><article><h3>Commercial maintenance</h3><p>Scheduling, operational planning and property maintenance.</p></article><article><h3>Pricing factors</h3><p>Understand the variables that can affect assessment and quotation.</p></article></div></section></>;
+}

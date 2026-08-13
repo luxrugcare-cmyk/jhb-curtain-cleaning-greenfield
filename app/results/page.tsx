@@ -1,4 +1,8 @@
 import { Hero } from "@/components/Hero";
 import { CTASection } from "@/components/CTASection";
-export const metadata={title:"Results & Case Studies"};
-export default function Results(){return <><Hero eyebrow="Results" title="Evidence-led project stories." body="The production site will publish verified before/after work, service method, project scope and customer outcomes."/><section className="section"><div className="shell card-grid"><article className="service-card"><div className="card-media"/><div><p className="eyebrow">Case study template</p><h3>Premium residence</h3><p>Property → textile → problem → method → result.</p></div></article><article className="service-card"><div className="card-media commercial-media"/><div><p className="eyebrow">Commercial project</p><h3>Hospitality property</h3><p>Operational constraints → scheduling → delivery → result.</p></div></article></div></section><CTASection/></>}
+
+export const metadata = { title: "Results & Case Studies" };
+
+export default function Results() {
+  return <><Hero eyebrow="Results" title="Project evidence, documented clearly." body="Completed project stories will be added as suitable photography, scope details and outcomes are available for publication."/><section className="section"><div className="shell content-grid"><article><p className="eyebrow">Project records</p><h2>See the property, textile, approach and outcome together.</h2><p>Residential and commercial case studies will be published here when the supporting project information is ready to share.</p></article><aside className="info-panel"><h3>Have a similar requirement?</h3><p>Send an assessment request with the property, textile and scope so we can discuss the appropriate next step.</p></aside></div></section><CTASection/></>;
+}
