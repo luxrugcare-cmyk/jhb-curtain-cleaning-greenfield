@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Pull production environment securely
+      - name: Confirm production Blob configuration
         shell: bash
         run: |
           set -euo pipefail
@@ -38,30 +38,38 @@ jobs:
           grep -Eq '^BLOB_READ_WRITE_TOKEN=.+' .vercel/.env.production.local
           echo "PASS production Blob token is configured"
 
-      - name: Verify private Blob create and delete
+      - name: Verify private Blob through production upload API
         shell: bash
         run: |
           set -euo pipefail
-          set -a
-          source .vercel/.env.production.local
-          set +a
-          node --input-type=module <<'NODE'
-          import { put, del } from '@vercel/blob';
-          const token = process.env.BLOB_READ_WRITE_TOKEN;
-          if (!token) throw new Error('BLOB_READ_WRITE_TOKEN unavailable');
-          const body = Buffer.from('JHB Curtain Cleaning controlled E2E Blob test');
-          const blob = await put(`e2e/${Date.now()}-storage-test.txt`, body, {
+          BASE_URL="$BASE_URL" REQUEST_ID="$REQUEST_ID" node --input-type=module <<'NODE'
+          import { upload } from '@vercel/blob/client';
+
+          const baseUrl = process.env.BASE_URL;
+          const requestId = process.env.REQUEST_ID;
+          const bytes = new Uint8Array([137,80,78,71,13,10,26,10,0,0,0,0]);
+          const file = new File([bytes], 'e2e-test.png', { type: 'image/png' });
+          const blob = await upload(`lead-photos/${requestId}/e2e-test.png`, file, {
             access: 'private',
-            contentType: 'text/plain',
-            addRandomSuffix: true,
-            token,
+            handleUploadUrl: `${baseUrl}/api/uploads`,
+            clientPayload: JSON.stringify({ requestId }),
           });
-          if (!blob.pathname) throw new Error('Blob upload did not return a pathname');
-          await del(blob.pathname, { token });
-          console.log('PASS private Blob upload and delete');
+          if (!blob.pathname?.startsWith(`lead-photos/${requestId}/`)) {
+            throw new Error(`Unexpected uploaded pathname: ${blob.pathname}`);
+          }
+
+          const response = await fetch(`${baseUrl}/api/uploads`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ requestId, pathname: blob.pathname }),
+          });
+          if (!response.ok) {
+            throw new Error(`Blob cleanup failed (${response.status}): ${await response.text()}`);
+          }
+          console.log('PASS production private Blob upload and delete');
           NODE
 
-      - name: Verify upload API is storage-enabled
+      - name: Verify upload API rejects malformed request
         shell: bash
         run: |
           set -euo pipefail
