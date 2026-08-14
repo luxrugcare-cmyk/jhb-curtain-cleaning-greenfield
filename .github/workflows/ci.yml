@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -74,6 +74,24 @@ jobs:
           path: /tmp/direct-sanity-runtime
           if-no-files-found: error
           retention-days: 1
+
+      - name: Apply generated lockfile to security branch and reinstall
+        shell: bash
+        env:
+          TARGET_BRANCH: fix/sanity-runtime-dependency-split
+        run: |
+          git fetch origin "$TARGET_BRANCH"
+          git switch -C "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
+          cp /tmp/direct-sanity-runtime/package-lock.json package-lock.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "security: regenerate runtime dependency lockfile"
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+          npm ci --no-audit --no-fund
+          npm audit --omit=dev --audit-level=high
 
       - name: Audit internal imports
         run: npm run audit:imports
