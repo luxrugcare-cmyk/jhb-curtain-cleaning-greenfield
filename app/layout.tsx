@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: { default: "JHB Curtain Cleaning | On-Site Curtain & Textile Care", template: "%s | JHB Curtain Cleaning" },
   description: siteConfig.description,
-  alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: siteConfig.name, title: siteConfig.name, description: siteConfig.description, url: siteConfig.url },
   robots: { index: true, follow: true },
 };
