@@ -6,13 +6,18 @@ import { ServiceGrid } from "@/components/ServiceGrid";
 import { CTASection } from "@/components/CTASection";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
+import { normalizeSeoDescription, normalizeSeoTitle } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const area = await getArea(slug);
   return area ? {
-    title: area.seo?.title || `Curtain & Textile Care in ${area.title}`,
-    description: area.seo?.description || area.summary,
+    title: normalizeSeoTitle(area.seo?.title, `Curtain & Textile Care in ${area.title}`),
+    description: normalizeSeoDescription(
+      area.seo?.description,
+      area.summary,
+      `Professional on-site curtain and textile care for residential and commercial properties in ${area.title} and surrounding areas.`,
+    ),
     alternates: { canonical: `/areas/${slug}` },
   } : {};
 }
