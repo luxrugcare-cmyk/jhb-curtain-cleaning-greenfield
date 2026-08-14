@@ -30,6 +30,26 @@ jobs:
           npm audit --json > /tmp/npm-audit.json || true
           cat /tmp/npm-audit.json
 
+      - name: Trace vulnerable dependency chains
+        shell: bash
+        run: |
+          npm ls js-yaml undici @vercel/frameworks @module-federation/dts-plugin @module-federation/enhanced --all || true
+          node - <<'NODE'
+          const packages = require('./package-lock.json').packages;
+          const targets = Object.entries(packages).filter(([path]) =>
+            path === 'node_modules/js-yaml' ||
+            path.includes('@vercel/frameworks') ||
+            path.includes('@module-federation/dts-plugin') ||
+            path.includes('@module-federation/enhanced') ||
+            path === 'node_modules/undici' ||
+            path.endsWith('/node_modules/undici')
+          );
+          for (const [path, meta] of targets) {
+            console.log(`\n### ${path || '<root>'}`);
+            console.log(JSON.stringify({version: meta.version, dependencies: meta.dependencies, optionalDependencies: meta.optionalDependencies}, null, 2));
+          }
+          NODE
+
       - name: Audit internal imports
         run: npm run audit:imports
 
