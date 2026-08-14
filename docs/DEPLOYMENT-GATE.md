@@ -35,10 +35,13 @@ Public:
 - `NEXT_PUBLIC_SANITY_DATASET`
 - `NEXT_PUBLIC_SANITY_API_VERSION`
 
+Sanity runtime note:
+- Production website reads use the public published Sanity dataset and do **not** require `SANITY_API_READ_TOKEN`.
+- Private/editorial Sanity credentials, if needed for Studio or administrative workflows, must not be treated as a website runtime dependency.
+
 Secrets:
 - `ATTIO_API_KEY`
 - `RESEND_API_KEY`
-- `SANITY_API_READ_TOKEN`
 - `BLOB_READ_WRITE_TOKEN`
 - `N8N_LEAD_WEBHOOK_URL` (optional)
 - `N8N_WEBHOOK_SECRET` (optional)
