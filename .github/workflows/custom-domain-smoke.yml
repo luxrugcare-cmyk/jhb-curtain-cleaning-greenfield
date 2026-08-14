@@ -22,15 +22,17 @@ jobs:
       BASE: https://www.jhbcurtaincleaning.co.za
       APEX: https://jhbcurtaincleaning.co.za
     steps:
-      - name: Verify live routes, apex redirect, canonicals and health
+      - name: Verify live routes, redirects, canonicals and health
         shell: bash
         run: |
           set -euo pipefail
           routes=(
             "/" "/quote" "/commercial-assessment" "/services" "/services/curtain-cleaning"
             "/commercial/hotels-hospitality" "/areas/johannesburg" "/areas/sandton" "/areas/roodepoort"
+            "/areas/randburg" "/areas/fourways" "/areas/midrand"
             "/advice" "/advice/how-on-site-curtain-cleaning-works" "/advice/curtain-cleaning-prices"
             "/advice/can-curtains-be-cleaned-without-taking-them-down" "/advice/curtain-cleaning-vs-washing-vs-dry-cleaning"
+            "/advice/mattress-cleaning-guide" "/advice/upholstery-couch-cleaning-guide" "/advice/blind-cleaning-guide"
             "/privacy" "/robots.txt" "/sitemap.xml"
           )
           for route in "${routes[@]}"; do
@@ -43,6 +45,17 @@ jobs:
           grep -Eq '^HTTP/[0-9.]+ 308' "$apex_headers"
           grep -Eqi '^location: https://www\.jhbcurtaincleaning\.co\.za/?' "$apex_headers"
           echo "PASS apex 308 -> www"
+          check_redirect() {
+            route="$1"; expected="$2"; headers=$(mktemp)
+            curl --silent --show-error --output /dev/null --dump-header "$headers" "$BASE$route"
+            grep -Eq '^HTTP/[0-9.]+ 308' "$headers"
+            grep -Fqi "location: $expected" "$headers"
+            echo "PASS redirect $route -> $expected"
+          }
+          check_redirect "/pricing" "$BASE/advice/curtain-cleaning-prices"
+          check_redirect "/blog/curtain-cleaning-sandton-guide" "$BASE/areas/sandton"
+          check_redirect "/testimonials" "$BASE/results"
+          check_redirect "/services/curtain-blind-cleaning" "$BASE/services/curtain-cleaning"
           check_canonical() {
             route="$1"; expected="$2"; file=$(mktemp)
             curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE$route" > "$file"
@@ -63,10 +76,9 @@ jobs:
           check_canonical "/" "$BASE"
           check_canonical "/quote" "$BASE/quote"
           check_canonical "/services" "$BASE/services"
-          check_canonical "/advice/how-on-site-curtain-cleaning-works" "$BASE/advice/how-on-site-curtain-cleaning-works"
-          check_canonical "/advice/curtain-cleaning-prices" "$BASE/advice/curtain-cleaning-prices"
-          check_canonical "/advice/can-curtains-be-cleaned-without-taking-them-down" "$BASE/advice/can-curtains-be-cleaned-without-taking-them-down"
-          check_canonical "/advice/curtain-cleaning-vs-washing-vs-dry-cleaning" "$BASE/advice/curtain-cleaning-vs-washing-vs-dry-cleaning"
+          check_canonical "/advice/mattress-cleaning-guide" "$BASE/advice/mattress-cleaning-guide"
+          check_canonical "/advice/upholstery-couch-cleaning-guide" "$BASE/advice/upholstery-couch-cleaning-guide"
+          check_canonical "/advice/blind-cleaning-guide" "$BASE/advice/blind-cleaning-guide"
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
           echo "$health" | grep -q '"ok":true'
           echo "$health" | grep -q '"service":"jhb-curtain-cleaning-greenfield"'
