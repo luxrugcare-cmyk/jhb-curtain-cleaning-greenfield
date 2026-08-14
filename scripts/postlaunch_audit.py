@@ -19,7 +19,6 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterable
 
 BASE = os.environ.get("BASE", "https://www.jhbcurtaincleaning.co.za").rstrip("/")
 REPORT_PATH = Path(os.environ.get("REPORT_PATH", "postlaunch-audit.json"))
@@ -27,6 +26,8 @@ TIMEOUT = float(os.environ.get("HTTP_TIMEOUT", "20"))
 MAX_WORKERS = int(os.environ.get("MAX_WORKERS", "8"))
 USER_AGENT = "JHBCurtainCleaning-PostLaunchAudit/1.0"
 BASE_HOST = urllib.parse.urlparse(BASE).netloc.lower()
+APEX_HOST = BASE_HOST.removeprefix("www.")
+INTERNAL_HOSTS = {BASE_HOST, APEX_HOST, f"www.{APEX_HOST}"}
 
 
 @dataclass
@@ -171,11 +172,9 @@ def internal_url(href: str, page_url: str) -> str | None:
     parsed = urllib.parse.urlparse(absolute)
     if parsed.scheme not in {"http", "https"}:
         return None
-    host = parsed.netloc.lower()
-    if host not in {BASE_HOST, BASE_HOST.removeprefix("www."), f"www.{BASE_HOST.removeprefix('www.')}":}:
+    if parsed.netloc.lower() not in INTERNAL_HOSTS:
         return None
-    clean = urllib.parse.urlunparse(("https", BASE_HOST, parsed.path or "/", "", parsed.query, ""))
-    return clean
+    return urllib.parse.urlunparse(("https", BASE_HOST, parsed.path or "/", "", parsed.query, ""))
 
 
 def parse_page(url: str) -> PageResult:
@@ -215,8 +214,7 @@ def parse_page(url: str) -> PageResult:
     elif normalize(parser.canonicals[0]) != normalize(url):
         errors.append(f"canonical mismatch: {parser.canonicals[0]}")
 
-    robots_lower = parser.robots.lower()
-    if "noindex" in robots_lower:
+    if "noindex" in parser.robots.lower():
         errors.append("page is noindex")
 
     if parser.h1_count == 0:
@@ -248,8 +246,7 @@ def parse_page(url: str) -> PageResult:
 
 
 def fetch_sitemap() -> list[str]:
-    sitemap_url = f"{BASE}/sitemap.xml"
-    result = request(sitemap_url)
+    result = request(f"{BASE}/sitemap.xml")
     if result.status != 200:
         raise RuntimeError(f"sitemap returned HTTP {result.status}: {result.error or ''}")
     try:
