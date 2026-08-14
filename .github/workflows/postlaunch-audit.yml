@@ -7,6 +7,7 @@ on:
     paths:
       - "scripts/postlaunch_audit.py"
       - ".github/workflows/postlaunch-audit.yml"
+      - ".postlaunch-audit-trigger"
   schedule:
     - cron: "17 */6 * * *"
 
