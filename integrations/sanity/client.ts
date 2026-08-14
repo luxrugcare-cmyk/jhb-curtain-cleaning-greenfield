@@ -1,14 +1,15 @@
 import { createClient } from "@sanity/client";
 import { sanityEnv, isSanityConfigured } from "./env";
 
-const readToken = process.env.SANITY_API_READ_TOKEN;
-
+// Published Sanity content is intentionally read through the public dataset/CDN.
+// The production dataset has been verified to allow anonymous published-content
+// reads, so the website does not depend on a runtime bearer token. Studio/schema
+// deployment and content-writing credentials remain separate and private.
 export const sanityClient = isSanityConfigured
   ? createClient({
       ...sanityEnv,
-      useCdn: !readToken,
+      useCdn: true,
       perspective: "published",
-      token: readToken || undefined,
     })
   : null;
 
