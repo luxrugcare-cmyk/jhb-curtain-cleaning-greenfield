@@ -50,12 +50,14 @@ jobs:
           }
           NODE
 
-      - name: Test production audit with Sanity Studio classified as development tooling
+      - name: Test production audit with direct Sanity client runtime
         shell: bash
         run: |
           cp package.json /tmp/package.json.before
           cp package-lock.json /tmp/package-lock.json.before
+          npm pkg delete dependencies.next-sanity
           npm pkg delete dependencies.sanity
+          npm pkg set 'dependencies.@sanity/client=^7.26.2'
           npm pkg set 'devDependencies.sanity=^6.7.0'
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund
           npm audit --omit=dev --json > /tmp/npm-audit-production.json || true
