@@ -1,0 +1,205 @@
+name: Live Precutover E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".live-e2e-trigger"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-precutover-e2e
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: https://jhb-curtain-cleaning-greenfield.vercel.app
+      TEST_EMAIL: info@jhbcurtaincleaning.co.za
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run controlled live acceptance tests
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { upload } from "@vercel/blob/client";
+          import { File } from "node:buffer";
+
+          const BASE = process.env.BASE;
+          const TEST_EMAIL = process.env.TEST_EMAIL;
+          const runId = process.env.GITHUB_RUN_ID;
+          const syntheticDomain = "e2e-precutover.jhbcurtaincleaning.co.za";
+          const mobile = "+27750119200";
+
+          function assert(condition, message) {
+            if (!condition) throw new Error(message);
+          }
+
+          async function submit(label, payload) {
+            const response = await fetch(`${BASE}/api/leads`, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const body = await response.json().catch(() => ({}));
+            if (response.status !== 201 || body.ok !== true) {
+              throw new Error(`${label} failed: HTTP ${response.status} ${JSON.stringify(body)}`);
+            }
+            assert(body.crm?.ok === true, `${label}: CRM persistence failed`);
+            assert(body.acknowledgement?.ok === true, `${label}: acknowledgement failed`);
+            assert(body.internalNotification?.ok === true, `${label}: internal notification failed`);
+            assert(body.automation?.ok === true, `${label}: automation contract failed`);
+            assert(body.automation?.mode === "not-configured", `${label}: expected n8n not-configured mode`);
+            assert(Array.isArray(body.warnings) && body.warnings.length === 0, `${label}: unexpected warnings ${JSON.stringify(body.warnings)}`);
+            console.log(`PASS ${label} request=${body.requestId} crm=${body.crm?.mode}`);
+            return body;
+          }
+
+          const common = {
+            email: TEST_EMAIL,
+            mobile,
+            location: "Roodepoort, Johannesburg",
+            preferredContact: "email",
+            marketingConsent: false,
+            privacyNoticeVersion: "2026-08-v1",
+            sourcePath: "/e2e/precutover",
+            sourceUrl: `${BASE}/e2e/precutover`,
+            utmSource: "chatgpt-precutover-e2e",
+            utmMedium: "qa",
+            utmCampaign: `deployment-gate-${runId}`,
+          };
+
+          const residentialNoPhoto = await submit("residential-no-photo", {
+            ...common,
+            requestId: `e2e-${runId}-res-no-photo`,
+            kind: "residential",
+            name: "Precutover E2E Residential",
+            service: "Curtain cleaning",
+            propertyType: "House",
+            scope: "Synthetic deployment-gate test: residential without photos.",
+          });
+
+          const photoRequestId = `e2e-${runId}-res-photo`;
+          const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZKQAAAABJRU5ErkJggg==", "base64");
+          const file = new File([png], "precutover-e2e.png", { type: "image/png" });
+          let blob;
+          try {
+            blob = await upload(`lead-photos/${photoRequestId}/precutover-e2e.png`, file, {
+              access: "private",
+              handleUploadUrl: `${BASE}/api/uploads`,
+              clientPayload: JSON.stringify({ requestId: photoRequestId }),
+            });
+            assert(blob.pathname.startsWith(`lead-photos/${photoRequestId}/`), "photo pathname is not request-scoped");
+            const unauthenticated = await fetch(blob.url, { redirect: "manual" });
+            assert(unauthenticated.status !== 200, `private blob was publicly readable at ${blob.url}`);
+            console.log(`PASS private-photo unauthenticated-status=${unauthenticated.status}`);
+
+            const residentialPhoto = await submit("residential-private-photo", {
+              ...common,
+              requestId: photoRequestId,
+              kind: "residential",
+              name: "Precutover E2E Residential",
+              service: "Curtain cleaning",
+              propertyType: "House",
+              scope: "Synthetic deployment-gate test: residential with one private photo.",
+              photos: [{ pathname: blob.pathname, contentType: "image/png", size: file.size }],
+            });
+            assert(!JSON.stringify(residentialPhoto).includes(blob.pathname), "private photo pathname leaked into public lead response");
+          } finally {
+            if (blob?.pathname) {
+              const deletion = await fetch(`${BASE}/api/uploads`, {
+                method: "DELETE",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ requestId: photoRequestId, pathname: blob.pathname }),
+              });
+              assert(deletion.ok, `private test photo cleanup failed: HTTP ${deletion.status}`);
+              console.log("PASS private-photo cleanup");
+            }
+          }
+
+          const commercialNoDomain = await submit("commercial-no-domain", {
+            ...common,
+            requestId: `e2e-${runId}-commercial-no-domain`,
+            kind: "commercial",
+            name: "Precutover E2E Commercial",
+            organisation: "JHB Curtain Cleaning Precutover E2E",
+            sector: "Corporate offices",
+            service: "Curtain cleaning",
+            scope: "Synthetic deployment-gate test: commercial without a company domain.",
+          });
+
+          const commercialWithDomain = await submit("commercial-with-domain", {
+            ...common,
+            requestId: `e2e-${runId}-commercial-domain-a`,
+            kind: "commercial",
+            name: "Precutover E2E Commercial",
+            organisation: "JHB Curtain Cleaning Precutover E2E",
+            organisationDomain: syntheticDomain,
+            sector: "Corporate offices",
+            service: "Curtain cleaning",
+            scope: "Synthetic deployment-gate test: commercial with company domain.",
+          });
+
+          const commercialDomainRepeat = await submit("commercial-domain-repeat", {
+            ...common,
+            requestId: `e2e-${runId}-commercial-domain-b`,
+            kind: "commercial",
+            name: "Precutover E2E Commercial",
+            organisation: "JHB Curtain Cleaning Precutover E2E",
+            organisationDomain: syntheticDomain,
+            sector: "Corporate offices",
+            service: "Curtain cleaning",
+            scope: "Synthetic deployment-gate test: repeat domain upsert.",
+          });
+
+          const personIds = [
+            residentialNoPhoto.crm?.externalId,
+            commercialNoDomain.crm?.externalId,
+            commercialWithDomain.crm?.externalId,
+            commercialDomainRepeat.crm?.externalId,
+          ].filter(Boolean);
+          assert(new Set(personIds).size === 1, `Attio duplicate person upsert failed: ${JSON.stringify(personIds)}`);
+          assert(Boolean(commercialWithDomain.crm?.companyRecordId), "commercial company record id missing");
+          assert(commercialWithDomain.crm.companyRecordId === commercialDomainRepeat.crm?.companyRecordId, "Attio company domain upsert failed");
+          console.log("PASS Attio person email upsert");
+          console.log("PASS Attio company domain upsert");
+
+          const result = {
+            runId,
+            requestIds: [
+              residentialNoPhoto.requestId,
+              photoRequestId,
+              commercialNoDomain.requestId,
+              commercialWithDomain.requestId,
+              commercialDomainRepeat.requestId,
+            ],
+            personRecordId: personIds[0],
+            companyRecordId: commercialWithDomain.crm.companyRecordId,
+            emailIds: [
+              residentialNoPhoto.acknowledgement?.id,
+              residentialNoPhoto.internalNotification?.id,
+              commercialNoDomain.acknowledgement?.id,
+              commercialNoDomain.internalNotification?.id,
+              commercialWithDomain.acknowledgement?.id,
+              commercialWithDomain.internalNotification?.id,
+              commercialDomainRepeat.acknowledgement?.id,
+              commercialDomainRepeat.internalNotification?.id,
+            ].filter(Boolean),
+          };
+          console.log(`E2E_RESULT ${JSON.stringify(result)}`);
+          NODE
