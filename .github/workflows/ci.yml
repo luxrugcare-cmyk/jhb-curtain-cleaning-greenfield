@@ -2,12 +2,12 @@ name: Greenfield CI
 
 on:
   push:
-    branches: [main, fix/precutover-seo-analytics-v2]
+    branches: [main]
   pull_request:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
@@ -20,19 +20,6 @@ jobs:
         with:
           node-version: 22
           cache: npm
-
-      - name: Regenerate and commit lockfile on validation branch
-        if: github.ref == 'refs/heads/fix/precutover-seo-analytics-v2'
-        shell: bash
-        run: |
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          if ! git diff --quiet -- package-lock.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package-lock.json
-            git commit -m "chore: regenerate package lock [skip ci]"
-            git push origin HEAD:fix/precutover-seo-analytics-v2
-          fi
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
