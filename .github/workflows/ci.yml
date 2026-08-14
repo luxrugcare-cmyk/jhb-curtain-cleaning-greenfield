@@ -2,7 +2,7 @@ name: Greenfield CI
 
 on:
   push:
-    branches: [main, release/precutover-rc1]
+    branches: [main]
   pull_request:
     branches: [main]
 
