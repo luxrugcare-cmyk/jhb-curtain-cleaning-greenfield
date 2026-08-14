@@ -7,12 +7,17 @@ import { ProcessSteps } from "@/components/ProcessSteps";
 import { CTASection } from "@/components/CTASection";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
+import { normalizeSeoDescription, normalizeSeoTitle } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params; const service = await getService(slug); if (!service) return {};
   return {
-    title: service.seo?.title || service.title,
-    description: service.seo?.description || service.summary,
+    title: normalizeSeoTitle(service.seo?.title, service.title),
+    description: normalizeSeoDescription(
+      service.seo?.description,
+      service.summary,
+      "Professional on-site assessment and textile care for homes and commercial properties across Johannesburg.",
+    ),
     alternates: { canonical: `/services/${slug}` },
     robots: service.seo?.noIndex ? { index: false, follow: true } : undefined,
   };
