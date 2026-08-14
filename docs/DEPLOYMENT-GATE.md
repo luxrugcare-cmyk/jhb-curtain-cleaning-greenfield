@@ -1,5 +1,17 @@
 # Deployment Gate
 
+## Production cutover status
+
+**COMPLETED — 14 August 2026.** All acceptance gates below passed before the custom domain was moved to the greenfield Vercel project.
+
+- Primary production host: `https://www.jhbcurtaincleaning.co.za`
+- Apex: `https://jhbcurtaincleaning.co.za` with permanent `308` redirect to `www`
+- Greenfield Vercel project: `jhb-curtain-cleaning-greenfield` (`prj_lbu1XdtAkiRKAGpAtxBe5voWIkEM`)
+- Prior production project retained as rollback target: `my-project` (`prj_i1xMGttxRtgrr8GysXfPj4VzH0Mt`)
+- Successful guarded cutover workflow: GitHub Actions run `31765744688`
+- Cutover validation passed live routes, canonicals, sitemap, robots, apex redirect and production `/api/health`.
+- Permanent custom-domain smoke and browser gates must continue to run against the live `www` hostname after cutover.
+
 ## Preview first
 
 The production domain must remain untouched until the full Next.js application passes all checks below in a preview environment.
@@ -56,4 +68,4 @@ Operational:
 16. `robots.txt`, sitemap, canonical and JSON-LD validate.
 17. Mobile sticky actions do not obstruct form controls or consent UI.
 18. Keyboard navigation and visible focus pass.
-19. No production domain alias until all prior checks pass.
+19. No production domain alias until all prior checks pass. **Passed; cutover completed 14 August 2026.**
