@@ -1,0 +1,127 @@
+name: Repair Sanity Production Read Token
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".sanity-read-token-repair-trigger"
+
+permissions:
+  contents: read
+
+jobs:
+  rotate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      SANITY_PROJECT_ID: g5y9wcb1
+      SANITY_DATASET: production
+      SANITY_API_VERSION: 2026-08-13
+      VERCEL_SCOPE: bookish-eureka
+      VERCEL_PROJECT: jhb-curtain-cleaning-greenfield
+    steps:
+      - name: Require management credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SANITY_AUTH_TOKEN"
+          test -n "$VERCEL_TOKEN"
+
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Create least-privilege Sanity Viewer token
+        id: sanity
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file=/tmp/sanity-token-create.json
+          http_code=$(curl --silent --show-error --output "$response_file" --write-out "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer $SANITY_AUTH_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"label":"JHB Curtain Cleaning - Vercel Production Read (automated)","roleName":"viewer"}' \
+            "https://api.sanity.io/v2021-06-07/projects/${SANITY_PROJECT_ID}/tokens" || true)
+
+          if [ "$http_code" != "200" ]; then
+            echo "Sanity token creation failed with HTTP $http_code. Vercel has not been modified."
+            cat "$response_file" | jq -c 'del(.key,.token,.secret)' || true
+            exit 1
+          fi
+
+          token=$(jq -r '.key // empty' "$response_file")
+          token_id=$(jq -r '.id // empty' "$response_file")
+          if [ -z "$token" ]; then
+            echo "Sanity returned HTTP 200 but no token key. Vercel has not been modified."
+            exit 1
+          fi
+
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+          echo "token_id=$token_id" >> "$GITHUB_OUTPUT"
+          echo "Created Sanity Viewer token successfully."
+
+      - name: Verify new token directly against Sanity
+        shell: bash
+        env:
+          NEW_SANITY_TOKEN: ${{ steps.sanity.outputs.token }}
+        run: |
+          set -euo pipefail
+          code=$(curl --silent --show-error --output /tmp/sanity-check.json --write-out "%{http_code}" \
+            --get \
+            -H "Authorization: Bearer $NEW_SANITY_TOKEN" \
+            --data-urlencode 'query=count(*[_type == "caseStudy"])' \
+            "https://${SANITY_PROJECT_ID}.api.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}" || true)
+          test "$code" = "200"
+          echo "Sanity Viewer token direct read: PASS (HTTP 200)"
+
+      - name: Link exact Vercel production project
+        shell: bash
+        run: >-
+          npx --yes vercel@latest link --yes
+          --scope "$VERCEL_SCOPE"
+          --project "$VERCEL_PROJECT"
+          --token "$VERCEL_TOKEN"
+
+      - name: Replace Vercel Production SANITY_API_READ_TOKEN
+        shell: bash
+        env:
+          NEW_SANITY_TOKEN: ${{ steps.sanity.outputs.token }}
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest env rm SANITY_API_READ_TOKEN production --yes --scope "$VERCEL_SCOPE" --token "$VERCEL_TOKEN" >/dev/null 2>&1 || true
+          printf '%s' "$NEW_SANITY_TOKEN" | npx --yes vercel@latest env add SANITY_API_READ_TOKEN production --scope "$VERCEL_SCOPE" --token "$VERCEL_TOKEN" >/dev/null
+          echo "Vercel Production SANITY_API_READ_TOKEN replaced."
+
+      - name: Pull and verify Vercel Production token
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest pull --yes --environment=production --scope "$VERCEL_SCOPE" --token "$VERCEL_TOKEN" >/dev/null
+          set -a
+          source .vercel/.env.production.local
+          set +a
+          code=$(curl --silent --show-error --output /tmp/sanity-vercel-check.json --write-out "%{http_code}" \
+            --get \
+            -H "Authorization: Bearer $SANITY_API_READ_TOKEN" \
+            --data-urlencode 'query=count(*[_type == "caseStudy"])' \
+            "https://${NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v${NEXT_PUBLIC_SANITY_API_VERSION}/data/query/${NEXT_PUBLIC_SANITY_DATASET}" || true)
+          test "$code" = "200"
+          echo "Vercel Production Sanity authenticated read: PASS (HTTP 200)"
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "### Sanity production read-token repair" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Project: g5y9wcb1" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Role: Viewer" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Vercel scope/project: bookish-eureka/jhb-curtain-cleaning-greenfield" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Direct Sanity read: PASS (HTTP 200)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Vercel Production read: PASS (HTTP 200)" >> "$GITHUB_STEP_SUMMARY"
