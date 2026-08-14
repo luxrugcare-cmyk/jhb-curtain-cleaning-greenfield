@@ -1,0 +1,132 @@
+name: Read-only Precutover E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".readonly-e2e-trigger"
+
+permissions:
+  contents: read
+
+jobs:
+  readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      BASE: https://jhb-curtain-cleaning-greenfield.vercel.app
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Link and pull production config
+        run: |
+          test -n "$VERCEL_TOKEN"
+          npx --yes vercel@latest link --yes --scope bookish-eureka --project jhb-curtain-cleaning-greenfield --token "$VERCEL_TOKEN" >/dev/null
+          npx --yes vercel@latest pull --yes --environment=production --scope bookish-eureka --token "$VERCEL_TOKEN" >/dev/null
+
+      - name: Prove Sanity fallback mode
+        shell: bash
+        run: |
+          env NEXT_PUBLIC_SANITY_PROJECT_ID='' SANITY_API_READ_TOKEN='' npx --yes tsx -e '
+            import { getService, getSector, getArea } from "./integrations/sanity/content.ts";
+            const service = await getService("curtain-cleaning");
+            const sector = await getSector("hotels-hospitality");
+            const area = await getArea("johannesburg");
+            if (!service?.title || !sector?.title || !area?.title) throw new Error("Sanity-disabled local fallback did not resolve required content");
+            console.log("PASS Sanity-disabled fallback", service.title, sector.title, area.title);
+          '
+
+      - name: Prove live Sanity content mode
+        shell: bash
+        run: |
+          set -a
+          source .vercel/.env.production.local
+          set +a
+          npx --yes tsx -e '
+            import { sanityClient } from "./integrations/sanity/client.ts";
+            import { getService, getSector, getArea } from "./integrations/sanity/content.ts";
+            if (!sanityClient) throw new Error("Sanity client is not configured in production");
+            const counts = await sanityClient.fetch(`{
+              "services": count(*[_type=="service"]),
+              "sectors": count(*[_type=="sector"]),
+              "areas": count(*[_type=="area"])
+            }`);
+            if (counts.services < 1 || counts.sectors < 1 || counts.areas < 1) throw new Error(`Published Sanity content missing: ${JSON.stringify(counts)}`);
+            const service = await getService("curtain-cleaning");
+            const sector = await getSector("hotels-hospitality");
+            const area = await getArea("johannesburg");
+            if (!service?.title || !sector?.title || !area?.title) throw new Error("Live Sanity content resolution failed");
+            console.log("PASS live Sanity counts", JSON.stringify(counts));
+            console.log("PASS live Sanity resolution", service.title, sector.title, area.title);
+          '
+
+      - name: Validate live JSON-LD
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+          from html.parser import HTMLParser
+
+          base = "https://jhb-curtain-cleaning-greenfield.vercel.app"
+          routes = [
+              "/",
+              "/services/curtain-cleaning",
+              "/commercial/hotels-hospitality",
+              "/areas/johannesburg",
+          ]
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.in_jsonld = False
+                  self.buf = []
+                  self.blocks = []
+              def handle_starttag(self, tag, attrs):
+                  values = dict(attrs)
+                  if tag == "script" and values.get("type") == "application/ld+json":
+                      self.in_jsonld = True
+                      self.buf = []
+              def handle_data(self, data):
+                  if self.in_jsonld:
+                      self.buf.append(data)
+              def handle_endtag(self, tag):
+                  if tag == "script" and self.in_jsonld:
+                      self.blocks.append("".join(self.buf))
+                      self.in_jsonld = False
+
+          expected_types = {
+              "/": {"LocalBusiness"},
+              "/services/curtain-cleaning": {"Service", "BreadcrumbList"},
+              "/commercial/hotels-hospitality": {"Service", "BreadcrumbList"},
+              "/areas/johannesburg": {"Service", "BreadcrumbList"},
+          }
+
+          for route in routes:
+              req = urllib.request.Request(base + route, headers={"User-Agent":"JHB-precutover-validator/1.0"})
+              with urllib.request.urlopen(req, timeout=20) as response:
+                  html = response.read().decode("utf-8")
+              parser = Parser(); parser.feed(html)
+              if not parser.blocks:
+                  raise SystemExit(f"No JSON-LD blocks on {route}")
+              docs = [json.loads(block) for block in parser.blocks]
+              types = {doc.get("@type") for doc in docs if isinstance(doc, dict)}
+              missing = expected_types[route] - types
+              if missing:
+                  raise SystemExit(f"Missing JSON-LD types on {route}: {sorted(missing)}; got {sorted(t for t in types if t)}")
+              for doc in docs:
+                  if isinstance(doc, dict) and doc.get("@context") != "https://schema.org":
+                      raise SystemExit(f"Invalid @context on {route}: {doc.get('@context')}")
+              print(f"PASS JSON-LD {route}: {sorted(t for t in types if t)}")
+          PY
