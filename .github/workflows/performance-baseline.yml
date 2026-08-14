@@ -1,0 +1,89 @@
+name: Production Performance Baseline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/performance-baseline.yml"
+      - ".performance-baseline-trigger"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-performance-baseline
+  cancel-in-progress: false
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: https://www.jhbcurtaincleaning.co.za
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Locate system Chrome
+        shell: bash
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$CHROME_PATH"
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+          "$CHROME_PATH" --version
+
+      - name: Run diagnostic Lighthouse audits
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p lighthouse-reports
+          routes=("/" "/services" "/quote" "/commercial-assessment")
+          names=("home" "services" "quote" "commercial-assessment")
+          for i in "${!routes[@]}"; do
+            echo "Auditing ${BASE}${routes[$i]}"
+            npx --yes lighthouse@latest "${BASE}${routes[$i]}" \
+              --chrome-path="$CHROME_PATH" \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --form-factor=mobile \
+              --screenEmulation.mobile=true \
+              --output=json \
+              --output-path="lighthouse-reports/${names[$i]}.json" \
+              --quiet
+          done
+
+      - name: Summarize baseline scores
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const files = fs.readdirSync('lighthouse-reports').filter(f => f.endsWith('.json')).sort();
+          console.log('| Page | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |');
+          console.log('|---|---:|---:|---:|---:|---:|---:|---:|');
+          for (const file of files) {
+            const r = JSON.parse(fs.readFileSync(path.join('lighthouse-reports', file), 'utf8'));
+            const c = r.categories;
+            const a = r.audits;
+            const pct = key => Math.round((c[key]?.score ?? 0) * 100);
+            const lcp = a['largest-contentful-paint']?.displayValue ?? 'n/a';
+            const cls = a['cumulative-layout-shift']?.displayValue ?? 'n/a';
+            const tbt = a['total-blocking-time']?.displayValue ?? 'n/a';
+            const line = `| ${file.replace('.json','')} | ${pct('performance')} | ${pct('accessibility')} | ${pct('best-practices')} | ${pct('seo')} | ${lcp} | ${cls} | ${tbt} |`;
+            console.log(line);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, line + '\n');
+          }
+          NODE
+
+      - name: Upload Lighthouse reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-lighthouse-baseline
+          path: lighthouse-reports/
+          if-no-files-found: warn
+          retention-days: 30
