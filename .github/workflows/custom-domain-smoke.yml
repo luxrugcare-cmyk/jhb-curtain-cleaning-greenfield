@@ -35,6 +35,8 @@ jobs:
             "/services/curtain-cleaning"
             "/commercial/hotels-hospitality"
             "/areas/johannesburg"
+            "/advice"
+            "/advice/how-on-site-curtain-cleaning-works"
             "/privacy"
             "/robots.txt"
             "/sitemap.xml"
@@ -72,6 +74,7 @@ jobs:
           check_canonical "/" "$BASE"
           check_canonical "/quote" "$BASE/quote"
           check_canonical "/services" "$BASE/services"
+          check_canonical "/advice/how-on-site-curtain-cleaning-works" "$BASE/advice/how-on-site-curtain-cleaning-works"
 
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
           echo "$health"
