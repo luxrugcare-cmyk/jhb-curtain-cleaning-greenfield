@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -21,17 +21,18 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Regenerate dependency lock for branch validation
+      - name: Regenerate and commit lockfile on validation branch
         if: github.ref == 'refs/heads/fix/precutover-seo-analytics-v2'
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-
-      - name: Export regenerated lockfile
-        if: github.ref == 'refs/heads/fix/precutover-seo-analytics-v2'
-        uses: actions/upload-artifact@v4
-        with:
-          name: regenerated-package-lock
-          path: package-lock.json
-          if-no-files-found: error
+        shell: bash
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          if ! git diff --quiet -- package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "chore: regenerate package lock [skip ci]"
+            git push origin HEAD:fix/precutover-seo-analytics-v2
+          fi
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
