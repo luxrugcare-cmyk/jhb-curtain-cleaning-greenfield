@@ -13,7 +13,7 @@ export function Header() {
         <nav className="desktop-nav" aria-label="Primary navigation">
           <Link href="/residential">Residential</Link>
           <Link href="/commercial">Commercial</Link>
-          <Link href="/services/curtain-cleaning">Services</Link>
+          <Link href="/services">Services</Link>
           <Link href="/results">Results</Link>
           <Link href="/areas/johannesburg">Areas</Link>
           <Link href="/advice">Advice</Link>

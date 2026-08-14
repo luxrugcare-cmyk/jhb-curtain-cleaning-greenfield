@@ -26,6 +26,22 @@ async function axeAudit(page, route) {
   console.log(`PASS axe ${route}: no serious/critical violations`);
 }
 
+async function proveAnalyticsStart(browser, route, expectedEvent) {
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 });
+  await page.goto(`${BASE}${route}`, { waitUntil: "networkidle2" });
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  const events = await page.evaluate(() => (window.dataLayer || []).map((item) => {
+    try { return Array.from(item); } catch { return item; }
+  }));
+  const hasExpected = events.some((item) => Array.isArray(item) && item[0] === "event" && item[1] === expectedEvent);
+  const manualPageViews = events.filter((item) => Array.isArray(item) && item[0] === "event" && item[1] === "page_view");
+  assert(hasExpected, `${route} did not queue direct-load ${expectedEvent}: ${JSON.stringify(events)}`);
+  assert(manualPageViews.length === 0, `${route} emitted manual page_view event(s): ${JSON.stringify(manualPageViews)}`);
+  console.log(`PASS analytics ${route}: ${expectedEvent} queued on direct load; no manual page_view event`);
+  await page.close();
+}
+
 async function overlap(page, targetSelector) {
   return page.evaluate((selector) => {
     const target = document.querySelector(selector);
@@ -139,6 +155,8 @@ async function main() {
     args: ["--no-sandbox", "--disable-dev-shm-usage"],
   });
   try {
+    await proveAnalyticsStart(browser, "/quote", "quote_start");
+    await proveAnalyticsStart(browser, "/commercial-assessment", "commercial_start");
     await proveResidentialMobile(browser);
     await proveCommercialMobile(browser);
     await proveKeyboard(browser, "/quote");
