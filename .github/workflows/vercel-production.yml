@@ -86,7 +86,6 @@ jobs:
             NEXT_PUBLIC_SANITY_PROJECT_ID
             NEXT_PUBLIC_SANITY_DATASET
             NEXT_PUBLIC_SANITY_API_VERSION
-            SANITY_API_READ_TOKEN
             BLOB_READ_WRITE_TOKEN
             ENABLE_FAILURE_ARCHIVE
             RESEND_TEMPLATE_RESIDENTIAL_ACK
@@ -138,10 +137,10 @@ jobs:
             exit 1
           fi
 
-      - name: Validate Sanity read access (non-blocking)
+      - name: Validate Sanity public published-content read
         shell: bash
         run: |
-          set -u
+          set -euo pipefail
           ENV_FILE=.vercel/.env.production.local
           set -a
           source "$ENV_FILE"
@@ -150,30 +149,24 @@ jobs:
           project="${NEXT_PUBLIC_SANITY_PROJECT_ID:-}"
           dataset="${NEXT_PUBLIC_SANITY_DATASET:-}"
           api_version="${NEXT_PUBLIC_SANITY_API_VERSION:-}"
-          token="${SANITY_API_READ_TOKEN:-}"
-
-          if [ -z "$project" ] || [ -z "$dataset" ] || [ -z "$api_version" ] || [ -z "$token" ]; then
-            echo "- Sanity authenticated read check: SKIPPED (configuration incomplete)" >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning::Sanity authenticated read check skipped because required values are missing."
-            exit 0
-          fi
-
           endpoint="https://${project}.api.sanity.io/v${api_version}/data/query/${dataset}"
-          response_file=/tmp/sanity-read-check.json
+          response_file=/tmp/sanity-public-read-check.json
+
           http_code=$(curl --silent --show-error --output "$response_file" --write-out "%{http_code}" \
             --get \
-            --header "Authorization: Bearer ${token}" \
-            --data-urlencode 'query=count(*[_type == "caseStudy"])' \
+            --data-urlencode 'query=count(*[_type == "caseStudy" && publicationStatus == "published" && publicationApproved == true])' \
             "$endpoint" || true)
 
-          if [ "$http_code" = "200" ]; then
-            echo "Sanity authenticated read check: PASS"
-            echo "- Sanity authenticated read check: PASS (HTTP 200)" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Sanity authenticated read check: WARN (HTTP ${http_code:-unavailable})"
-            echo "- Sanity authenticated read check: WARN (HTTP ${http_code:-unavailable}); site remains fail-soft" >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning::Sanity read credentials are not currently authenticating (HTTP ${http_code:-unavailable}). Public pages remain protected by fail-soft CMS fallbacks."
+          if [ "$http_code" != "200" ]; then
+            echo "Sanity public published-content read: FAILED (HTTP ${http_code:-unavailable})"
+            jq -c 'del(.result,.ms,.query)' "$response_file" 2>/dev/null || cat "$response_file"
+            echo "- Sanity public published-content read: FAILED (HTTP ${http_code:-unavailable})" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           fi
+
+          count=$(jq -r '.result' "$response_file")
+          echo "Sanity public published-content read: PASS (HTTP 200; approved caseStudy count=$count)"
+          echo "- Sanity public published-content read: PASS (HTTP 200; approved caseStudy count=$count)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build with Vercel
         run: >-
@@ -208,6 +201,7 @@ jobs:
             "/services/curtain-cleaning"
             "/commercial/hotels-hospitality"
             "/areas/johannesburg"
+            "/results"
             "/privacy"
             "/robots.txt"
             "/sitemap.xml"
@@ -259,6 +253,7 @@ jobs:
           check_canonical "/services/curtain-cleaning" "$CANONICAL_BASE/services/curtain-cleaning"
           check_canonical "/commercial/hotels-hospitality" "$CANONICAL_BASE/commercial/hotels-hospitality"
           check_canonical "/areas/johannesburg" "$CANONICAL_BASE/areas/johannesburg"
+          check_canonical "/results" "$CANONICAL_BASE/results"
           check_canonical "/privacy" "$CANONICAL_BASE/privacy"
 
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
