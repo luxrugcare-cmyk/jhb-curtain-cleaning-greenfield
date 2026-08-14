@@ -5,7 +5,15 @@ import { Hero } from "@/components/Hero";
 import { TrustStrip } from "@/components/TrustStrip";
 import { CTASection } from "@/components/CTASection";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params; const sector = await getSector(slug); return sector ? { title: sector.seo?.title || sector.title, description: sector.seo?.description || sector.summary } : {}; }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const sector = await getSector(slug);
+  return sector ? {
+    title: sector.seo?.title || sector.title,
+    description: sector.seo?.description || sector.summary,
+    alternates: { canonical: `/commercial/${slug}` },
+  } : {};
+}
 
 export default async function SectorPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params; const sector = await getSector(slug); if (!sector) notFound();

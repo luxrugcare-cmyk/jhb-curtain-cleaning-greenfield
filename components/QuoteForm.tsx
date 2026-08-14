@@ -46,11 +46,11 @@ export function QuoteForm() {
   if (status === "success") return <div className="form-success"><h2>Assessment request received.</h2><p>Your request has been recorded. We’ll respond using your preferred contact method.</p><p className="request-id">Reference: {requestId}</p></div>;
 
   return <form onSubmit={submit} className="wizard-card">
-    <div className="progress"><span style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div>
+    <div className="progress" role="progressbar" aria-label="Residential assessment progress" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={step + 1}><span style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div>
     <p className="eyebrow">Residential assessment • Step {step + 1} of {steps.length}</p>
     <h2>{steps[step]}</h2>
-    {step === 0 && <div className="choice-grid">{services.map(s => <button type="button" key={s.slug} className={`choice ${data.service === s.title ? "selected" : ""}`} onClick={() => update("service", s.title)}>{s.title}</button>)}</div>}
-    {step === 1 && <div className="choice-grid">{["House","Apartment","Estate","Guest house","Other"].map(v => <button type="button" className={`choice ${data.propertyType === v ? "selected" : ""}`} onClick={() => update("propertyType", v)} key={v}>{v}</button>)}</div>}
+    {step === 0 && <div className="choice-grid">{services.map(s => <button type="button" key={s.slug} aria-pressed={data.service === s.title} className={`choice ${data.service === s.title ? "selected" : ""}`} onClick={() => update("service", s.title)}>{s.title}</button>)}</div>}
+    {step === 1 && <div className="choice-grid">{["House","Apartment","Estate","Guest house","Other"].map(v => <button type="button" aria-pressed={data.propertyType === v} className={`choice ${data.propertyType === v ? "selected" : ""}`} onClick={() => update("propertyType", v)} key={v}>{v}</button>)}</div>}
     {step === 2 && <label>Tell us about the scope<textarea value={data.scope} onChange={e => update("scope", e.target.value)} placeholder="Approximate quantity, fabric, stains, height, access or anything else useful."/></label>}
     {step === 3 && <PhotoUpload requestId={requestId} value={data.photos} onChange={photos => { update("photos", photos); if (photos.length) trackEvent("quote_upload", { count: photos.length }); }} />}
     {step === 4 && <label>Property location<input value={data.location} onChange={e => update("location", e.target.value)} placeholder="Suburb / city" /></label>}

@@ -1,5 +1,4 @@
 import Script from "next/script";
-import { RoutePageViews } from "./RoutePageViews";
 
 export function Analytics() {
   const id = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -12,6 +11,5 @@ export function Analytics() {
       window.gtag('js', new Date());
       window.gtag('config', '${id}', { send_page_view: true });
     `}</Script>
-    <RoutePageViews />
   </>;
 }
