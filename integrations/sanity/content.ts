@@ -17,7 +17,8 @@ export type PublishedCaseStudy = {
   testimonial?: {
     quote?: string;
     attribution?: string;
-    permissionConfirmed?: boolean;
+    role?: string;
+    publicationApproved?: boolean;
   };
   publishedAt?: string;
   updatedAt?: string;
