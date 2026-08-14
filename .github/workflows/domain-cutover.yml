@@ -1,0 +1,127 @@
+name: Production Domain Cutover
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".domain-cutover-trigger"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cutover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      SCOPE: bookish-eureka
+      TARGET: jhb-curtain-cleaning-greenfield-e0vgggdvt-bookish-eureka.vercel.app
+      ROLLBACK_TARGET: my-project-5kei6ezgz-bookish-eureka.vercel.app
+      WWW_DOMAIN: www.jhbcurtaincleaning.co.za
+      APEX_DOMAIN: jhbcurtaincleaning.co.za
+    steps:
+      - name: Require token and inspect validated target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          npx --yes vercel@latest inspect "$TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN" | tee /tmp/target.txt
+          grep -q 'status.*Ready' /tmp/target.txt
+          grep -q 'target.*production' /tmp/target.txt
+
+      - name: Confirm rollback target exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest inspect "$ROLLBACK_TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN" | tee /tmp/rollback.txt
+          grep -q 'status.*Ready' /tmp/rollback.txt
+
+      - name: Alias custom domains to validated greenfield deployment
+        id: alias
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest alias set "$TARGET" "$WWW_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN"
+          npx --yes vercel@latest alias set "$TARGET" "$APEX_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN"
+
+      - name: Validate live custom domains
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          check_200() {
+            host="$1"
+            path="$2"
+            for attempt in {1..12}; do
+              code=$(curl --location --silent --show-error --output /tmp/body.html --write-out '%{http_code}' --max-time 20 "https://${host}${path}" || true)
+              if [ "$code" = "200" ]; then
+                echo "PASS https://${host}${path} (200)"
+                return 0
+              fi
+              echo "Attempt $attempt: https://${host}${path} returned ${code:-curl-error}"
+              sleep 5
+            done
+            return 1
+          }
+
+          check_canonical() {
+            host="$1"
+            path="$2"
+            expected="$3"
+            file="/tmp/canonical-$(echo "$host$path" | tr '/.' '___').html"
+            curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "https://${host}${path}" > "$file"
+            python - "$file" "$expected" <<'PY'
+          from html.parser import HTMLParser
+          import sys
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.hrefs=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag != 'link': return
+                  values=dict(attrs)
+                  if 'canonical' in values.get('rel','').split() and values.get('href'):
+                      self.hrefs.append(values['href'])
+          p=Parser()
+          with open(sys.argv[1], encoding='utf-8') as f: p.feed(f.read())
+          expected=sys.argv[2]
+          if p.hrefs != [expected]:
+              raise SystemExit(f'canonical mismatch: expected {[expected]!r}, got {p.hrefs!r}')
+          print(f'PASS canonical {expected}')
+          PY
+          }
+
+          check_200 "$WWW_DOMAIN" "/"
+          check_200 "$WWW_DOMAIN" "/quote"
+          check_200 "$WWW_DOMAIN" "/commercial-assessment"
+          check_200 "$WWW_DOMAIN" "/services"
+          check_200 "$WWW_DOMAIN" "/services/curtain-cleaning"
+          check_200 "$WWW_DOMAIN" "/commercial/hotels-hospitality"
+          check_200 "$WWW_DOMAIN" "/areas/johannesburg"
+          check_200 "$WWW_DOMAIN" "/robots.txt"
+          check_200 "$WWW_DOMAIN" "/sitemap.xml"
+          check_200 "$APEX_DOMAIN" "/"
+
+          check_canonical "$WWW_DOMAIN" "/" "https://www.jhbcurtaincleaning.co.za"
+          check_canonical "$WWW_DOMAIN" "/quote" "https://www.jhbcurtaincleaning.co.za/quote"
+          check_canonical "$WWW_DOMAIN" "/services" "https://www.jhbcurtaincleaning.co.za/services"
+
+          health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "https://${WWW_DOMAIN}/api/health")
+          echo "$health"
+          echo "$health" | grep -q '"ok":true'
+          echo "$health" | grep -q '"environment":"production"'
+
+          echo "=== final relevant aliases ==="
+          npx --yes vercel@latest alias ls --limit 100 --scope "$SCOPE" --token "$VERCEL_TOKEN" | grep -E 'jhbcurtaincleaning\.co\.za|jhb-curtain-cleaning-greenfield' || true
+
+      - name: Automatic rollback on cutover failure
+        if: ${{ failure() && steps.alias.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "Post-cutover validation failed. Restoring prior production aliases."
+          npx --yes vercel@latest alias set "$ROLLBACK_TARGET" "$WWW_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN" || true
+          npx --yes vercel@latest alias set "$ROLLBACK_TARGET" "$APEX_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN" || true
+          echo "Rollback commands issued."
