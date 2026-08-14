@@ -18,9 +18,8 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       WWW_DOMAIN: www.jhbcurtaincleaning.co.za
       APEX_DOMAIN: jhbcurtaincleaning.co.za
-      PERSONAL_SCOPE: accsu1983-2909
     steps:
-      - name: Inspect personal Vercel scope domain ownership
+      - name: Inspect personal Vercel account domain ownership
         shell: bash
         run: |
           set -uo pipefail
@@ -28,10 +27,10 @@ jobs:
           echo "=== whoami ==="
           npx --yes vercel@latest whoami --token "$VERCEL_TOKEN" || true
           echo "=== personal domains ==="
-          npx --yes vercel@latest domains ls --limit 100 --scope "$PERSONAL_SCOPE" --token "$VERCEL_TOKEN" || true
-          echo "=== inspect www in personal scope ==="
-          npx --yes vercel@latest domains inspect "$WWW_DOMAIN" --scope "$PERSONAL_SCOPE" --token "$VERCEL_TOKEN" || true
-          echo "=== inspect apex in personal scope ==="
-          npx --yes vercel@latest domains inspect "$APEX_DOMAIN" --scope "$PERSONAL_SCOPE" --token "$VERCEL_TOKEN" || true
+          npx --yes vercel@latest domains ls --limit 100 --token "$VERCEL_TOKEN" || true
+          echo "=== inspect www in personal account ==="
+          npx --yes vercel@latest domains inspect "$WWW_DOMAIN" --token "$VERCEL_TOKEN" || true
+          echo "=== inspect apex in personal account ==="
+          npx --yes vercel@latest domains inspect "$APEX_DOMAIN" --token "$VERCEL_TOKEN" || true
           echo "=== relevant personal aliases ==="
-          npx --yes vercel@latest alias ls --limit 100 --scope "$PERSONAL_SCOPE" --token "$VERCEL_TOKEN" | grep -E 'jhbcurtaincleaning\.co\.za|my-project|curtain-cleaning' || true
+          npx --yes vercel@latest alias ls --limit 100 --token "$VERCEL_TOKEN" | grep -E 'jhbcurtaincleaning\.co\.za|my-project|curtain-cleaning' || true
