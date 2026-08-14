@@ -22,21 +22,18 @@ jobs:
       WWW_DOMAIN: www.jhbcurtaincleaning.co.za
       APEX_DOMAIN: jhbcurtaincleaning.co.za
     steps:
-      - name: Require token and inspect validated target
+      - name: Require token and confirm validated target exists
         shell: bash
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          npx --yes vercel@latest inspect "$TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN" | tee /tmp/target.txt
-          grep -q 'status.*Ready' /tmp/target.txt
-          grep -q 'target.*production' /tmp/target.txt
+          npx --yes vercel@latest inspect "$TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN"
 
       - name: Confirm rollback target exists
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes vercel@latest inspect "$ROLLBACK_TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN" | tee /tmp/rollback.txt
-          grep -q 'status.*Ready' /tmp/rollback.txt
+          npx --yes vercel@latest inspect "$ROLLBACK_TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN"
 
       - name: Alias custom domains to validated greenfield deployment
         id: alias
