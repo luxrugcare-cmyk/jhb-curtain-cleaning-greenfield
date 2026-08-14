@@ -50,7 +50,7 @@ jobs:
           }
           NODE
 
-      - name: Test production audit with direct Sanity client runtime
+      - name: Generate direct Sanity client runtime dependency files
         shell: bash
         run: |
           cp package.json /tmp/package.json.before
@@ -62,8 +62,18 @@ jobs:
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund
           npm audit --omit=dev --json > /tmp/npm-audit-production.json || true
           cat /tmp/npm-audit-production.json
+          mkdir -p /tmp/direct-sanity-runtime
+          cp package.json package-lock.json /tmp/direct-sanity-runtime/
           mv /tmp/package.json.before package.json
           mv /tmp/package-lock.json.before package-lock.json
+
+      - name: Upload generated dependency files
+        uses: actions/upload-artifact@v4
+        with:
+          name: direct-sanity-runtime-dependencies
+          path: /tmp/direct-sanity-runtime
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Audit internal imports
         run: npm run audit:imports
