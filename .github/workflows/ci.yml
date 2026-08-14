@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
@@ -29,69 +29,6 @@ jobs:
         run: |
           npm audit --json > /tmp/npm-audit.json || true
           cat /tmp/npm-audit.json
-
-      - name: Trace vulnerable dependency chains
-        shell: bash
-        run: |
-          npm ls js-yaml undici @vercel/frameworks @module-federation/dts-plugin @module-federation/enhanced --all || true
-          node - <<'NODE'
-          const packages = require('./package-lock.json').packages;
-          const targets = Object.entries(packages).filter(([path]) =>
-            path === 'node_modules/js-yaml' ||
-            path.includes('@vercel/frameworks') ||
-            path.includes('@module-federation/dts-plugin') ||
-            path.includes('@module-federation/enhanced') ||
-            path === 'node_modules/undici' ||
-            path.endsWith('/node_modules/undici')
-          );
-          for (const [path, meta] of targets) {
-            console.log(`\n### ${path || '<root>'}`);
-            console.log(JSON.stringify({version: meta.version, dependencies: meta.dependencies, optionalDependencies: meta.optionalDependencies}, null, 2));
-          }
-          NODE
-
-      - name: Generate direct Sanity client runtime dependency files
-        shell: bash
-        run: |
-          cp package.json /tmp/package.json.before
-          cp package-lock.json /tmp/package-lock.json.before
-          npm pkg delete dependencies.next-sanity
-          npm pkg delete dependencies.sanity
-          npm pkg set 'dependencies.@sanity/client=^7.26.2'
-          npm pkg set 'devDependencies.sanity=^6.7.0'
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          npm audit --omit=dev --json > /tmp/npm-audit-production.json || true
-          cat /tmp/npm-audit-production.json
-          mkdir -p /tmp/direct-sanity-runtime
-          cp package.json package-lock.json /tmp/direct-sanity-runtime/
-          mv /tmp/package.json.before package.json
-          mv /tmp/package-lock.json.before package-lock.json
-
-      - name: Upload generated dependency files
-        uses: actions/upload-artifact@v4
-        with:
-          name: direct-sanity-runtime-dependencies
-          path: /tmp/direct-sanity-runtime
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Apply generated lockfile to security branch and reinstall
-        shell: bash
-        env:
-          TARGET_BRANCH: fix/sanity-runtime-dependency-split
-        run: |
-          git fetch origin "$TARGET_BRANCH"
-          git switch -C "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
-          cp /tmp/direct-sanity-runtime/package-lock.json package-lock.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package-lock.json
-          if ! git diff --cached --quiet; then
-            git commit -m "security: regenerate runtime dependency lockfile"
-            git push origin "HEAD:$TARGET_BRANCH"
-          fi
-          npm ci --no-audit --no-fund
-          npm audit --omit=dev --audit-level=high
 
       - name: Audit internal imports
         run: npm run audit:imports
