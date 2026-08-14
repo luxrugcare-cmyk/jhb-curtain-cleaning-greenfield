@@ -1,85 +1,163 @@
-# Case-study intake checklist — Sprint 07 operations
+# Case-study evidence intake desk — operations
 
-Use this checklist before any JHB Curtain Cleaning project record is published.
+Use this workflow before any JHB Curtain Cleaning project record is published.
 
-## 1. Source evidence
+## Architecture rule
 
-Record only facts that can be supported by job notes, assessment records, photographs, correspondence or other retained evidence.
+The Sanity `production` dataset is publicly readable for published content. Treat Sanity as the **publication CMS**, not the private evidence archive.
 
-Required core fields:
-- project title
-- property type
-- service
-- initial condition / scope
-- assessment decision
-- cleaning method / approach
-- documented outcome
+Keep these outside Sanity unless and until the specific material is approved for public release:
+- customer names or private contact details;
+- internal job references;
+- exact residential addresses;
+- raw technician notes;
+- unapproved before/after photographs;
+- private correspondence;
+- consent records or approval evidence;
+- internal redaction notes that reveal private information.
 
-Optional context:
-- area
-- textile / material
-- operational constraints
-- limitations / remaining marks
+Retain raw evidence in an authorised private business system. In Sanity, record only the category of retained evidence and the public-safe facts supported by it.
+
+## 1. Create the case-study intake record
+
+Open the Sanity Studio and create a **Case study** document.
+
+Start with:
+- public-safe working title;
+- slug;
+- work completion date, if known;
+- publication status = `Draft intake`;
+- publication approval = false.
+
+Do not place private customer identifiers in the title or slug.
+
+## 2. Capture project facts
+
+Record only facts supported by retained evidence.
+
+Required public case-study fields:
+- property type;
+- service;
+- initial condition / scope;
+- assessment decision;
+- method / approach actually used;
+- documented outcome.
+
+Optional public-safe context:
+- area/suburb, only where authorised;
+- textile/material;
+- operational constraints;
+- limitations or remaining marks.
 
 Do not add unsupported claims, invented outcomes, inferred customer identities, fabricated testimonials or reconstructed project details.
 
-## 2. Privacy and POPIA screening
+## 3. Record retained evidence categories
 
-Before publication:
-- remove personal information that is unnecessary for the case study;
-- avoid exact residential addresses unless there is a compelling, authorised reason to publish them;
-- record any redaction requirements in `redactionNotes`;
-- do not infer publication consent from service delivery consent;
-- treat photographs, names, quotations and organisation identifiers as separately reviewable evidence.
+In **Retained evidence sources**, tick the categories actually held privately, such as:
+- technician / project notes;
+- assessment record;
+- quotation / agreed scope;
+- private before/after photography;
+- client correspondence;
+- completion / handover record;
+- other retained documentation.
 
-## 3. Testimonial approval
+Do not paste the underlying private content, file URLs, job numbers or customer identifiers into Sanity.
+
+After checking every factual claim against that evidence, set **Evidence review completed** to true.
+
+## 4. Privacy and POPIA review
+
+Choose one **Public identity treatment**:
+- Anonymous — no identifying client/property details;
+- Area only — suburb/area approved, client/property unnamed;
+- Named identification approved.
+
+Then verify:
+- unnecessary personal information is removed;
+- exact residential addresses are not published;
+- area/suburb publication is authorised when used;
+- customer or business naming is authorised when used;
+- quotations have separate publication authority;
+- photographs have separate publication authority;
+- identifiable people, rooms, documents, vehicle plates, screens and other private details have been reviewed.
+
+Set **Privacy / POPIA review completed** to true only after that review.
+
+The `redactionNotes` field is a temporary drafting aid only. Because the dataset is public, it must be empty before the case can be marked Published. Keep sensitive redaction instructions in the private evidence record instead.
+
+## 5. Testimonial approval
 
 A testimonial may appear publicly only when:
 - the quotation is accurate;
-- attribution is accurate and within the customer's approval;
+- attribution and role/organisation context are accurate;
+- the customer has authorised publication of that exact presentation;
 - `testimonial.publicationApproved == true`.
 
-If approval is absent, the project may still be published without the testimonial if the case-study-level approval requirements are satisfied.
+Do not paraphrase a customer statement into quotation marks. If approval is absent, remove the testimonial content before publishing the case study.
 
-## 4. Image approval
+## 6. Image approval
 
-Each evidence image requires:
-- the image asset;
+Raw or unapproved evidence images must remain in private storage.
+
+Only upload an image to Sanity after publication rights/privacy approval is already recorded privately.
+
+For every Sanity image provide:
+- evidence stage: Before / After / Detail / Context;
+- approved image asset;
 - descriptive alt text;
 - optional factual caption;
-- `publicationApproved == true` for that specific image.
+- `publicationApproved == true`.
 
-Do not publish an image merely because the overall case study has publication approval.
+Sanity image assets are publication assets. Do not use Sanity as a private photo archive.
 
-## 5. Case-study publication gate
+## 7. Publication gate
 
-The public website query must continue to require BOTH:
+The Studio blocks `Published` unless all of the following are true:
+- at least one retained evidence-source category is recorded;
+- Evidence review completed = true;
+- Privacy / POPIA review completed = true;
+- Public identity treatment is selected;
+- Case-study publication approval = true;
+- Published date is present;
+- temporary redaction notes are empty;
+- any testimonial content has testimonial publication approval;
+- every image stored on the case has image publication approval.
+
+The public website independently requires BOTH:
 - `publicationStatus == "published"`
-- `publicationApproved == true`
+- `publicationApproved == true`.
 
-The CMS schema also prevents a document from being marked Published without the case-study approval flag.
+This is a second protection layer; the CMS gate does not replace the website query gate.
 
-## 6. Final editorial check
+## 8. Final editorial check
 
 Before moving a record to Published:
-- factual claims match retained evidence;
+- every factual claim matches retained evidence;
 - before/after language is descriptive rather than exaggerated;
 - limitations and remaining marks are not hidden;
-- customer names, business names, identifiable rooms and exact locations have been checked for authorisation;
-- testimonial approval is explicit if a testimonial is used;
+- identity treatment matches the recorded permission;
+- testimonial approval is explicit if testimonial content is used;
 - every public image has image-level approval;
-- SEO title/description do not introduce claims absent from the case-study body.
+- image alt text is factual and useful;
+- SEO title/description introduce no claim absent from the case-study body;
+- no private job reference, contact information, exact residential address or confidential note appears in the Sanity document.
 
-## 7. Sanity credential dependency
+## 9. Current runtime state
 
-As of 14 August 2026, the production Sanity read token is configured but fails authenticated reads with HTTP 401. The public website remains operational because Sanity reads fail softly to static fallback content.
+Production no longer requires a Sanity Viewer/read token. The website reads the public published-content dataset anonymously and the production deployment gate requires HTTP 200 from the approved-case query.
 
-Credential remediation acceptance criteria:
-1. create or rotate a read-only Sanity token for the correct project/dataset;
-2. update only the production `SANITY_API_READ_TOKEN` in the correct Vercel project (`bookish-eureka/jhb-curtain-cleaning-greenfield`);
-3. trigger the normal Vercel Production Deploy workflow;
-4. the non-blocking `Validate Sanity read access` step must report HTTP 200 / PASS;
-5. public route smoke tests must remain green;
-6. `/results` must remain evidence-gated and must not expose draft/unapproved case studies.
+The production query remains evidence-gated and currently renders only case studies that pass the two-part publication condition above.
 
-Do not weaken the fail-soft fallback or publication gates to work around an invalid token.
+## Evidence quality standard
+
+Prefer records that answer:
+- What was the actual property/service context?
+- What textile/material was assessed?
+- What condition or problem was present?
+- Why was the selected method appropriate?
+- What operational constraints mattered?
+- What changed after the work?
+- What did not change or remained limited?
+
+A small portfolio of verified cases is more valuable than a large portfolio of vague or unsupported claims.
