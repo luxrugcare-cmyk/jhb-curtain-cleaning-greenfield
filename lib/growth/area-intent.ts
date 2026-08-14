@@ -39,6 +39,39 @@ const areaIntent: Record<string, AreaIntent> = {
     ],
     nearby: ["Johannesburg", "Randburg", "Sandton"],
   },
+  randburg: {
+    title: "Curtain and textile cleaning in Randburg",
+    intro: "Randburg includes family homes, apartments, offices, schools and managed properties across established residential and commercial nodes. We assess fabric condition, installation, access and the wider room scope before recommending an on-site treatment path.",
+    localFactors: [
+      { title: "Established interiors", body: "Older curtains and linings may show sun exposure, weakened seams or previous cleaning effects. Condition is checked before treatment expectations are agreed." },
+      { title: "Home and office scopes", body: "Curtains, blinds, upholstery and carpets can often be assessed together when a property needs a coordinated interior-cleaning plan." },
+      { title: "Access planning", body: "Apartments, complexes and business premises can involve security, parking or operating-hour constraints that are best captured before the service date." },
+      { title: "Local commercial needs", body: "Schools, offices and managed facilities can use the commercial assessment path when repeat scheduling, room sequencing or documentation matters." },
+    ],
+    nearby: ["Johannesburg", "Sandton", "Roodepoort", "Fourways"],
+  },
+  fourways: {
+    title: "Curtain and textile cleaning in Fourways",
+    intro: "Fourways properties often include estates, apartments, family homes, hospitality venues and commercial spaces. The service is scoped around the textile, room use, access requirements and whether the work can be completed efficiently while furnishings remain in place.",
+    localFactors: [
+      { title: "Estates and complexes", body: "Gate access, visitor procedures and appointment timing should be confirmed in advance so the technician can reach the property without avoidable delays." },
+      { title: "Large windows and fitted curtains", body: "Full-height curtains and fitted window treatments can be cumbersome to remove. Where suitable, on-site treatment can reduce handling and refitting logistics." },
+      { title: "Family living spaces", body: "Curtains are frequently assessed alongside sofas, carpets, mattresses or rugs when the objective is a broader interior refresh." },
+      { title: "Commercial and hospitality spaces", body: "Restaurants, offices, accommodation and managed properties may need work sequenced around trading hours or guest access." },
+    ],
+    nearby: ["Sandton", "Randburg", "Midrand", "Johannesburg"],
+  },
+  midrand: {
+    title: "Curtain and textile cleaning in Midrand",
+    intro: "Midrand combines residential estates and apartments with offices, healthcare, education, hospitality and large commercial sites. Assessments therefore consider both fabric suitability and practical site factors such as access, operating hours and the number of rooms or items involved.",
+    localFactors: [
+      { title: "Residential estates", body: "Security access, parking and appointment timing can be planned before arrival, especially for larger estate or apartment developments." },
+      { title: "Corporate and managed sites", body: "Multi-room and repeat-service work benefits from a written scope covering access, sequencing, textiles and any areas that must remain operational." },
+      { title: "Mixed textile inventories", body: "Curtains, blinds, upholstery, carpets and mattresses can be assessed as one property-wide scope where that is more practical." },
+      { title: "Operational scheduling", body: "Commercial work can be arranged around room availability and site rules rather than treating every area as an isolated appointment." },
+    ],
+    nearby: ["Sandton", "Fourways", "Johannesburg"],
+  },
 };
 
 export function getAreaIntent(slug: string) {
