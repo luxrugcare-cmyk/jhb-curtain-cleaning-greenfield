@@ -20,13 +20,14 @@ concurrency:
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       BASE: https://www.jhbcurtaincleaning.co.za
       MIN_PERFORMANCE: "80"
       MIN_ACCESSIBILITY: "95"
       MIN_BEST_PRACTICES: "95"
       MIN_SEO: "95"
+      SAMPLES_PER_PAGE: "3"
     steps:
       - uses: actions/checkout@v6
 
@@ -42,7 +43,7 @@ jobs:
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
           "$CHROME_PATH" --version
 
-      - name: Run production Lighthouse audits
+      - name: Run three production Lighthouse samples per page
         shell: bash
         run: |
           set -euo pipefail
@@ -50,63 +51,75 @@ jobs:
           routes=("/" "/services" "/quote" "/commercial-assessment")
           names=("home" "services" "quote" "commercial-assessment")
           for i in "${!routes[@]}"; do
-            echo "Auditing ${BASE}${routes[$i]}"
-            npx --yes lighthouse@latest "${BASE}${routes[$i]}" \
-              --chrome-path="$CHROME_PATH" \
-              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-              --only-categories=performance,accessibility,best-practices,seo \
-              --form-factor=mobile \
-              --screenEmulation.mobile=true \
-              --output=json \
-              --output-path="lighthouse-reports/${names[$i]}.json" \
-              --quiet
+            for sample in $(seq 1 "$SAMPLES_PER_PAGE"); do
+              echo "Auditing ${BASE}${routes[$i]} sample ${sample}/${SAMPLES_PER_PAGE}"
+              npx --yes lighthouse@latest "${BASE}${routes[$i]}" \
+                --chrome-path="$CHROME_PATH" \
+                --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+                --only-categories=performance,accessibility,best-practices,seo \
+                --form-factor=mobile \
+                --screenEmulation.mobile=true \
+                --output=json \
+                --output-path="lighthouse-reports/${names[$i]}-${sample}.json" \
+                --quiet
+            done
           done
 
-      - name: Summarize scores and enforce regression thresholds
+      - name: Summarize median scores and enforce regression thresholds
         shell: bash
         run: |
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
-          const files = fs.readdirSync('lighthouse-reports').filter(f => f.endsWith('.json')).sort();
+          const pages = ['commercial-assessment', 'home', 'quote', 'services'];
+          const samples = Number(process.env.SAMPLES_PER_PAGE || 3);
           const minimums = {
             performance: Number(process.env.MIN_PERFORMANCE),
             accessibility: Number(process.env.MIN_ACCESSIBILITY),
             'best-practices': Number(process.env.MIN_BEST_PRACTICES),
             seo: Number(process.env.MIN_SEO),
           };
+          const median = values => {
+            const sorted = [...values].sort((a, b) => a - b);
+            return sorted[Math.floor(sorted.length / 2)];
+          };
+          const round = value => Math.round(value * 10) / 10;
           let failed = false;
-          const header = '| Page | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |';
+          const header = '| Page | Perf median | A11y median | Best Practices median | SEO median | LCP median | CLS median | TBT median |';
           const separator = '|---|---:|---:|---:|---:|---:|---:|---:|';
           console.log(header);
           console.log(separator);
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, header + '\n' + separator + '\n');
-          for (const file of files) {
-            const r = JSON.parse(fs.readFileSync(path.join('lighthouse-reports', file), 'utf8'));
-            const c = r.categories;
-            const a = r.audits;
-            const pct = key => Math.round((c[key]?.score ?? 0) * 100);
+
+          for (const page of pages) {
+            const reports = [];
+            for (let sample = 1; sample <= samples; sample++) {
+              const file = path.join('lighthouse-reports', `${page}-${sample}.json`);
+              reports.push(JSON.parse(fs.readFileSync(file, 'utf8')));
+            }
+            const categoryMedian = key => median(reports.map(r => Math.round((r.categories[key]?.score ?? 0) * 100)));
+            const auditMedian = key => median(reports.map(r => Number(r.audits[key]?.numericValue ?? 0)));
             const scores = {
-              performance: pct('performance'),
-              accessibility: pct('accessibility'),
-              'best-practices': pct('best-practices'),
-              seo: pct('seo'),
+              performance: categoryMedian('performance'),
+              accessibility: categoryMedian('accessibility'),
+              'best-practices': categoryMedian('best-practices'),
+              seo: categoryMedian('seo'),
             };
-            const lcp = a['largest-contentful-paint']?.displayValue ?? 'n/a';
-            const cls = a['cumulative-layout-shift']?.displayValue ?? 'n/a';
-            const tbt = a['total-blocking-time']?.displayValue ?? 'n/a';
-            const line = `| ${file.replace('.json','')} | ${scores.performance} | ${scores.accessibility} | ${scores['best-practices']} | ${scores.seo} | ${lcp} | ${cls} | ${tbt} |`;
+            const lcpMs = auditMedian('largest-contentful-paint');
+            const cls = auditMedian('cumulative-layout-shift');
+            const tbtMs = auditMedian('total-blocking-time');
+            const line = `| ${page} | ${scores.performance} | ${scores.accessibility} | ${scores['best-practices']} | ${scores.seo} | ${(lcpMs / 1000).toFixed(1)} s | ${round(cls)} | ${Math.round(tbtMs)} ms |`;
             console.log(line);
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, line + '\n');
             for (const [category, minimum] of Object.entries(minimums)) {
               if (scores[category] < minimum) {
-                console.error(`FAIL ${file}: ${category} ${scores[category]} < ${minimum}`);
+                console.error(`FAIL ${page}: median ${category} ${scores[category]} < ${minimum}`);
                 failed = true;
               }
             }
           }
           if (failed) process.exit(1);
-          console.log('PASS Lighthouse regression thresholds');
+          console.log('PASS median Lighthouse regression thresholds');
           NODE
 
       - name: Upload Lighthouse reports
