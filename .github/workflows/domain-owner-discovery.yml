@@ -16,29 +16,47 @@ jobs:
     timeout-minutes: 8
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TEAM_SLUG: bookish-eureka
+      LEGACY_PROJECT: my-project
+      GREENFIELD_PROJECT: jhb-curtain-cleaning-greenfield
       WWW_DOMAIN: www.jhbcurtaincleaning.co.za
       APEX_DOMAIN: jhbcurtaincleaning.co.za
     steps:
-      - name: Query personal-account domain registry through Vercel REST API
+      - name: Query Vercel project-domain assignments read-only
         shell: bash
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
           auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
 
-          echo "=== personal domain list (no teamId) ==="
-          curl --fail-with-body --silent --show-error "https://api.vercel.com/v5/domains?limit=100" "${auth[@]}" | tee /tmp/domains.json
+          query_project() {
+            project="$1"
+            encoded=$(python -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=""))' "$project")
+            url="https://api.vercel.com/v9/projects/${encoded}/domains?limit=100&slug=${TEAM_SLUG}"
+            code=$(curl --silent --show-error --output "/tmp/${project}.json" --write-out '%{http_code}' "$url" "${auth[@]}")
+            echo "=== $project project domains: HTTP $code ==="
+            cat "/tmp/${project}.json"
+            echo
+            if [ "$code" != "200" ]; then return 1; fi
+            python - "/tmp/${project}.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          for item in d.get('domains', []):
+              print('DOMAIN', item.get('name'), 'verified=', item.get('verified'), 'redirect=', item.get('redirect'), 'gitBranch=', item.get('gitBranch'), 'projectId=', item.get('projectId'))
+          PY
+          }
+
+          query_project "$LEGACY_PROJECT"
+          query_project "$GREENFIELD_PROJECT"
+
+          echo "=== assert legacy custom-domain visibility ==="
           python - <<'PY'
           import json
-          d=json.load(open('/tmp/domains.json'))
-          for item in d.get('domains', []):
-              print(item.get('name'), item.get('serviceType'), item.get('verified'))
+          d=json.load(open('/tmp/my-project.json'))
+          names={x.get('name') for x in d.get('domains',[])}
+          required={'jhbcurtaincleaning.co.za','www.jhbcurtaincleaning.co.za'}
+          print('visible:', sorted(names & required))
+          missing=required-names
+          if missing:
+              raise SystemExit(f'missing legacy project domains: {sorted(missing)}')
           PY
-
-          for domain in "$APEX_DOMAIN" "$WWW_DOMAIN"; do
-            echo "=== personal GET /v5/domains/$domain ==="
-            code=$(curl --silent --show-error --output /tmp/domain.json --write-out '%{http_code}' "https://api.vercel.com/v5/domains/$domain" "${auth[@]}")
-            echo "HTTP $code"
-            cat /tmp/domain.json
-            echo
-          done
