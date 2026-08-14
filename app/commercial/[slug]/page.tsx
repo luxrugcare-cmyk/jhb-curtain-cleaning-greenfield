@@ -6,13 +6,18 @@ import { TrustStrip } from "@/components/TrustStrip";
 import { CTASection } from "@/components/CTASection";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
+import { normalizeSeoDescription, normalizeSeoTitle } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const sector = await getSector(slug);
   return sector ? {
-    title: sector.seo?.title || sector.title,
-    description: sector.seo?.description || sector.summary,
+    title: normalizeSeoTitle(sector.seo?.title, sector.title),
+    description: normalizeSeoDescription(
+      sector.seo?.description,
+      sector.summary,
+      "Plan professional on-site curtain and textile care around access, operating hours and site requirements in Johannesburg.",
+    ),
     alternates: { canonical: `/commercial/${slug}` },
   } : {};
 }
