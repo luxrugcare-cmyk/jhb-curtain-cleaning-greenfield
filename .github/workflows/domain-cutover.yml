@@ -16,48 +16,116 @@ jobs:
     timeout-minutes: 15
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      SCOPE: bookish-eureka
-      TARGET: jhb-curtain-cleaning-greenfield-e0vgggdvt-bookish-eureka.vercel.app
-      ROLLBACK_TARGET: my-project-5kei6ezgz-bookish-eureka.vercel.app
+      TEAM_SLUG: bookish-eureka
+      LEGACY_PROJECT: my-project
+      LEGACY_PROJECT_ID: prj_i1xMGttxRtgrr8GysXfPj4VzH0Mt
+      GREENFIELD_PROJECT: jhb-curtain-cleaning-greenfield
+      GREENFIELD_PROJECT_ID: prj_lbu1XdtAkiRKAGpAtxBe5voWIkEM
       WWW_DOMAIN: www.jhbcurtaincleaning.co.za
       APEX_DOMAIN: jhbcurtaincleaning.co.za
     steps:
-      - name: Require token and confirm validated target exists
+      - name: Verify project-domain preconditions
         shell: bash
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          npx --yes vercel@latest inspect "$TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN"
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+          curl --fail-with-body --silent --show-error \
+            "https://api.vercel.com/v9/projects/${LEGACY_PROJECT}/domains?limit=100&slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/legacy-domains.json
+          curl --fail-with-body --silent --show-error \
+            "https://api.vercel.com/v9/projects/${GREENFIELD_PROJECT}/domains?limit=100&slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/greenfield-domains.json
+          python - <<'PY'
+          import json
+          legacy=json.load(open('/tmp/legacy-domains.json'))
+          green=json.load(open('/tmp/greenfield-domains.json'))
+          by_name={x['name']:x for x in legacy.get('domains',[])}
+          required={'www.jhbcurtaincleaning.co.za','jhbcurtaincleaning.co.za'}
+          missing=required-set(by_name)
+          if missing: raise SystemExit(f'legacy project missing custom domains: {sorted(missing)}')
+          if any(x.get('name') in required for x in green.get('domains',[])):
+              raise SystemExit('greenfield already has one or more custom domains; refusing ambiguous cutover')
+          www=by_name['www.jhbcurtaincleaning.co.za']
+          apex=by_name['jhbcurtaincleaning.co.za']
+          if not www.get('verified') or not apex.get('verified'):
+              raise SystemExit('custom domains are not verified')
+          if apex.get('redirect') != 'www.jhbcurtaincleaning.co.za' or apex.get('redirectStatusCode') != 308:
+              raise SystemExit(f'unexpected apex redirect config: {apex}')
+          print('PASS preconditions: both verified domains on legacy project; apex 308 -> www')
+          PY
 
-      - name: Confirm rollback target exists
+      - name: Move www domain to greenfield project
+        id: move_www
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes vercel@latest inspect "$ROLLBACK_TARGET" --scope "$SCOPE" --token "$VERCEL_TOKEN"
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"projectId\":\"${GREENFIELD_PROJECT_ID}\",\"gitBranch\":null,\"redirect\":null,\"redirectStatusCode\":null}" \
+            "https://api.vercel.com/v1/projects/${LEGACY_PROJECT}/domains/${WWW_DOMAIN}/move?slug=${TEAM_SLUG}" \
+            | tee /tmp/move-www.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/move-www.json'))
+          assert d.get('name')=='www.jhbcurtaincleaning.co.za', d
+          assert d.get('projectId')=='prj_lbu1XdtAkiRKAGpAtxBe5voWIkEM', d
+          assert d.get('verified') is True, d
+          print('PASS moved www to greenfield')
+          PY
 
-      - name: Alias custom domains to validated greenfield deployment
-        id: alias
+      - name: Move apex domain to greenfield and preserve redirect
+        id: move_apex
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes vercel@latest alias set "$TARGET" "$WWW_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN"
-          npx --yes vercel@latest alias set "$TARGET" "$APEX_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN"
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"projectId\":\"${GREENFIELD_PROJECT_ID}\",\"gitBranch\":null,\"redirect\":\"${WWW_DOMAIN}\",\"redirectStatusCode\":308}" \
+            "https://api.vercel.com/v1/projects/${LEGACY_PROJECT}/domains/${APEX_DOMAIN}/move?slug=${TEAM_SLUG}" \
+            | tee /tmp/move-apex.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/move-apex.json'))
+          assert d.get('name')=='jhbcurtaincleaning.co.za', d
+          assert d.get('projectId')=='prj_lbu1XdtAkiRKAGpAtxBe5voWIkEM', d
+          assert d.get('verified') is True, d
+          assert d.get('redirect')=='www.jhbcurtaincleaning.co.za', d
+          assert d.get('redirectStatusCode')==308, d
+          print('PASS moved apex to greenfield with 308 redirect preserved')
+          PY
 
-      - name: Validate live custom domains
+      - name: Validate project ownership and live custom domains
         id: validate
         shell: bash
         run: |
           set -euo pipefail
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+          curl --fail-with-body --silent --show-error \
+            "https://api.vercel.com/v9/projects/${GREENFIELD_PROJECT}/domains?limit=100&slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/final-domains.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/final-domains.json'))
+          by_name={x['name']:x for x in d.get('domains',[])}
+          for name in ('www.jhbcurtaincleaning.co.za','jhbcurtaincleaning.co.za'):
+              if name not in by_name: raise SystemExit(f'{name} missing from greenfield project')
+              if not by_name[name].get('verified'): raise SystemExit(f'{name} not verified')
+          apex=by_name['jhbcurtaincleaning.co.za']
+          if apex.get('redirect')!='www.jhbcurtaincleaning.co.za' or apex.get('redirectStatusCode')!=308:
+              raise SystemExit(f'apex redirect not preserved: {apex}')
+          print('PASS project-domain ownership moved to greenfield')
+          PY
 
           check_200() {
-            host="$1"
-            path="$2"
+            host="$1"; path="$2"
             for attempt in {1..12}; do
               code=$(curl --location --silent --show-error --output /tmp/body.html --write-out '%{http_code}' --max-time 20 "https://${host}${path}" || true)
-              if [ "$code" = "200" ]; then
-                echo "PASS https://${host}${path} (200)"
-                return 0
-              fi
+              if [ "$code" = "200" ]; then echo "PASS https://${host}${path} (200)"; return 0; fi
               echo "Attempt $attempt: https://${host}${path} returned ${code:-curl-error}"
               sleep 5
             done
@@ -65,60 +133,69 @@ jobs:
           }
 
           check_canonical() {
-            host="$1"
-            path="$2"
-            expected="$3"
-            file="/tmp/canonical-$(echo "$host$path" | tr '/.' '___').html"
-            curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "https://${host}${path}" > "$file"
+            path="$1"; expected="$2"; file="/tmp/canonical-$(echo "$path" | tr '/' '_').html"
+            curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "https://${WWW_DOMAIN}${path}" > "$file"
             python - "$file" "$expected" <<'PY'
           from html.parser import HTMLParser
           import sys
-          class Parser(HTMLParser):
-              def __init__(self):
-                  super().__init__(); self.hrefs=[]
+          class P(HTMLParser):
+              def __init__(self): super().__init__(); self.hrefs=[]
               def handle_starttag(self, tag, attrs):
-                  if tag != 'link': return
-                  values=dict(attrs)
-                  if 'canonical' in values.get('rel','').split() and values.get('href'):
-                      self.hrefs.append(values['href'])
-          p=Parser()
-          with open(sys.argv[1], encoding='utf-8') as f: p.feed(f.read())
-          expected=sys.argv[2]
-          if p.hrefs != [expected]:
-              raise SystemExit(f'canonical mismatch: expected {[expected]!r}, got {p.hrefs!r}')
-          print(f'PASS canonical {expected}')
+                  if tag!='link': return
+                  v=dict(attrs)
+                  if 'canonical' in v.get('rel','').split() and v.get('href'): self.hrefs.append(v['href'])
+          p=P(); p.feed(open(sys.argv[1],encoding='utf-8').read())
+          if p.hrefs != [sys.argv[2]]: raise SystemExit(f'canonical mismatch: {p.hrefs!r}')
+          print('PASS canonical', sys.argv[2])
           PY
           }
 
-          check_200 "$WWW_DOMAIN" "/"
-          check_200 "$WWW_DOMAIN" "/quote"
-          check_200 "$WWW_DOMAIN" "/commercial-assessment"
-          check_200 "$WWW_DOMAIN" "/services"
-          check_200 "$WWW_DOMAIN" "/services/curtain-cleaning"
-          check_200 "$WWW_DOMAIN" "/commercial/hotels-hospitality"
-          check_200 "$WWW_DOMAIN" "/areas/johannesburg"
-          check_200 "$WWW_DOMAIN" "/robots.txt"
-          check_200 "$WWW_DOMAIN" "/sitemap.xml"
+          for path in / /quote /commercial-assessment /services /services/curtain-cleaning /commercial/hotels-hospitality /areas/johannesburg /robots.txt /sitemap.xml; do
+            check_200 "$WWW_DOMAIN" "$path"
+          done
           check_200 "$APEX_DOMAIN" "/"
-
-          check_canonical "$WWW_DOMAIN" "/" "https://www.jhbcurtaincleaning.co.za"
-          check_canonical "$WWW_DOMAIN" "/quote" "https://www.jhbcurtaincleaning.co.za/quote"
-          check_canonical "$WWW_DOMAIN" "/services" "https://www.jhbcurtaincleaning.co.za/services"
+          check_canonical "/" "https://www.jhbcurtaincleaning.co.za"
+          check_canonical "/quote" "https://www.jhbcurtaincleaning.co.za/quote"
+          check_canonical "/services" "https://www.jhbcurtaincleaning.co.za/services"
 
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "https://${WWW_DOMAIN}/api/health")
           echo "$health"
           echo "$health" | grep -q '"ok":true'
           echo "$health" | grep -q '"environment":"production"'
+          echo "PASS custom-domain cutover validation"
 
-          echo "=== final relevant aliases ==="
-          npx --yes vercel@latest alias ls --limit 100 --scope "$SCOPE" --token "$VERCEL_TOKEN" | grep -E 'jhbcurtaincleaning\.co\.za|jhb-curtain-cleaning-greenfield' || true
-
-      - name: Automatic rollback on cutover failure
-        if: ${{ failure() && steps.alias.outcome == 'success' }}
+      - name: Automatic rollback of any moved domains on failure
+        if: ${{ failure() && steps.move_www.outcome == 'success' }}
         shell: bash
         run: |
           set -uo pipefail
-          echo "Post-cutover validation failed. Restoring prior production aliases."
-          npx --yes vercel@latest alias set "$ROLLBACK_TARGET" "$WWW_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN" || true
-          npx --yes vercel@latest alias set "$ROLLBACK_TARGET" "$APEX_DOMAIN" --scope "$SCOPE" --token "$VERCEL_TOKEN" || true
-          echo "Rollback commands issued."
+          echo "Cutover failed after www moved. Discovering current assignments and restoring moved domains."
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+          curl --silent --show-error \
+            "https://api.vercel.com/v9/projects/${GREENFIELD_PROJECT}/domains?limit=100&slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/rollback-current.json || true
+
+          has_domain() {
+            python - "$1" <<'PY'
+          import json,sys
+          try: d=json.load(open('/tmp/rollback-current.json'))
+          except Exception: raise SystemExit(1)
+          raise SystemExit(0 if any(x.get('name')==sys.argv[1] for x in d.get('domains',[])) else 1)
+          PY
+          }
+
+          if has_domain "$APEX_DOMAIN"; then
+            echo "Rolling apex back to legacy project"
+            curl --silent --show-error --fail-with-body -X POST \
+              -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" \
+              -d "{\"projectId\":\"${LEGACY_PROJECT_ID}\",\"gitBranch\":null,\"redirect\":\"${WWW_DOMAIN}\",\"redirectStatusCode\":308}" \
+              "https://api.vercel.com/v1/projects/${GREENFIELD_PROJECT}/domains/${APEX_DOMAIN}/move?slug=${TEAM_SLUG}" || true
+          fi
+          if has_domain "$WWW_DOMAIN"; then
+            echo "Rolling www back to legacy project"
+            curl --silent --show-error --fail-with-body -X POST \
+              -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" \
+              -d "{\"projectId\":\"${LEGACY_PROJECT_ID}\",\"gitBranch\":null,\"redirect\":null,\"redirectStatusCode\":null}" \
+              "https://api.vercel.com/v1/projects/${GREENFIELD_PROJECT}/domains/${WWW_DOMAIN}/move?slug=${TEAM_SLUG}" || true
+          fi
+          echo "Rollback attempt complete."
