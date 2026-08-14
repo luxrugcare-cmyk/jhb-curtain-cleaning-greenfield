@@ -13,24 +13,32 @@ permissions:
 jobs:
   discover:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       WWW_DOMAIN: www.jhbcurtaincleaning.co.za
       APEX_DOMAIN: jhbcurtaincleaning.co.za
     steps:
-      - name: Inspect personal Vercel account domain ownership
+      - name: Query personal-account domain registry through Vercel REST API
         shell: bash
         run: |
-          set -uo pipefail
+          set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          echo "=== whoami ==="
-          npx --yes vercel@latest whoami --token "$VERCEL_TOKEN" || true
-          echo "=== personal domains ==="
-          npx --yes vercel@latest domains ls --limit 100 --token "$VERCEL_TOKEN" || true
-          echo "=== inspect www in personal account ==="
-          npx --yes vercel@latest domains inspect "$WWW_DOMAIN" --token "$VERCEL_TOKEN" || true
-          echo "=== inspect apex in personal account ==="
-          npx --yes vercel@latest domains inspect "$APEX_DOMAIN" --token "$VERCEL_TOKEN" || true
-          echo "=== relevant personal aliases ==="
-          npx --yes vercel@latest alias ls --limit 100 --token "$VERCEL_TOKEN" | grep -E 'jhbcurtaincleaning\.co\.za|my-project|curtain-cleaning' || true
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+
+          echo "=== personal domain list (no teamId) ==="
+          curl --fail-with-body --silent --show-error "https://api.vercel.com/v5/domains?limit=100" "${auth[@]}" | tee /tmp/domains.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/domains.json'))
+          for item in d.get('domains', []):
+              print(item.get('name'), item.get('serviceType'), item.get('verified'))
+          PY
+
+          for domain in "$APEX_DOMAIN" "$WWW_DOMAIN"; do
+            echo "=== personal GET /v5/domains/$domain ==="
+            code=$(curl --silent --show-error --output /tmp/domain.json --write-out '%{http_code}' "https://api.vercel.com/v5/domains/$domain" "${auth[@]}")
+            echo "HTTP $code"
+            cat /tmp/domain.json
+            echo
+          done
