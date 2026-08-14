@@ -2,6 +2,11 @@ name: Sanity Studio
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".sanity-studio-deploy-trigger"
 
 permissions:
   contents: read
