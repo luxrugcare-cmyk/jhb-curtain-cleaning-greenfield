@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Local GA4 network-dispatch audit for JHB Curtain Cleaning.
+ * GA4 network-dispatch audit for JHB Curtain Cleaning.
  *
- * Connects to an already-running Chrome DevTools Protocol endpoint on
- * http://127.0.0.1:9222, opens an isolated tab, verifies production GA4
- * network dispatch, sends one clearly-labelled synthetic verification event,
- * and closes the tab. No forms are submitted and no PII is generated.
+ * Connects to Chrome DevTools Protocol, opens an isolated tab, verifies
+ * production GA4 network dispatch, sends one clearly-labelled synthetic
+ * verification event, and closes the tab. No forms are submitted and no PII
+ * is generated.
  */
 
 const CDP_BASE = process.env.CDP_BASE || "http://127.0.0.1:9222";
@@ -22,6 +22,21 @@ async function httpJson(url, options = {}) {
   const response = await fetch(url, options);
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
   return response.json();
+}
+
+function collectParams(url, postData = "") {
+  const merged = new URLSearchParams();
+  const parsed = new URL(url);
+  for (const [key, value] of parsed.searchParams) merged.append(key, value);
+
+  // GA4 may send collection payload fields in POST data instead of the URL.
+  // Support both URL-encoded bodies and newline-delimited batches.
+  for (const line of String(postData || "").split(/\r?\n/)) {
+    if (!line) continue;
+    const bodyParams = new URLSearchParams(line);
+    for (const [key, value] of bodyParams) merged.append(key, value);
+  }
+  return merged;
 }
 
 async function main() {
@@ -75,16 +90,18 @@ async function main() {
         return;
       }
       if (msg.method === "Network.requestWillBeSent") {
-        const url = msg.params?.request?.url || "";
+        const request = msg.params?.request || {};
+        const url = request.url || "";
         try {
           const parsed = new URL(url);
           const host = parsed.hostname.toLowerCase();
           if (host.endsWith("google-analytics.com") || host === "analytics.google.com") {
+            const params = collectParams(url, request.postData || "");
             requests.push({
               host,
               path: parsed.pathname,
-              tid: parsed.searchParams.get("tid"),
-              eventName: parsed.searchParams.get("en"),
+              tid: params.get("tid"),
+              eventName: params.get("en"),
             });
           }
         } catch {}
@@ -107,7 +124,7 @@ async function main() {
     await send("Page.enable");
     await send("Runtime.enable");
 
-    const url = `${SITE}?verification_source=local_ga4_cdp_audit`;
+    const url = `${SITE}?verification_source=ga4_cdp_audit`;
     await send("Page.navigate", { url });
     await new Promise((resolve) => setTimeout(resolve, 7000));
 
@@ -125,7 +142,7 @@ async function main() {
         if (typeof window.gtag !== 'function') return {ok:false, reason:'window.gtag unavailable'};
         window.gtag('event', '${VERIFY_EVENT}', {
           debug_mode: true,
-          verification_source: 'local_cdp_audit',
+          verification_source: 'cdp_audit',
           non_interaction: true
         });
         return {ok:true};
@@ -142,7 +159,7 @@ async function main() {
 
     console.log(`PASS synthetic ${VERIFY_EVENT} dispatched to ${EXPECTED_ID}`);
     console.log("PASS no lead form or CRM submission was performed");
-    console.log("PASS GA4 local network-dispatch audit completed");
+    console.log("PASS GA4 network-dispatch audit completed");
   } finally {
     try { ws?.close(); } catch {}
     await closeTarget();
