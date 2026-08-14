@@ -5,6 +5,22 @@ import { dispatchLeadAutomation } from "@/integrations/n8n/client";
 import { LeadProcessingError, LeadValidationError } from "@/lib/errors";
 import type { LeadPayload } from "@/types/lead";
 
+export type LeadDependencies = {
+  upsertLeadInAttio: typeof upsertLeadInAttio;
+  sendLeadAcknowledgement: typeof sendLeadAcknowledgement;
+  sendInternalLeadNotification: typeof sendInternalLeadNotification;
+  archiveFailedLead: typeof archiveFailedLead;
+  dispatchLeadAutomation: typeof dispatchLeadAutomation;
+};
+
+const defaultDependencies: LeadDependencies = {
+  upsertLeadInAttio,
+  sendLeadAcknowledgement,
+  sendInternalLeadNotification,
+  archiveFailedLead,
+  dispatchLeadAutomation,
+};
+
 function normalize(payload: LeadPayload): LeadPayload {
   return {
     ...payload,
@@ -30,12 +46,12 @@ function validate(payload: LeadPayload) {
   for (const photo of payload.photos || []) if (!photo.pathname.startsWith("lead-photos/")) throw new LeadValidationError("Invalid photo reference.");
 }
 
-export async function acceptLead(raw: LeadPayload) {
+export async function acceptLead(raw: LeadPayload, dependencies: LeadDependencies = defaultDependencies) {
   const payload = normalize(raw); validate(payload);
   const [crmResult, acknowledgementResult, notificationResult] = await Promise.allSettled([
-    upsertLeadInAttio(payload),
-    payload.email ? sendLeadAcknowledgement(payload) : Promise.resolve({ ok: true, mode: "not-requested" }),
-    sendInternalLeadNotification(payload),
+    dependencies.upsertLeadInAttio(payload),
+    payload.email ? dependencies.sendLeadAcknowledgement(payload) : Promise.resolve({ ok: true, mode: "not-requested" }),
+    dependencies.sendInternalLeadNotification(payload),
   ]);
 
   const failures: string[] = [];
@@ -45,7 +61,7 @@ export async function acceptLead(raw: LeadPayload) {
 
   let recovery: unknown = null;
   if (failures.length) {
-    try { recovery = await archiveFailedLead(payload, failures); }
+    try { recovery = await dependencies.archiveFailedLead(payload, failures); }
     catch (error) { failures.push(`recovery_archive: ${error instanceof Error ? error.message : "unknown error"}`); }
   }
 
@@ -56,11 +72,11 @@ export async function acceptLead(raw: LeadPayload) {
   if (!durable) throw new LeadProcessingError("The enquiry could not be safely recorded. Please contact us by phone or WhatsApp.");
 
   let automation: unknown = { ok: true, mode: "not-configured" };
-  try { automation = await dispatchLeadAutomation(payload, crm); }
+  try { automation = await dependencies.dispatchLeadAutomation(payload, crm); }
   catch (error) {
     const failure = `automation: ${error instanceof Error ? error.message : "unknown error"}`;
     failures.push(failure);
-    try { recovery = await archiveFailedLead(payload, [failure]); } catch { /* durable lead already exists */ }
+    try { recovery = await dependencies.archiveFailedLead(payload, [failure]); } catch { /* durable lead already exists */ }
     automation = { ok: false, mode: "failed" };
   }
 
