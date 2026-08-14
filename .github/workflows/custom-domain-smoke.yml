@@ -46,16 +46,20 @@ jobs:
           grep -Eqi '^location: https://www\.jhbcurtaincleaning\.co\.za/?' "$apex_headers"
           echo "PASS apex 308 -> www"
           check_redirect() {
-            route="$1"; expected="$2"; headers=$(mktemp)
+            route="$1"; target="$2"; headers=$(mktemp)
             curl --silent --show-error --output /dev/null --dump-header "$headers" "$BASE$route"
             grep -Eq '^HTTP/[0-9.]+ 308' "$headers"
-            grep -Fqi "location: $expected" "$headers"
-            echo "PASS redirect $route -> $expected"
+            location=$(awk 'tolower($1) == "location:" { print $2 }' "$headers" | tr -d '\r' | tail -1)
+            if [ "$location" != "$target" ] && [ "$location" != "$BASE$target" ]; then
+              echo "redirect mismatch for $route: expected $target or $BASE$target, got $location" >&2
+              exit 1
+            fi
+            echo "PASS redirect $route -> $location"
           }
-          check_redirect "/pricing" "$BASE/advice/curtain-cleaning-prices"
-          check_redirect "/blog/curtain-cleaning-sandton-guide" "$BASE/areas/sandton"
-          check_redirect "/testimonials" "$BASE/results"
-          check_redirect "/services/curtain-blind-cleaning" "$BASE/services/curtain-cleaning"
+          check_redirect "/pricing" "/advice/curtain-cleaning-prices"
+          check_redirect "/blog/curtain-cleaning-sandton-guide" "/areas/sandton"
+          check_redirect "/testimonials" "/results"
+          check_redirect "/services/curtain-blind-cleaning" "/services/curtain-cleaning"
           check_canonical() {
             route="$1"; expected="$2"; file=$(mktemp)
             curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE$route" > "$file"
