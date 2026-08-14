@@ -40,11 +40,13 @@ jobs:
         run: |
           env NEXT_PUBLIC_SANITY_PROJECT_ID='' SANITY_API_READ_TOKEN='' npx --yes tsx -e '
             import { getService, getSector, getArea } from "./integrations/sanity/content.ts";
-            const service = await getService("curtain-cleaning");
-            const sector = await getSector("hotels-hospitality");
-            const area = await getArea("johannesburg");
-            if (!service?.title || !sector?.title || !area?.title) throw new Error("Sanity-disabled local fallback did not resolve required content");
-            console.log("PASS Sanity-disabled fallback", service.title, sector.title, area.title);
+            void (async () => {
+              const service = await getService("curtain-cleaning");
+              const sector = await getSector("hotels-hospitality");
+              const area = await getArea("johannesburg");
+              if (!service?.title || !sector?.title || !area?.title) throw new Error("Sanity-disabled local fallback did not resolve required content");
+              console.log("PASS Sanity-disabled fallback", service.title, sector.title, area.title);
+            })();
           '
 
       - name: Prove live Sanity content mode
@@ -56,19 +58,21 @@ jobs:
           npx --yes tsx -e '
             import { sanityClient } from "./integrations/sanity/client.ts";
             import { getService, getSector, getArea } from "./integrations/sanity/content.ts";
-            if (!sanityClient) throw new Error("Sanity client is not configured in production");
-            const counts = await sanityClient.fetch(`{
-              "services": count(*[_type=="service"]),
-              "sectors": count(*[_type=="sector"]),
-              "areas": count(*[_type=="area"])
-            }`);
-            if (counts.services < 1 || counts.sectors < 1 || counts.areas < 1) throw new Error(`Published Sanity content missing: ${JSON.stringify(counts)}`);
-            const service = await getService("curtain-cleaning");
-            const sector = await getSector("hotels-hospitality");
-            const area = await getArea("johannesburg");
-            if (!service?.title || !sector?.title || !area?.title) throw new Error("Live Sanity content resolution failed");
-            console.log("PASS live Sanity counts", JSON.stringify(counts));
-            console.log("PASS live Sanity resolution", service.title, sector.title, area.title);
+            void (async () => {
+              if (!sanityClient) throw new Error("Sanity client is not configured in production");
+              const counts = await sanityClient.fetch(`{
+                "services": count(*[_type=="service"]),
+                "sectors": count(*[_type=="sector"]),
+                "areas": count(*[_type=="area"])
+              }`);
+              if (counts.services < 1 || counts.sectors < 1 || counts.areas < 1) throw new Error(`Published Sanity content missing: ${JSON.stringify(counts)}`);
+              const service = await getService("curtain-cleaning");
+              const sector = await getSector("hotels-hospitality");
+              const area = await getArea("johannesburg");
+              if (!service?.title || !sector?.title || !area?.title) throw new Error("Live Sanity content resolution failed");
+              console.log("PASS live Sanity counts", JSON.stringify(counts));
+              console.log("PASS live Sanity resolution", service.title, sector.title, area.title);
+            })();
           '
 
       - name: Validate live JSON-LD
