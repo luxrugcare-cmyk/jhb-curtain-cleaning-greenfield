@@ -2,7 +2,7 @@ import { Hero } from "@/components/Hero";
 import { ProcessSteps } from "@/components/ProcessSteps";
 import { CTASection } from "@/components/CTASection";
 
-export const metadata = { title: "About", alternates: { canonical: "/about" } };
+export const metadata = { title: "About JHB Curtain Cleaning", description: "Learn how JHB Curtain Cleaning plans residential and commercial textile care around fabric assessment, installation, access and property requirements.", alternates: { canonical: "/about" } };
 
 export default function About() {
   return <>

@@ -11,6 +11,29 @@ import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
 import { normalizeSeoDescription, normalizeSeoTitle } from "@/lib/seo/metadata";
 import { serviceIntent } from "@/lib/growth/service-intent";
 
+const serviceGuides: Record<string, Array<{ href: string; title: string; body: string }>> = {
+  "curtain-cleaning": [
+    { href: "/advice/how-on-site-curtain-cleaning-works", title: "How on-site curtain cleaning works", body: "Understand assessment, suitability, treatment decisions and the in-place cleaning sequence." },
+    { href: "/advice/curtain-cleaning-prices", title: "Curtain cleaning prices", body: "See which fabric, size, access and site factors affect a quotation." },
+    { href: "/advice/can-curtains-be-cleaned-without-taking-them-down", title: "Cleaning without taking curtains down", body: "Learn when in-place curtain cleaning is suitable and when another route may be safer." },
+  ],
+  "blind-cleaning": [
+    { href: "/advice/blind-cleaning-guide", title: "Blind cleaning guide", body: "Compare material, mechanism and access considerations for fitted blinds." },
+  ],
+  "upholstery-cleaning": [
+    { href: "/advice/upholstery-couch-cleaning-guide", title: "Upholstery and couch cleaning guide", body: "Review fabric identification, stain expectations, cushions and drying factors." },
+  ],
+  "mattress-cleaning": [
+    { href: "/advice/mattress-cleaning-guide", title: "Mattress cleaning guide", body: "Review textile-hygiene scope, inspection, soil, odour and drying considerations." },
+  ],
+  "carpet-cleaning": [
+    { href: "/advice/carpet-cleaning-guide", title: "Carpet cleaning guide", body: "Understand fibre, backing, traffic lanes, spotting and drying considerations before service." },
+  ],
+  "rug-care": [
+    { href: "/advice/rug-and-persian-rug-cleaning-guide", title: "Rug and Persian rug cleaning guide", body: "Understand fibre, dyes, construction, fringe and why higher-value rugs require cautious assessment." },
+  ],
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const service = await getService(slug);
@@ -34,6 +57,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   if (!service) notFound();
 
   const intent = serviceIntent[slug];
+  const guides = serviceGuides[slug] || [];
 
   return (
     <>
@@ -47,84 +71,20 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           <article>
             <p className="eyebrow">Service detail</p>
             <h2>Assess suitability before choosing the method.</h2>
-            <p>
-              {service.intro ||
-                intent?.lead ||
-                "The assessment considers the textile, installation, condition and property requirements before the service approach is discussed."}
-            </p>
-
-            {service.suitableFor?.length ? (
-              <div className="info-panel">
-                <h3>Suitable for</h3>
-                <ul className="check-list">
-                  {service.suitableFor.map((item: string) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : intent ? (
-              <div className="info-panel">
-                <h3>Common requests</h3>
-                <ul className="check-list">
-                  {intent.commonRequests.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+            <p>{service.intro || intent?.lead || "The assessment considers the textile, installation, condition and property requirements before the service approach is discussed."}</p>
+            {service.suitableFor?.length ? <div className="info-panel"><h3>Suitable for</h3><ul className="check-list">{service.suitableFor.map((item: string) => <li key={item}>{item}</li>)}</ul></div> : intent ? <div className="info-panel"><h3>Common requests</h3><ul className="check-list">{intent.commonRequests.map((item) => <li key={item}>{item}</li>)}</ul></div> : null}
           </article>
-
-          <aside className="sticky-panel">
-            <p className="eyebrow">Assessment</p>
-            <h3>Need this service?</h3>
-            <p>Choose the assessment that matches the property. Residential and commercial enquiries use separate workflows.</p>
-            <a className="button button-primary" href="/quote">Residential assessment</a>
-            <a className="button button-secondary" href="/commercial-assessment">Commercial site assessment</a>
-          </aside>
+          <aside className="sticky-panel"><p className="eyebrow">Assessment</p><h3>Need this service?</h3><p>Choose the assessment that matches the property. Residential and commercial enquiries use separate workflows.</p><a className="button button-primary" href="/quote">Residential assessment</a><a className="button button-secondary" href="/commercial-assessment">Commercial site assessment</a></aside>
         </div>
       </section>
 
-      {intent ? (
-        <section className="section section-soft">
-          <div className="shell">
-            <div className="section-heading">
-              <p className="eyebrow">Before cleaning</p>
-              <h2>What affects the recommended approach?</h2>
-              <p>The safest method depends on the textile and its condition rather than the service name alone.</p>
-            </div>
-            <div className="feature-grid">
-              {intent.decisionPoints.map((item) => (
-                <article key={item}>
-                  <h3>{item}</h3>
-                  <p>This is checked during assessment so the proposed scope matches the material, installation and site conditions.</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      {intent ? <section className="section section-soft"><div className="shell"><div className="section-heading"><p className="eyebrow">Before cleaning</p><h2>What affects the recommended approach?</h2><p>The safest method depends on the textile and its condition rather than the service name alone.</p></div><div className="feature-grid">{intent.decisionPoints.map((item) => <article key={item}><h3>{item}</h3><p>This is checked during assessment so the proposed scope matches the material, installation and site conditions.</p></article>)}</div></div></section> : null}
+
+      {guides.length ? <section className="section"><div className="shell"><div className="section-heading"><p className="eyebrow">Related guidance</p><h2>Read the service-specific guides before requesting treatment.</h2></div><div className="feature-grid">{guides.map((guide) => <article key={guide.href}><h3>{guide.title}</h3><p>{guide.body}</p><Link href={guide.href}>Read the guide →</Link></article>)}</div></div></section> : null}
 
       <ProcessSteps />
 
-      {intent?.related.length ? (
-        <section className="section">
-          <div className="shell">
-            <div className="section-heading">
-              <p className="eyebrow">Related textile care</p>
-              <h2>Services often considered together.</h2>
-            </div>
-            <div className="feature-grid">
-              {intent.related.map((item) => (
-                <article key={item.slug}>
-                  <h3>{item.label}</h3>
-                  <p>Review the service scope and assessment considerations before deciding what should be included in the visit.</p>
-                  <Link href={`/services/${item.slug}`}>Explore {item.label.toLowerCase()} →</Link>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      {intent?.related.length ? <section className="section"><div className="shell"><div className="section-heading"><p className="eyebrow">Related textile care</p><h2>Services often considered together.</h2></div><div className="feature-grid">{intent.related.map((item) => <article key={item.slug}><h3>{item.label}</h3><p>Review the service scope and assessment considerations before deciding what should be included in the visit.</p><Link href={`/services/${item.slug}`}>Explore {item.label.toLowerCase()} →</Link></article>)}</div></div></section> : null}
 
       <CTASection />
     </>

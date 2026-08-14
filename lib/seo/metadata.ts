@@ -1,9 +1,18 @@
 const DEFAULT_MIN_DESCRIPTION = 90;
 const DEFAULT_MAX_DESCRIPTION = 165;
 const DEFAULT_MAX_TITLE_BASE = 46;
+const BRAND_SUFFIX = /\s*(?:\||[-–—])\s*JHB Curtain Cleaning\s*$/i;
 
 function clean(value: string) {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function stripBrandSuffix(value: string) {
+  let title = clean(value);
+  while (BRAND_SUFFIX.test(title)) {
+    title = title.replace(BRAND_SUFFIX, "").trim();
+  }
+  return title;
 }
 
 export function normalizeSeoDescription(
@@ -24,7 +33,7 @@ export function normalizeSeoDescription(
 }
 
 export function normalizeSeoTitle(value: string | undefined, fallback: string) {
-  const title = clean(value || fallback);
+  const title = stripBrandSuffix(value || fallback);
   if (title.length <= DEFAULT_MAX_TITLE_BASE) return title;
   const clipped = title.slice(0, DEFAULT_MAX_TITLE_BASE);
   const boundary = clipped.lastIndexOf(" ");

@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 
 export const metadata = {
-  title: "On-site Curtain & Textile Cleaning Services",
+  title: "Curtain & Textile Cleaning Services",
   description: "Explore JHB Curtain Cleaning's on-site curtain, blind, upholstery, mattress, carpet, fabric-protection and specialist textile-care services.",
   alternates: { canonical: "/services" },
 };

@@ -18,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/advice/mattress-cleaning-guide",
     "/advice/upholstery-couch-cleaning-guide",
     "/advice/blind-cleaning-guide",
+    "/advice/carpet-cleaning-guide",
+    "/advice/rug-and-persian-rug-cleaning-guide",
     "/about",
     "/contact",
     "/quote",
