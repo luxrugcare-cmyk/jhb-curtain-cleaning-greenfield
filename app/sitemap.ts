@@ -4,7 +4,20 @@ import { siteConfig } from "@/lib/site-config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const staticPaths = ["", "/residential", "/commercial", "/services", "/results", "/advice", "/about", "/contact", "/quote", "/commercial-assessment", "/privacy"];
+  const staticPaths = [
+    "",
+    "/residential",
+    "/commercial",
+    "/services",
+    "/results",
+    "/advice",
+    "/advice/how-on-site-curtain-cleaning-works",
+    "/about",
+    "/contact",
+    "/quote",
+    "/commercial-assessment",
+    "/privacy",
+  ];
   const dynamicPaths = [
     ...services.map(s => `/services/${s.slug}`),
     ...sectors.map(s => `/commercial/${s.slug}`),
@@ -13,7 +26,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [...staticPaths, ...dynamicPaths].map(path => ({
     url: new URL(path || "/", siteConfig.url).toString(),
     lastModified: now,
-    changeFrequency: path === "" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : path === "/services" || path.startsWith("/services/") || path.startsWith("/commercial/") ? 0.8 : 0.6,
+    changeFrequency: path === "" || path.startsWith("/advice/") ? "weekly" : "monthly",
+    priority:
+      path === ""
+        ? 1
+        : path === "/services" || path.startsWith("/services/") || path.startsWith("/commercial/")
+          ? 0.8
+          : path.startsWith("/advice/")
+            ? 0.7
+            : 0.6,
   }));
 }

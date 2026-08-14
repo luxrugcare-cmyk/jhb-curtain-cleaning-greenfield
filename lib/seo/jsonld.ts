@@ -30,6 +30,42 @@ export function serviceJsonLd(name: string, description: string, path: string) {
   };
 }
 
+export function articleJsonLd({
+  headline,
+  description,
+  path,
+  datePublished,
+  dateModified = datePublished,
+}: {
+  headline: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified?: string;
+}) {
+  const url = new URL(path, siteConfig.url).toString();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline,
+    description,
+    datePublished,
+    dateModified,
+    mainEntityOfPage: url,
+    url,
+    author: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+  };
+}
+
 export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
   return {
     "@context": "https://schema.org",
