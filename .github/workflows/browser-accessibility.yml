@@ -1,0 +1,39 @@
+name: Browser Accessibility Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/test-browser-accessibility.cjs"
+      - ".browser-accessibility-trigger"
+
+permissions:
+  contents: read
+
+jobs:
+  browser-a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: https://jhb-curtain-cleaning-greenfield.vercel.app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Install browser-test packages without changing lockfile
+        run: npm install --no-save --package-lock=false puppeteer-core axe-core
+      - name: Locate system Chrome
+        shell: bash
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$CHROME_PATH"
+          echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+          "$CHROME_PATH" --version
+      - name: Run browser accessibility checks
+        run: node scripts/test-browser-accessibility.cjs
