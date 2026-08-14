@@ -6,6 +6,8 @@ import { ServiceGrid } from "@/components/ServiceGrid";
 import { ProcessSteps } from "@/components/ProcessSteps";
 import { CTASection } from "@/components/CTASection";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 export default function HomePage() {
   return <>
     <Hero eyebrow="On-site curtain & textile care" title="Specialist fabric care. Without taking your curtains down." body="Residential and commercial textile care built around assessment, fabric suitability and minimal disruption." />

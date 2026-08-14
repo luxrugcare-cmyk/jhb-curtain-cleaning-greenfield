@@ -1,4 +1,4 @@
-import { createClient } from "next-sanity";
+import { createClient } from "@sanity/client";
 import { sanityEnv, isSanityConfigured } from "./env";
 
 const readToken = process.env.SANITY_API_READ_TOKEN;

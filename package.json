@@ -12,18 +12,18 @@
     "sanity:deploy": "sanity deploy"
   },
   "dependencies": {
+    "@sanity/client": "^7.26.2",
+    "@vercel/blob": "^2.6.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "@vercel/blob": "^2.6.1",
-    "next-sanity": "^13.2.1",
-    "sanity": "^6.7.0",
     "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "sanity": "^6.7.0",
     "typescript": "latest"
   }
 }

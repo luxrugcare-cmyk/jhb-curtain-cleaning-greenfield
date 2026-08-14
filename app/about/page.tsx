@@ -2,7 +2,7 @@ import { Hero } from "@/components/Hero";
 import { ProcessSteps } from "@/components/ProcessSteps";
 import { CTASection } from "@/components/CTASection";
 
-export const metadata = { title: "About" };
+export const metadata = { title: "About", alternates: { canonical: "/about" } };
 
 export default function About() {
   return <>
