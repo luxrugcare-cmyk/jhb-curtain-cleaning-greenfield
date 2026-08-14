@@ -1,0 +1,128 @@
+name: Vercel Read-Only Production Audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/vercel-readonly-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TEAM_SLUG: bookish-eureka
+      GREENFIELD_PROJECT: jhb-curtain-cleaning-greenfield
+      GREENFIELD_PROJECT_ID: prj_lbu1XdtAkiRKAGpAtxBe5voWIkEM
+      WWW_DOMAIN: www.jhbcurtaincleaning.co.za
+      APEX_DOMAIN: jhbcurtaincleaning.co.za
+      EXPECTED_GA4_ID: G-E4ZJQ57W4Y
+    steps:
+      - name: Verify Vercel project access without exposing secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+          curl --fail-with-body --silent --show-error \
+            "https://api.vercel.com/v9/projects/${GREENFIELD_PROJECT_ID}?slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/project.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/project.json'))
+          assert d.get('id')=='prj_lbu1XdtAkiRKAGpAtxBe5voWIkEM', d.get('id')
+          assert d.get('name')=='jhb-curtain-cleaning-greenfield', d.get('name')
+          print('PASS Vercel token can read greenfield production project')
+          print('PASS project:', d.get('name'))
+          PY
+
+      - name: Verify custom domains remain on greenfield
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+          curl --fail-with-body --silent --show-error \
+            "https://api.vercel.com/v9/projects/${GREENFIELD_PROJECT}/domains?limit=100&slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/domains.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/domains.json'))
+          by={x['name']:x for x in d.get('domains',[])}
+          www=by.get('www.jhbcurtaincleaning.co.za')
+          apex=by.get('jhbcurtaincleaning.co.za')
+          assert www and www.get('verified') is True, 'www missing or unverified'
+          assert apex and apex.get('verified') is True, 'apex missing or unverified'
+          assert apex.get('redirect')=='www.jhbcurtaincleaning.co.za', 'unexpected apex redirect target'
+          assert apex.get('redirectStatusCode')==308, 'unexpected apex redirect status'
+          print('PASS verified www and apex are attached to greenfield')
+          print('PASS apex 308 -> www')
+          PY
+
+      - name: Verify required production environment variable names
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer $VERCEL_TOKEN")
+          curl --fail-with-body --silent --show-error \
+            "https://api.vercel.com/v9/projects/${GREENFIELD_PROJECT_ID}/env?slug=${TEAM_SLUG}" \
+            "${auth[@]}" > /tmp/env.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/env.json'))
+          rows=d.get('envs', d if isinstance(d,list) else [])
+          keys={r.get('key') for r in rows}
+          required={
+            'NEXT_PUBLIC_GA_MEASUREMENT_ID',
+            'NEXT_PUBLIC_SITE_URL',
+            'NEXT_PUBLIC_SANITY_PROJECT_ID',
+            'NEXT_PUBLIC_SANITY_DATASET',
+            'ATTIO_API_KEY',
+            'RESEND_API_KEY',
+            'BLOB_READ_WRITE_TOKEN',
+          }
+          missing=sorted(required-keys)
+          if missing: raise SystemExit('missing required env keys: '+', '.join(missing))
+          print('PASS required production environment variable names are present')
+          print('PASS GA4 uses NEXT_PUBLIC_GA_MEASUREMENT_ID (not legacy NEXT_PUBLIC_GA4_ID)')
+          PY
+
+      - name: Verify live greenfield routing and GA4 loader
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://${WWW_DOMAIN}"
+          health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
+          echo "$health" | grep -q '"ok":true'
+          echo "$health" | grep -q '"service":"jhb-curtain-cleaning-greenfield"'
+          echo "$health" | grep -q '"environment":"production"'
+          echo "PASS live /api/health identifies greenfield production"
+
+          headers=$(mktemp)
+          curl --silent --show-error --retry 5 --retry-delay 2 --output /dev/null --dump-header "$headers" "https://${APEX_DOMAIN}/"
+          grep -Eq '^HTTP/[0-9.]+ 308' "$headers"
+          grep -Eqi '^location: https://www\.jhbcurtaincleaning\.co\.za/?' "$headers"
+          echo "PASS live apex 308 -> www"
+
+          html=$(mktemp)
+          curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/" > "$html"
+          grep -Fq "googletagmanager.com/gtag/js?id=${EXPECTED_GA4_ID}" "$html"
+          grep -Fq "${EXPECTED_GA4_ID}" "$html"
+          echo "PASS live homepage loads expected GA4 Measurement ID"
+
+          python - "$html" <<'PY'
+          from html.parser import HTMLParser
+          import sys
+          class P(HTMLParser):
+              def __init__(self): super().__init__(); self.hrefs=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag!='link': return
+                  v=dict(attrs)
+                  if 'canonical' in v.get('rel','').split() and v.get('href'): self.hrefs.append(v['href'])
+          p=P(); p.feed(open(sys.argv[1],encoding='utf-8').read())
+          assert p.hrefs==['https://www.jhbcurtaincleaning.co.za'], p.hrefs
+          print('PASS live homepage canonical is www')
+          PY
