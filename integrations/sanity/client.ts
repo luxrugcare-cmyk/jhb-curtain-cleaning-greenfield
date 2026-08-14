@@ -22,7 +22,14 @@ export async function sanityFetch<T>(
   query: string,
   params: Record<string, unknown> = {},
 ) {
-  return sanityClient
-    ? sanityClient.fetch<T>(query, params, { next: { revalidate: 300 } })
-    : null;
+  if (!sanityClient) return null;
+
+  try {
+    return await sanityClient.fetch<T>(query, params, { next: { revalidate: 300 } });
+  } catch (error) {
+    console.error("sanity_content_fetch_failed", {
+      message: error instanceof Error ? error.message : "unknown error",
+    });
+    return null;
+  }
 }
