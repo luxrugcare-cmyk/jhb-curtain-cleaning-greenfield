@@ -1,0 +1,29 @@
+name: Lead Resilience Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "lib/lead-service.ts"
+      - "scripts/test-lead-resilience.ts"
+      - ".lead-resilience-trigger"
+
+permissions:
+  contents: read
+
+jobs:
+  resilience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run isolated CRM/Resend failure acceptance tests
+        run: npx --yes tsx scripts/test-lead-resilience.ts
