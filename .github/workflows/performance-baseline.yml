@@ -1,4 +1,4 @@
-name: Production Performance Baseline
+name: Production Performance Gate
 
 on:
   workflow_dispatch:
@@ -7,12 +7,14 @@ on:
     paths:
       - ".github/workflows/performance-baseline.yml"
       - ".performance-baseline-trigger"
+  schedule:
+    - cron: "23 5 * * 1"
 
 permissions:
   contents: read
 
 concurrency:
-  group: production-performance-baseline
+  group: production-performance-gate
   cancel-in-progress: false
 
 jobs:
@@ -21,6 +23,10 @@ jobs:
     timeout-minutes: 15
     env:
       BASE: https://www.jhbcurtaincleaning.co.za
+      MIN_PERFORMANCE: "80"
+      MIN_ACCESSIBILITY: "95"
+      MIN_BEST_PRACTICES: "95"
+      MIN_SEO: "95"
     steps:
       - uses: actions/checkout@v6
 
@@ -36,7 +42,7 @@ jobs:
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
           "$CHROME_PATH" --version
 
-      - name: Run diagnostic Lighthouse audits
+      - name: Run production Lighthouse audits
         shell: bash
         run: |
           set -euo pipefail
@@ -56,34 +62,58 @@ jobs:
               --quiet
           done
 
-      - name: Summarize baseline scores
+      - name: Summarize scores and enforce regression thresholds
         shell: bash
         run: |
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
           const files = fs.readdirSync('lighthouse-reports').filter(f => f.endsWith('.json')).sort();
-          console.log('| Page | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |');
-          console.log('|---|---:|---:|---:|---:|---:|---:|---:|');
+          const minimums = {
+            performance: Number(process.env.MIN_PERFORMANCE),
+            accessibility: Number(process.env.MIN_ACCESSIBILITY),
+            'best-practices': Number(process.env.MIN_BEST_PRACTICES),
+            seo: Number(process.env.MIN_SEO),
+          };
+          let failed = false;
+          const header = '| Page | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |';
+          const separator = '|---|---:|---:|---:|---:|---:|---:|---:|';
+          console.log(header);
+          console.log(separator);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, header + '\n' + separator + '\n');
           for (const file of files) {
             const r = JSON.parse(fs.readFileSync(path.join('lighthouse-reports', file), 'utf8'));
             const c = r.categories;
             const a = r.audits;
             const pct = key => Math.round((c[key]?.score ?? 0) * 100);
+            const scores = {
+              performance: pct('performance'),
+              accessibility: pct('accessibility'),
+              'best-practices': pct('best-practices'),
+              seo: pct('seo'),
+            };
             const lcp = a['largest-contentful-paint']?.displayValue ?? 'n/a';
             const cls = a['cumulative-layout-shift']?.displayValue ?? 'n/a';
             const tbt = a['total-blocking-time']?.displayValue ?? 'n/a';
-            const line = `| ${file.replace('.json','')} | ${pct('performance')} | ${pct('accessibility')} | ${pct('best-practices')} | ${pct('seo')} | ${lcp} | ${cls} | ${tbt} |`;
+            const line = `| ${file.replace('.json','')} | ${scores.performance} | ${scores.accessibility} | ${scores['best-practices']} | ${scores.seo} | ${lcp} | ${cls} | ${tbt} |`;
             console.log(line);
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, line + '\n');
+            for (const [category, minimum] of Object.entries(minimums)) {
+              if (scores[category] < minimum) {
+                console.error(`FAIL ${file}: ${category} ${scores[category]} < ${minimum}`);
+                failed = true;
+              }
+            }
           }
+          if (failed) process.exit(1);
+          console.log('PASS Lighthouse regression thresholds');
           NODE
 
       - name: Upload Lighthouse reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: production-lighthouse-baseline
+          name: production-lighthouse-reports
           path: lighthouse-reports/
           if-no-files-found: warn
           retention-days: 30
