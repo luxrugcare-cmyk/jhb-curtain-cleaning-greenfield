@@ -214,7 +214,7 @@ jobs:
           PY
           }
 
-          check_canonical "/" "$CANONICAL_BASE/"
+          check_canonical "/" "$CANONICAL_BASE"
           check_canonical "/quote" "$CANONICAL_BASE/quote"
           check_canonical "/commercial-assessment" "$CANONICAL_BASE/commercial-assessment"
           check_canonical "/services/curtain-cleaning" "$CANONICAL_BASE/services/curtain-cleaning"
