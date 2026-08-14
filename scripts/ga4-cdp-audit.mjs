@@ -2,16 +2,15 @@
 /**
  * GA4 network-dispatch audit for JHB Curtain Cleaning.
  *
- * Connects to Chrome DevTools Protocol, opens an isolated tab, verifies
- * production GA4 network dispatch, sends one clearly-labelled synthetic
- * verification event, and closes the tab. No forms are submitted and no PII
- * is generated.
+ * Connects to Chrome DevTools Protocol, opens an isolated tab, and verifies
+ * that the live production site sends a GA4 page_view to the expected
+ * Measurement ID. No forms are submitted, no CRM lead is created, and no
+ * synthetic analytics events are generated.
  */
 
 const CDP_BASE = process.env.CDP_BASE || "http://127.0.0.1:9222";
 const SITE = "https://www.jhbcurtaincleaning.co.za/";
 const EXPECTED_ID = "G-E4ZJQ57W4Y";
-const VERIFY_EVENT = "jhb_verification_ping";
 
 function fail(message) {
   console.error(`FAIL ${message}`);
@@ -28,9 +27,6 @@ function collectParams(url, postData = "") {
   const merged = new URLSearchParams();
   const parsed = new URL(url);
   for (const [key, value] of parsed.searchParams) merged.append(key, value);
-
-  // GA4 may send collection payload fields in POST data instead of the URL.
-  // Support both URL-encoded bodies and newline-delimited batches.
   for (const line of String(postData || "").split(/\r?\n/)) {
     if (!line) continue;
     const bodyParams = new URLSearchParams(line);
@@ -122,44 +118,24 @@ async function main() {
 
     await send("Network.enable");
     await send("Page.enable");
-    await send("Runtime.enable");
 
-    const url = `${SITE}?verification_source=ga4_cdp_audit`;
-    await send("Page.navigate", { url });
+    await send("Page.navigate", { url: `${SITE}?verification_source=ga4_cdp_audit` });
     await new Promise((resolve) => setTimeout(resolve, 7000));
 
-    const pageView = requests.find((r) => r.tid === EXPECTED_ID && r.eventName === "page_view");
     const anyExpected = requests.find((r) => r.tid === EXPECTED_ID);
     if (!anyExpected) {
       fail(`No GA4 collection request observed for expected Measurement ID ${EXPECTED_ID}`);
     }
     console.log(`PASS production dispatched GA4 traffic for ${EXPECTED_ID}`);
-    if (pageView) console.log("PASS GA4 page_view network dispatch observed");
-    else console.log("WARN expected GA4 ID dispatched, but no explicit page_view request was observed in the capture window");
 
-    const evalResult = await send("Runtime.evaluate", {
-      expression: `(() => {
-        if (typeof window.gtag !== 'function') return {ok:false, reason:'window.gtag unavailable'};
-        window.gtag('event', '${VERIFY_EVENT}', {
-          debug_mode: true,
-          verification_source: 'cdp_audit',
-          non_interaction: true
-        });
-        return {ok:true};
-      })()`,
-      returnByValue: true,
-      awaitPromise: true,
-    });
-    const resultValue = evalResult?.result?.value;
-    if (!resultValue?.ok) fail(`Could not dispatch verification event: ${resultValue?.reason || "unknown"}`);
-
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    const ping = requests.find((r) => r.tid === EXPECTED_ID && r.eventName === VERIFY_EVENT);
-    if (!ping) fail(`Verification event ${VERIFY_EVENT} was not observed on the GA4 collection network path`);
-
-    console.log(`PASS synthetic ${VERIFY_EVENT} dispatched to ${EXPECTED_ID}`);
+    const pageView = requests.find((r) => r.tid === EXPECTED_ID && r.eventName === "page_view");
+    if (!pageView) {
+      fail(`No GA4 page_view observed for expected Measurement ID ${EXPECTED_ID}`);
+    }
+    console.log("PASS GA4 page_view network dispatch observed");
+    console.log("PASS no synthetic analytics event was generated");
     console.log("PASS no lead form or CRM submission was performed");
-    console.log("PASS GA4 network-dispatch audit completed");
+    console.log("PASS GA4 production network-dispatch audit completed");
   } finally {
     try { ws?.close(); } catch {}
     await closeTarget();
