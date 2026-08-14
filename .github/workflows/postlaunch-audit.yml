@@ -1,0 +1,47 @@
+name: Post-Launch Production Audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/postlaunch_audit.py"
+      - ".github/workflows/postlaunch-audit.yml"
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: postlaunch-production-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      BASE: https://www.jhbcurtaincleaning.co.za
+      REPORT_PATH: postlaunch-audit.json
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Compile audit script
+        run: python -m py_compile scripts/postlaunch_audit.py
+
+      - name: Crawl sitemap, metadata, structured data and internal links
+        run: python scripts/postlaunch_audit.py
+
+      - name: Upload audit report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: postlaunch-production-audit
+          path: postlaunch-audit.json
+          if-no-files-found: warn
+          retention-days: 30
