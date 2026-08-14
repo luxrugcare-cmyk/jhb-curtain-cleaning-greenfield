@@ -1,0 +1,81 @@
+name: Custom Domain Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/custom-domain-smoke.yml"
+  workflow_run:
+    workflows: ["Vercel Production Deploy"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  live-domain-smoke:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      BASE: https://www.jhbcurtaincleaning.co.za
+      APEX: https://jhbcurtaincleaning.co.za
+    steps:
+      - name: Verify live routes, apex redirect, canonicals and health
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          routes=(
+            "/"
+            "/quote"
+            "/commercial-assessment"
+            "/services"
+            "/services/curtain-cleaning"
+            "/commercial/hotels-hospitality"
+            "/areas/johannesburg"
+            "/privacy"
+            "/robots.txt"
+            "/sitemap.xml"
+          )
+          for route in "${routes[@]}"; do
+            code=$(curl --location --silent --show-error --retry 5 --retry-delay 2 --output /dev/null --write-out '%{http_code}' "$BASE$route")
+            test "$code" = "200"
+            echo "PASS $BASE$route ($code)"
+          done
+
+          apex_headers=$(mktemp)
+          curl --silent --show-error --retry 5 --retry-delay 2 --output /dev/null --dump-header "$apex_headers" "$APEX/"
+          grep -Eq '^HTTP/[0-9.]+ 308' "$apex_headers"
+          grep -Eqi '^location: https://www\.jhbcurtaincleaning\.co\.za/?' "$apex_headers"
+          echo "PASS apex 308 -> www"
+
+          check_canonical() {
+            route="$1"; expected="$2"; file=$(mktemp)
+            curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE$route" > "$file"
+            python - "$file" "$expected" <<'PY'
+          from html.parser import HTMLParser
+          import sys
+          class P(HTMLParser):
+              def __init__(self): super().__init__(); self.hrefs=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag != 'link': return
+                  v=dict(attrs)
+                  if 'canonical' in v.get('rel','').split() and v.get('href'): self.hrefs.append(v['href'])
+          p=P(); p.feed(open(sys.argv[1], encoding='utf-8').read())
+          if p.hrefs != [sys.argv[2]]: raise SystemExit(f'canonical mismatch: expected {[sys.argv[2]]!r}, got {p.hrefs!r}')
+          print('PASS canonical', sys.argv[2])
+          PY
+          }
+
+          check_canonical "/" "$BASE"
+          check_canonical "/quote" "$BASE/quote"
+          check_canonical "/services" "$BASE/services"
+
+          health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
+          echo "$health"
+          echo "$health" | grep -q '"ok":true'
+          echo "$health" | grep -q '"service":"jhb-curtain-cleaning-greenfield"'
+          echo "$health" | grep -q '"environment":"production"'
+          echo "PASS live custom domain serves greenfield production"
