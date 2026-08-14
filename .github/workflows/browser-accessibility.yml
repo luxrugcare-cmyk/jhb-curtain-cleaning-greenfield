@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      BASE: https://jhb-curtain-cleaning-greenfield.vercel.app
+      BASE: https://www.jhbcurtaincleaning.co.za
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -35,5 +35,5 @@ jobs:
           test -n "$CHROME_PATH"
           echo "CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
           "$CHROME_PATH" --version
-      - name: Run browser accessibility checks
+      - name: Run browser accessibility and analytics checks on live domain
         run: node scripts/test-browser-accessibility.cjs
