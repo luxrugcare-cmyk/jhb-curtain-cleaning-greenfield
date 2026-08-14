@@ -45,10 +45,11 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Validate source
         run: |
+          npm audit --omit=dev --audit-level=high
           npm run audit:imports
           npm run typecheck
           npm run build
@@ -67,12 +68,14 @@ jobs:
           --scope bookish-eureka
           --token "$VERCEL_TOKEN"
 
-      - name: Report integration readiness
+      - name: Enforce production integration readiness
         shell: bash
         run: |
+          set -euo pipefail
           ENV_FILE=.vercel/.env.production.local
           echo "### Production integration readiness" >> "$GITHUB_STEP_SUMMARY"
-          vars=(
+
+          required=(
             NEXT_PUBLIC_SITE_URL
             NEXT_PUBLIC_BUSINESS_PHONE
             NEXT_PUBLIC_GA_MEASUREMENT_ID
@@ -82,24 +85,55 @@ jobs:
             LEAD_NOTIFICATION_EMAIL
             NEXT_PUBLIC_SANITY_PROJECT_ID
             NEXT_PUBLIC_SANITY_DATASET
+            NEXT_PUBLIC_SANITY_API_VERSION
             SANITY_API_READ_TOKEN
             BLOB_READ_WRITE_TOKEN
-            N8N_LEAD_WEBHOOK_URL
-            N8N_WEBHOOK_SECRET
+            ENABLE_FAILURE_ARCHIVE
             RESEND_TEMPLATE_RESIDENTIAL_ACK
             RESEND_TEMPLATE_COMMERCIAL_ACK
             RESEND_TEMPLATE_INTERNAL_LEAD
             RESEND_WEBHOOK_SECRET
           )
-          for name in "${vars[@]}"; do
+          optional=(
+            N8N_LEAD_WEBHOOK_URL
+            N8N_WEBHOOK_SECRET
+          )
+
+          missing=0
+          for name in "${required[@]}"; do
             if [ -f "$ENV_FILE" ] && grep -Eq "^${name}=.+" "$ENV_FILE"; then
               status="configured"
             else
               status="missing/empty"
+              missing=1
             fi
             echo "${name}: ${status}"
             echo "- ${name}: ${status}" >> "$GITHUB_STEP_SUMMARY"
           done
+
+          for name in "${optional[@]}"; do
+            if [ -f "$ENV_FILE" ] && grep -Eq "^${name}=.+" "$ENV_FILE"; then
+              status="configured"
+            else
+              status="optional/unconfigured"
+            fi
+            echo "${name}: ${status}"
+            echo "- ${name}: ${status}" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          if ! grep -Eq '^ENABLE_FAILURE_ARCHIVE="?true"?$' "$ENV_FILE"; then
+            echo "ENABLE_FAILURE_ARCHIVE must be true in Production."
+            echo "- ENABLE_FAILURE_ARCHIVE value check: FAILED" >> "$GITHUB_STEP_SUMMARY"
+            missing=1
+          else
+            echo "ENABLE_FAILURE_ARCHIVE value check: true"
+            echo "- ENABLE_FAILURE_ARCHIVE value check: true" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Required production integration configuration is incomplete."
+            exit 1
+          fi
 
       - name: Build with Vercel
         run: >-
@@ -115,11 +149,17 @@ jobs:
           echo "### Vercel production deployment" >> "$GITHUB_STEP_SUMMARY"
           echo "$URL" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Smoke test public production routes and APIs
+      - name: Smoke test public production routes, canonicals and APIs
         shell: bash
         run: |
           set -euo pipefail
           BASE="https://jhb-curtain-cleaning-greenfield.vercel.app"
+          ENV_FILE=.vercel/.env.production.local
+          set -a
+          source "$ENV_FILE"
+          set +a
+          CANONICAL_BASE="${NEXT_PUBLIC_SITE_URL%/}"
+
           routes=(
             "/"
             "/quote"
@@ -127,6 +167,7 @@ jobs:
             "/services/curtain-cleaning"
             "/commercial/hotels-hospitality"
             "/areas/johannesburg"
+            "/privacy"
             "/robots.txt"
             "/sitemap.xml"
           )
@@ -138,6 +179,45 @@ jobs:
             fi
             echo "PASS $route ($code)"
           done
+
+          check_canonical() {
+            route="$1"
+            expected="$2"
+            file="/tmp/canonical-$(echo "$route" | tr '/:' '__').html"
+            curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE$route" > "$file"
+            python - "$file" "$expected" <<'PY'
+          from html.parser import HTMLParser
+          import sys
+
+          class CanonicalParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.hrefs = []
+              def handle_starttag(self, tag, attrs):
+                  if tag != "link":
+                      return
+                  values = dict(attrs)
+                  rel = values.get("rel", "").split()
+                  if "canonical" in rel and values.get("href"):
+                      self.hrefs.append(values["href"])
+
+          path, expected = sys.argv[1], sys.argv[2]
+          parser = CanonicalParser()
+          with open(path, encoding="utf-8") as handle:
+              parser.feed(handle.read())
+          if parser.hrefs != [expected]:
+              raise SystemExit(f"canonical mismatch: expected {[expected]!r}, got {parser.hrefs!r}")
+          print(f"PASS canonical {expected}")
+          PY
+          }
+
+          check_canonical "/" "$CANONICAL_BASE/"
+          check_canonical "/quote" "$CANONICAL_BASE/quote"
+          check_canonical "/commercial-assessment" "$CANONICAL_BASE/commercial-assessment"
+          check_canonical "/services/curtain-cleaning" "$CANONICAL_BASE/services/curtain-cleaning"
+          check_canonical "/commercial/hotels-hospitality" "$CANONICAL_BASE/commercial/hotels-hospitality"
+          check_canonical "/areas/johannesburg" "$CANONICAL_BASE/areas/johannesburg"
+          check_canonical "/privacy" "$CANONICAL_BASE/privacy"
 
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
           echo "Health response: $health"
