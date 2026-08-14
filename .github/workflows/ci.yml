@@ -2,7 +2,7 @@ name: Greenfield CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, fix/precutover-seo-analytics-v2]
   pull_request:
     branches: [main]
 
@@ -21,47 +21,29 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Regenerate dependency lock for branch validation
+        if: github.ref == 'refs/heads/fix/precutover-seo-analytics-v2'
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Export regenerated lockfile
+        if: github.ref == 'refs/heads/fix/precutover-seo-analytics-v2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: regenerated-package-lock
+          path: package-lock.json
+          if-no-files-found: error
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Report dependency security audit
+      - name: Report full dependency security audit
         shell: bash
         run: |
           npm audit --json > /tmp/npm-audit.json || true
           cat /tmp/npm-audit.json
 
-      - name: Trace vulnerable dependency chains
-        shell: bash
-        run: |
-          npm ls js-yaml undici @vercel/frameworks @module-federation/dts-plugin @module-federation/enhanced --all || true
-          node - <<'NODE'
-          const packages = require('./package-lock.json').packages;
-          const targets = Object.entries(packages).filter(([path]) =>
-            path === 'node_modules/js-yaml' ||
-            path.includes('@vercel/frameworks') ||
-            path.includes('@module-federation/dts-plugin') ||
-            path.includes('@module-federation/enhanced') ||
-            path === 'node_modules/undici' ||
-            path.endsWith('/node_modules/undici')
-          );
-          for (const [path, meta] of targets) {
-            console.log(`\n### ${path || '<root>'}`);
-            console.log(JSON.stringify({version: meta.version, dependencies: meta.dependencies, optionalDependencies: meta.optionalDependencies}, null, 2));
-          }
-          NODE
-
-      - name: Test production audit with Sanity Studio classified as development tooling
-        shell: bash
-        run: |
-          cp package.json /tmp/package.json.before
-          cp package-lock.json /tmp/package-lock.json.before
-          npm pkg delete dependencies.sanity
-          npm pkg set 'devDependencies.sanity=^6.7.0'
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          npm audit --omit=dev --json > /tmp/npm-audit-production.json || true
-          cat /tmp/npm-audit-production.json
-          mv /tmp/package.json.before package.json
-          mv /tmp/package-lock.json.before package-lock.json
+      - name: Enforce production dependency security gate
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Audit internal imports
         run: npm run audit:imports
