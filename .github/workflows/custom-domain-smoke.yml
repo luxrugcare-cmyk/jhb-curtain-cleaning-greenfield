@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           routes=(
-            "/" "/quote" "/commercial-assessment" "/services" "/services/curtain-cleaning"
+            "/" "/quote" "/commercial-assessment" "/services" "/services/curtain-cleaning" "/results"
             "/services/carpet-cleaning" "/services/rug-care"
             "/commercial/hotels-hospitality" "/areas/johannesburg" "/areas/sandton" "/areas/roodepoort"
             "/areas/randburg" "/areas/fourways" "/areas/midrand"
@@ -82,6 +82,8 @@ jobs:
           check_canonical "/" "$BASE"
           check_canonical "/quote" "$BASE/quote"
           check_canonical "/services" "$BASE/services"
+          check_canonical "/services/curtain-cleaning" "$BASE/services/curtain-cleaning"
+          check_canonical "/results" "$BASE/results"
           check_canonical "/services/carpet-cleaning" "$BASE/services/carpet-cleaning"
           check_canonical "/services/rug-care" "$BASE/services/rug-care"
           check_canonical "/advice/carpet-cleaning-guide" "$BASE/advice/carpet-cleaning-guide"
