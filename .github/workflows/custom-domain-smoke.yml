@@ -26,33 +26,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           routes=(
-            "/"
-            "/quote"
-            "/commercial-assessment"
-            "/services"
-            "/services/curtain-cleaning"
-            "/commercial/hotels-hospitality"
-            "/areas/johannesburg"
-            "/advice"
-            "/advice/how-on-site-curtain-cleaning-works"
-            "/privacy"
-            "/robots.txt"
-            "/sitemap.xml"
+            "/" "/quote" "/commercial-assessment" "/services" "/services/curtain-cleaning"
+            "/commercial/hotels-hospitality" "/areas/johannesburg" "/areas/sandton" "/areas/roodepoort"
+            "/advice" "/advice/how-on-site-curtain-cleaning-works" "/advice/curtain-cleaning-prices"
+            "/advice/can-curtains-be-cleaned-without-taking-them-down" "/advice/curtain-cleaning-vs-washing-vs-dry-cleaning"
+            "/privacy" "/robots.txt" "/sitemap.xml"
           )
           for route in "${routes[@]}"; do
             code=$(curl --location --silent --show-error --retry 5 --retry-delay 2 --output /dev/null --write-out '%{http_code}' "$BASE$route")
             test "$code" = "200"
             echo "PASS $BASE$route ($code)"
           done
-
           apex_headers=$(mktemp)
           curl --silent --show-error --retry 5 --retry-delay 2 --output /dev/null --dump-header "$apex_headers" "$APEX/"
           grep -Eq '^HTTP/[0-9.]+ 308' "$apex_headers"
           grep -Eqi '^location: https://www\.jhbcurtaincleaning\.co\.za/?' "$apex_headers"
           echo "PASS apex 308 -> www"
-
           check_canonical() {
             route="$1"; expected="$2"; file=$(mktemp)
             curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE$route" > "$file"
@@ -70,14 +60,14 @@ jobs:
           print('PASS canonical', sys.argv[2])
           PY
           }
-
           check_canonical "/" "$BASE"
           check_canonical "/quote" "$BASE/quote"
           check_canonical "/services" "$BASE/services"
           check_canonical "/advice/how-on-site-curtain-cleaning-works" "$BASE/advice/how-on-site-curtain-cleaning-works"
-
+          check_canonical "/advice/curtain-cleaning-prices" "$BASE/advice/curtain-cleaning-prices"
+          check_canonical "/advice/can-curtains-be-cleaned-without-taking-them-down" "$BASE/advice/can-curtains-be-cleaned-without-taking-them-down"
+          check_canonical "/advice/curtain-cleaning-vs-washing-vs-dry-cleaning" "$BASE/advice/curtain-cleaning-vs-washing-vs-dry-cleaning"
           health=$(curl --location --fail --silent --show-error --retry 5 --retry-delay 2 "$BASE/api/health")
-          echo "$health"
           echo "$health" | grep -q '"ok":true'
           echo "$health" | grep -q '"service":"jhb-curtain-cleaning-greenfield"'
           echo "$health" | grep -q '"environment":"production"'
