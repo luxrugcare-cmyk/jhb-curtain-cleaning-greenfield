@@ -58,13 +58,58 @@ $gscOutput | ForEach-Object { Add-Line "GSC $_" }
 if ($gscExit -ne 0) { throw "GSC audit failed with exit code $gscExit" }
 Add-Line "PASS GSC audit report written: $gscReport"
 
-# Chrome CDP preflight.
-try {
-  $version = Invoke-RestMethod -Uri "$CdpBase/json/version" -TimeoutSec 5
-  Add-Line "PASS Chrome CDP reachable: $($version.Browser)"
-} catch {
-  throw "Chrome CDP is not reachable at $CdpBase. Start Chrome with --remote-debugging-port=9222 and retry."
+function Get-ChromePath {
+  $candidates = @(
+    "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
+    "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
+    "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe"
+  ) | Where-Object { $_ -and (Test-Path $_) }
+  return $candidates | Select-Object -First 1
 }
+
+function Test-Cdp {
+  try {
+    return Invoke-RestMethod -Uri "$CdpBase/json/version" -TimeoutSec 3
+  } catch {
+    return $null
+  }
+}
+
+# Chrome CDP preflight. If unavailable, launch a separate temporary headless
+# Chrome profile. Modern Chrome requires a non-default user-data-dir for
+# remote-debugging switches to take effect.
+$version = Test-Cdp
+$chromeProcess = $null
+$tempProfile = $null
+if (-not $version) {
+  $chrome = Get-ChromePath
+  if (-not $chrome) {
+    throw "Chrome CDP is not reachable at $CdpBase and Chrome was not found in standard install locations."
+  }
+
+  $tempProfile = Join-Path $env:TEMP "jhb-ga4-cdp-$stamp"
+  New-Item -ItemType Directory -Path $tempProfile -Force | Out-Null
+  Add-Line "INFO Chrome CDP not running; launching isolated headless Chrome profile"
+  $chromeArgs = @(
+    '--headless=new',
+    '--remote-debugging-port=9222',
+    "--user-data-dir=$tempProfile",
+    '--no-first-run',
+    '--no-default-browser-check',
+    'about:blank'
+  )
+  $chromeProcess = Start-Process -FilePath $chrome -ArgumentList $chromeArgs -PassThru -WindowStyle Hidden
+
+  for ($i = 0; $i -lt 20 -and -not $version; $i++) {
+    Start-Sleep -Milliseconds 500
+    $version = Test-Cdp
+  }
+  if (-not $version) {
+    try { if ($chromeProcess -and -not $chromeProcess.HasExited) { Stop-Process -Id $chromeProcess.Id -Force } } catch {}
+    throw "Could not start isolated Chrome CDP at $CdpBase."
+  }
+}
+Add-Line "PASS Chrome CDP reachable: $($version.Browser)"
 
 # GA4 network-dispatch audit.
 Add-Line 'RUN GA4 browser network-dispatch audit'
@@ -75,6 +120,12 @@ try {
   $ga4Exit = $LASTEXITCODE
 } finally {
   $env:CDP_BASE = $oldCdp
+  if ($chromeProcess) {
+    try { if (-not $chromeProcess.HasExited) { Stop-Process -Id $chromeProcess.Id -Force } } catch {}
+  }
+  if ($tempProfile -and (Test-Path $tempProfile)) {
+    try { Remove-Item -Path $tempProfile -Recurse -Force -ErrorAction SilentlyContinue } catch {}
+  }
 }
 $ga4Output | ForEach-Object { Add-Line "GA4 $_" }
 if ($ga4Exit -ne 0) { throw "GA4 audit failed with exit code $ga4Exit" }

@@ -34,6 +34,13 @@ def fail(message: str) -> None:
     raise SystemExit(message)
 
 
+def as_int(value: object) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
 def load_oauth_client(path: pathlib.Path) -> tuple[str, str, str]:
     data = json.loads(path.read_text(encoding="utf-8"))
     cfg = data.get("installed") or data.get("web") or data
@@ -60,7 +67,7 @@ def request_json(
     body: dict | None = None,
     form: dict | None = None,
 ) -> dict:
-    headers = {"User-Agent": "JHB-Curtain-Cleaning-GSC-Audit/1.0"}
+    headers = {"User-Agent": "JHB-Curtain-Cleaning-GSC-Audit/1.1"}
     data = None
     if access_token:
         headers["Authorization"] = f"Bearer {access_token}"
@@ -109,10 +116,7 @@ def enc(value: str) -> str:
 
 
 def list_sites(access_token: str) -> list[dict]:
-    data = request_json(
-        "https://www.googleapis.com/webmasters/v3/sites",
-        access_token=access_token,
-    )
+    data = request_json("https://www.googleapis.com/webmasters/v3/sites", access_token=access_token)
     return data.get("siteEntry", [])
 
 
@@ -208,8 +212,10 @@ def main() -> int:
     print("PASS production sitemap is listed in Search Console")
     if sitemap.get("isPending"):
         print("WARN production sitemap is still pending")
-    if sitemap.get("errors") or sitemap.get("warnings"):
-        print(f"WARN sitemap reports errors={sitemap.get('errors', 0)} warnings={sitemap.get('warnings', 0)}")
+    sitemap_errors = as_int(sitemap.get("errors"))
+    sitemap_warnings = as_int(sitemap.get("warnings"))
+    if sitemap_errors or sitemap_warnings:
+        print(f"WARN sitemap reports errors={sitemap_errors} warnings={sitemap_warnings}")
     else:
         print("PASS sitemap reports no API-level errors/warnings")
 
@@ -238,15 +244,11 @@ def main() -> int:
             "lastSubmitted": sitemap.get("lastSubmitted"),
             "lastDownloaded": sitemap.get("lastDownloaded"),
             "isPending": sitemap.get("isPending"),
-            "errors": sitemap.get("errors"),
-            "warnings": sitemap.get("warnings"),
+            "errors": sitemap_errors,
+            "warnings": sitemap_warnings,
             "contents": sitemap.get("contents", []),
         },
-        "searchAnalytics": {
-            "days": args.days,
-            "rowCount": len(rows),
-            "rows": rows,
-        },
+        "searchAnalytics": {"days": args.days, "rowCount": len(rows), "rows": rows},
         "urlInspection": inspection_summary,
     }
 
