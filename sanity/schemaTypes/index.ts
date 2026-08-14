@@ -44,23 +44,54 @@ const caseStudy = defineType({
     defineField({ name: "limitations", title: "Limitations / remaining marks", type: "text" }),
     defineField({
       name: "testimonial",
-      title: "Approved testimonial",
+      title: "Testimonial",
       type: "object",
+      description: "Keep testimonial publication approval separate from the case-study approval.",
       fields: [
-        defineField({ name: "quote", type: "text" }),
-        defineField({ name: "attribution", type: "string" }),
-        defineField({ name: "permissionConfirmed", type: "boolean", initialValue: false }),
+        defineField({ name: "quote", title: "Quote", type: "text" }),
+        defineField({ name: "attribution", title: "Attribution", type: "string" }),
+        defineField({ name: "role", title: "Role / organisation context", type: "string" }),
+        defineField({
+          name: "publicationApproved",
+          title: "Testimonial publication approved",
+          type: "boolean",
+          description: "Confirm only when the customer has authorised publication of the quotation and attribution shown here.",
+          initialValue: false,
+        }),
       ],
     }),
     defineField({
-      name: "approvedImages",
-      title: "Approved publication images",
+      name: "evidenceImages",
+      title: "Evidence images",
       type: "array",
+      description: "Each image requires its own publication approval. Keep private or unapproved evidence outside public output.",
       of: [
         {
-          type: "image",
-          options: { hotspot: true },
-          fields: [defineField({ name: "alt", title: "Alt text", type: "string" })],
+          type: "object",
+          name: "evidenceImage",
+          title: "Evidence image",
+          fields: [
+            defineField({ name: "image", title: "Image", type: "image", options: { hotspot: true }, validation: r => r.required() }),
+            defineField({ name: "alt", title: "Alt text", type: "string", validation: r => r.required() }),
+            defineField({ name: "caption", title: "Caption", type: "string" }),
+            defineField({
+              name: "publicationApproved",
+              title: "Image publication approved",
+              type: "boolean",
+              description: "Confirm only when publication rights/privacy approval for this specific image are recorded.",
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { title: "caption", media: "image", approved: "publicationApproved" },
+            prepare(selection) {
+              return {
+                title: selection.title || "Evidence image",
+                subtitle: selection.approved ? "Publication approved" : "Not approved for publication",
+                media: selection.media,
+              };
+            },
+          },
         },
       ],
     }),
@@ -82,10 +113,17 @@ const caseStudy = defineType({
     }),
     defineField({
       name: "publicationApproved",
-      title: "Publication approval confirmed",
+      title: "Case-study publication approval confirmed",
       type: "boolean",
       description: "Must be explicitly confirmed before this case study can appear on the public website.",
       initialValue: false,
+      validation: r => r.custom((value, context) => {
+        const document = context.document as { publicationStatus?: string } | undefined;
+        if (document?.publicationStatus === "published" && value !== true) {
+          return "Publication approval must be confirmed before status can be Published.";
+        }
+        return true;
+      }),
     }),
     defineField({
       name: "redactionNotes",
