@@ -138,6 +138,43 @@ jobs:
             exit 1
           fi
 
+      - name: Validate Sanity read access (non-blocking)
+        shell: bash
+        run: |
+          set -u
+          ENV_FILE=.vercel/.env.production.local
+          set -a
+          source "$ENV_FILE"
+          set +a
+
+          project="${NEXT_PUBLIC_SANITY_PROJECT_ID:-}"
+          dataset="${NEXT_PUBLIC_SANITY_DATASET:-}"
+          api_version="${NEXT_PUBLIC_SANITY_API_VERSION:-}"
+          token="${SANITY_API_READ_TOKEN:-}"
+
+          if [ -z "$project" ] || [ -z "$dataset" ] || [ -z "$api_version" ] || [ -z "$token" ]; then
+            echo "- Sanity authenticated read check: SKIPPED (configuration incomplete)" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Sanity authenticated read check skipped because required values are missing."
+            exit 0
+          fi
+
+          endpoint="https://${project}.api.sanity.io/v${api_version}/data/query/${dataset}"
+          response_file=/tmp/sanity-read-check.json
+          http_code=$(curl --silent --show-error --output "$response_file" --write-out "%{http_code}" \
+            --get \
+            --header "Authorization: Bearer ${token}" \
+            --data-urlencode 'query=count(*[_type == "caseStudy"])' \
+            "$endpoint" || true)
+
+          if [ "$http_code" = "200" ]; then
+            echo "Sanity authenticated read check: PASS"
+            echo "- Sanity authenticated read check: PASS (HTTP 200)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Sanity authenticated read check: WARN (HTTP ${http_code:-unavailable})"
+            echo "- Sanity authenticated read check: WARN (HTTP ${http_code:-unavailable}); site remains fail-soft" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Sanity read credentials are not currently authenticating (HTTP ${http_code:-unavailable}). Public pages remain protected by fail-soft CMS fallbacks."
+          fi
+
       - name: Build with Vercel
         run: >-
           npx --yes vercel@latest build --prod
