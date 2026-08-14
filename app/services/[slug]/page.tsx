@@ -10,7 +10,12 @@ import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params; const service = await getService(slug); if (!service) return {};
-  return { title: service.seo?.title || service.title, description: service.seo?.description || service.summary, robots: service.seo?.noIndex ? { index: false, follow: true } : undefined };
+  return {
+    title: service.seo?.title || service.title,
+    description: service.seo?.description || service.summary,
+    alternates: { canonical: `/services/${slug}` },
+    robots: service.seo?.noIndex ? { index: false, follow: true } : undefined,
+  };
 }
 
 export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
