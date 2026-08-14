@@ -6,13 +6,18 @@ import { ServiceGrid } from "@/components/ServiceGrid";
 import { ProcessSteps } from "@/components/ProcessSteps";
 import { CTASection } from "@/components/CTASection";
 
-export const metadata = { alternates: { canonical: "/" } };
+export const metadata = {
+  title: "On-Site Curtain Cleaning Johannesburg",
+  description: "Professional on-site curtain cleaning in Johannesburg for homes and commercial properties, with fabric assessment, minimal disruption and no unnecessary curtain removal.",
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return <>
-    <Hero eyebrow="On-site curtain & textile care" title="Specialist fabric care. Without taking your curtains down." body="Residential and commercial textile care built around assessment, fabric suitability and minimal disruption." />
+    <Hero eyebrow="On-site curtain & textile care" title="Specialist curtain cleaning in Johannesburg. Without unnecessary removal." body="Residential and commercial textile care built around fabric assessment, suitability and minimal disruption across Johannesburg and surrounding areas." />
     <TrustStrip/>
     <AudienceSplit/>
+    <section className="section"><div className="shell content-grid"><article><p className="eyebrow">Curtain cleaning</p><h2>Start with the installed curtain and the property.</h2><p>Our core service is professional curtain cleaning planned around the fabric, lining, condition, installation and room use. Where suitable, treatment can be completed while the curtains remain hanging, reducing removal and refitting disruption.</p><p><Link href="/services/curtain-cleaning">Explore curtain cleaning →</Link></p><p><Link href="/advice/how-on-site-curtain-cleaning-works">How on-site curtain cleaning works →</Link></p></article><article><p className="eyebrow">Johannesburg service area</p><h2>Local planning matters.</h2><p>Access, estates, apartments, offices, hotels and managed facilities can all change how a textile-cleaning visit should be scoped. Our Johannesburg area pages explain those practical considerations without creating thin suburb doorway pages.</p><p><Link href="/areas/johannesburg">Curtain cleaning in Johannesburg →</Link></p><p><Link href="/areas/sandton">Curtain cleaning in Sandton →</Link></p></article></div></section>
     <section className="section"><div className="shell"><div className="section-heading split-heading"><div><p className="eyebrow">Core services</p><h2>Specialist textile care, structured by need.</h2></div><Link className="card-link" href="/residential">Explore residential →</Link></div><ServiceGrid limit={6}/></div></section>
     <ProcessSteps/>
     <section className="section surface"><div className="shell case-study"><div className="case-media"/><div><p className="eyebrow">Project evidence</p><h2>Case studies will bring the property, textile, method and outcome together.</h2><p>Completed project stories will be added as suitable photography and supporting information are available for publication.</p><Link className="button button-secondary" href="/results">View results</Link></div></div></section>
