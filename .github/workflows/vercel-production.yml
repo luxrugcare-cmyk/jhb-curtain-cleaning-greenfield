@@ -121,7 +121,10 @@ jobs:
             echo "- ${name}: ${status}" >> "$GITHUB_STEP_SUMMARY"
           done
 
-          if ! grep -Eq '^ENABLE_FAILURE_ARCHIVE="?true"?$' "$ENV_FILE"; then
+          set -a
+          source "$ENV_FILE"
+          set +a
+          if [ "${ENABLE_FAILURE_ARCHIVE:-}" != "true" ]; then
             echo "ENABLE_FAILURE_ARCHIVE must be true in Production."
             echo "- ENABLE_FAILURE_ARCHIVE value check: FAILED" >> "$GITHUB_STEP_SUMMARY"
             missing=1
