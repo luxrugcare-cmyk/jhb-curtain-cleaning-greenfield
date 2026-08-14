@@ -17,6 +17,7 @@ jobs:
     timeout-minutes: 15
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      SANITY_API_READ_TOKEN_SECRET: ${{ secrets.SANITY_API_READ_TOKEN }}
       BASE: https://jhb-curtain-cleaning-greenfield.vercel.app
     steps:
       - uses: actions/checkout@v6
@@ -32,6 +33,7 @@ jobs:
       - name: Link and pull production config
         run: |
           test -n "$VERCEL_TOKEN"
+          test -n "$SANITY_API_READ_TOKEN_SECRET"
           npx --yes vercel@latest link --yes --scope bookish-eureka --project jhb-curtain-cleaning-greenfield --token "$VERCEL_TOKEN" >/dev/null
           npx --yes vercel@latest pull --yes --environment=production --scope bookish-eureka --token "$VERCEL_TOKEN" >/dev/null
 
@@ -55,6 +57,7 @@ jobs:
           set -a
           source .vercel/.env.production.local
           set +a
+          export SANITY_API_READ_TOKEN="$SANITY_API_READ_TOKEN_SECRET"
           npx --yes tsx -e '
             import { sanityClient } from "./integrations/sanity/client.ts";
             import { getService, getSector, getArea } from "./integrations/sanity/content.ts";
