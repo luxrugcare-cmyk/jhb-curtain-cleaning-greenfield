@@ -5,7 +5,15 @@ import { Hero } from "@/components/Hero";
 import { ServiceGrid } from "@/components/ServiceGrid";
 import { CTASection } from "@/components/CTASection";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params; const area = await getArea(slug); return area ? { title: area.seo?.title || `Curtain & Textile Care in ${area.title}`, description: area.seo?.description || area.summary } : {}; }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const area = await getArea(slug);
+  return area ? {
+    title: area.seo?.title || `Curtain & Textile Care in ${area.title}`,
+    description: area.seo?.description || area.summary,
+    alternates: { canonical: `/areas/${slug}` },
+  } : {};
+}
 
 export default async function AreaPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params; const area = await getArea(slug); if (!area) notFound();
