@@ -38,18 +38,22 @@ export function Hero({
           <p className="eyebrow">{eyebrow}</p>
           <h1>{title}</h1>
           <p className="hero-body">{body}</p>
+          <div className="rating-badge">
+            <span className="gold-stars">★★★★★</span>
+            <span className="rating-text">4.8/5 Verified Google Reviews</span>
+          </div>
           <div className="button-row">
             <Link
               className="button button-primary"
               href={commercial ? "/commercial-assessment" : "/quote"}
             >
-              {commercial ? "Request site assessment" : "Get an assessment"}
+              {commercial ? "Request Site Assessment" : "Send Photos For Quote"}
             </Link>
             <Link
               className="button button-secondary"
               href={commercial ? "/results" : "/commercial"}
             >
-              {commercial ? "View capability" : "Commercial services"}
+              {commercial ? "View Capability" : "Commercial Services"}
             </Link>
           </div>
         </div>
