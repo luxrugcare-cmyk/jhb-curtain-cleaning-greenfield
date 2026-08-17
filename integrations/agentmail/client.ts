@@ -21,7 +21,7 @@ export async function sendAgentMailMessage(options: {
     return { ok: true, mode: "stub" as const };
   }
 
-  const response = await fetch(`${AGENTMAIL_API_BASE}/inboxes/${encodeURIComponent(inboxId)}/messages`, {
+  const response = await fetch(`${AGENTMAIL_API_BASE}/inboxes/${encodeURIComponent(inboxId)}/messages/send`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
