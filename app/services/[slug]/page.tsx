@@ -64,7 +64,33 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
     <JsonLd data={serviceJsonLd(service.title, service.summary, `/services/${slug}`)} />
     <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: service.title, path: `/services/${slug}` }])} />
     {isCurtain ? <JsonLd data={faqJsonLd(curtainFaqs)} /> : null}
-    <Hero eyebrow={service.heroEyebrow || "Specialist service"} title={service.title} body={service.summary} />
+    <Hero
+      eyebrow={service.heroEyebrow || "Specialist service"}
+      title={service.title}
+      body={service.summary}
+      imageSrc={
+        slug === "curtain-cleaning"
+          ? "/brand/stitch/curtain-cleaning-hero.png"
+          : slug === "blind-cleaning"
+          ? "/brand/stitch/roller-blind-cleaning.png"
+          : slug === "upholstery-cleaning"
+          ? "/brand/stitch/upholstery-cleaning.png"
+          : slug === "mattress-cleaning"
+          ? "/brand/stitch/mattress-cleaning.png"
+          : slug === "carpet-cleaning"
+          ? "/brand/stitch/carpet-cleaning.png"
+          : slug === "rug-care"
+          ? "/brand/stitch/oriental-rug-cleaning.png"
+          : slug === "fabric-protection"
+          ? "/brand/stitch/fabric-protection.png"
+          : slug === "fire-retardant-treatment"
+          ? "/brand/stitch/flame-retardant.png"
+          : "/brand/stitch/curtain-cleaning-hero.png"
+      }
+      imageAlt={`${service.title} specialist on-site care in Johannesburg`}
+      cardTitle={service.title}
+      cardSubtitle="On-Site Assessment & Treatment"
+    />
     <TrustStrip />
 
     <section className="section"><div className="shell content-grid"><article><p className="eyebrow">Service detail</p><h2>Assess suitability before choosing the method.</h2><p>{service.intro || intent?.lead || "The assessment considers the textile, installation, condition and property requirements before the service approach is discussed."}</p>{service.suitableFor?.length ? <div className="info-panel"><h3>Suitable for</h3><ul className="check-list">{service.suitableFor.map((item: string) => <li key={item}>{item}</li>)}</ul></div> : intent ? <div className="info-panel"><h3>Common requests</h3><ul className="check-list">{intent.commonRequests.map(item => <li key={item}>{item}</li>)}</ul></div> : null}</article><aside className="sticky-panel"><p className="eyebrow">Assessment</p><h3>Need this service?</h3><p>Choose the assessment that matches the property. Residential and commercial enquiries use separate workflows.</p><a className="button button-primary" href="/quote">Residential assessment</a><a className="button button-secondary" href="/commercial-assessment">Commercial site assessment</a></aside></div></section>
