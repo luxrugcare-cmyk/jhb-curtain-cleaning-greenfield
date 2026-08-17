@@ -28,7 +28,7 @@ export async function sendAgentMailMessage(options: {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      to: options.to,
+      to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,
       text: options.text,
       html: options.html,
