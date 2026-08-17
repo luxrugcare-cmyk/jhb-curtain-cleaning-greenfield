@@ -3,17 +3,21 @@
 
 Dispatches review requests via AgentMail / WhatsApp format using the verified
 Google Business Profile link: https://g.page/r/CbZEjFiE3HjZEBM/review
+and responsive HTML emailer: templates/email/customer_review_request.html
 """
 
 import argparse
 import json
 import os
+import pathlib
 import sys
 import urllib.request
 import urllib.parse
 
 GBP_REVIEW_URL = "https://g.page/r/CbZEjFiE3HjZEBM/review"
 AGENTMAIL_API_BASE = "https://api.agentmail.to/v0"
+DEFAULT_INBOX_ID = "stephen-1015@agentmail.to"
+TEMPLATE_PATH = pathlib.Path("templates/email/customer_review_request.html")
 
 WHATSAPP_TEMPLATE = """Hi {name},
 
@@ -47,13 +51,25 @@ Website: https://www.jhbcurtaincleaning.co.za
 Direct Line: +27 75 011 9200"""
 
 
-def send_email_via_agentmail(to_email: str, subject: str, body: str, api_key: str, inbox_id: str):
+def load_html_template(name: str, service: str) -> str:
+    if not TEMPLATE_PATH.exists():
+        return ""
+    content = TEMPLATE_PATH.read_text(encoding="utf-8")
+    content = content.replace("{{name}}", name).replace("{{service}}", service)
+    return content
+
+
+def send_email_via_agentmail(to_email: str, subject: str, body: str, html_body: str, api_key: str, inbox_id: str):
     url = f"{AGENTMAIL_API_BASE}/inboxes/{urllib.parse.quote(inbox_id)}/messages/send"
-    payload = json.dumps({
+    payload_dict = {
         "to": [to_email],
         "subject": subject,
         "text": body
-    }).encode("utf-8")
+    }
+    if html_body:
+        payload_dict["html"] = html_body
+
+    payload = json.dumps(payload_dict).encode("utf-8")
 
     req = urllib.request.Request(
         url,
@@ -75,6 +91,7 @@ def main():
     parser.add_argument("--service", default="curtain cleaning", help="Service rendered")
     parser.add_argument("--channel", choices=["whatsapp", "email"], default="whatsapp", help="Dispatch channel")
     parser.add_argument("--email", help="Customer email (required if channel is email)")
+    parser.add_argument("--inbox", default=DEFAULT_INBOX_ID, help="AgentMail Inbox ID")
     args = parser.parse_args()
 
     if args.channel == "whatsapp":
@@ -92,12 +109,14 @@ def main():
             sys.exit(1)
 
         api_key = os.environ.get("AGENTMAIL_API_KEY", "am_us_inbox_5f01bf0cc1891d1454297ab473334f1628540b4e04cd6028c33702bb2fa636cf")
-        inbox_id = os.environ.get("AGENTMAIL_INBOX_ID", "stephen-1015@agentmail.to")
+        inbox_id = args.inbox
         subject = f"Thank you from JHB Curtain Cleaning / Google Review"
-        body = EMAIL_TEMPLATE.format(name=args.name, service=args.service, link=GBP_REVIEW_URL)
+        text_body = EMAIL_TEMPLATE.format(name=args.name, service=args.service, link=GBP_REVIEW_URL)
+        html_body = load_html_template(args.name, args.service)
 
-        print(f"Dispatching review request email to {args.email} via AgentMail...")
-        res = send_email_via_agentmail(args.email, subject, body, api_key, inbox_id)
+        print(f"Dispatching review request email to {args.email} via AgentMail ({inbox_id})...")
+        print(f"HTML Emailer: {'LOADED (' + str(len(html_body)) + ' bytes)' if html_body else 'PLAIN-TEXT ONLY'}")
+        res = send_email_via_agentmail(args.email, subject, text_body, html_body, api_key, inbox_id)
         print("Review request sent successfully:", res)
 
 

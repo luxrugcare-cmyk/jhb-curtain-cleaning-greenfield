@@ -2,11 +2,11 @@
 """B2B Commercial Outreach Campaign Manager for JHB Curtain Cleaning.
 
 Autonomous sequencing engine for:
-1. Boutique Hotels & Hospitality Managers
-2. Corporate Facilities & Office Managers
-3. Interior Designers & Luxury Estate Managers
+1. Boutique Hotels & Hospitality Managers (templates/email/hospitality_hotel_campaign.html)
+2. Corporate Facilities & Office Managers (templates/email/corporate_facilities_campaign.html)
+3. Interior Designers & Luxury Estate Managers (templates/email/interior_design_trade_campaign.html)
 
-Uses AgentMail (stephen-1015@agentmail.to) with POPIA-compliant, high-converting copy.
+Uses AgentMail (stephen-1015@agentmail.to) with responsive HTML emailers and plain-text fallback.
 """
 
 import argparse
@@ -21,10 +21,14 @@ import urllib.parse
 AGENTMAIL_API_BASE = "https://api.agentmail.to/v0"
 DEFAULT_INBOX_ID = "stephen-1015@agentmail.to"
 LOG_PATH = pathlib.Path("docs/campaigns/outreach-log.json")
+TEMPLATE_DIR = pathlib.Path("templates/email")
 
 # Sequence 1: Hospitality & Boutique Hotels
 HOTEL_SEQUENCE = {
     "name": "hospitality_hotels",
+    "mailbox_tag": "hospitality-campaign",
+    "sender_display": "Stephen | JHB Curtain Cleaning Hospitality",
+    "template_file": "hospitality_hotel_campaign.html",
     "touch1": {
         "subject": "Curtain cleaning without room downtime for {hotel_name}",
         "body": """Hi {first_name},
@@ -69,6 +73,9 @@ JHB Curtain Cleaning
 # Sequence 2: Corporate Facilities & Office Managers
 CORPORATE_SEQUENCE = {
     "name": "corporate_facilities",
+    "mailbox_tag": "corporate-campaign",
+    "sender_display": "Stephen | JHB Commercial Textile Care",
+    "template_file": "corporate_facilities_campaign.html",
     "touch1": {
         "subject": "After-hours curtain & blind maintenance for {company_name}",
         "body": """Hi {first_name},
@@ -95,6 +102,9 @@ Commercial Portal: https://www.jhbcurtaincleaning.co.za/commercial/offices-corpo
 # Sequence 3: Interior Designers & Estate Managers
 DESIGNER_SEQUENCE = {
     "name": "interior_designers",
+    "mailbox_tag": "designer-trade-campaign",
+    "sender_display": "Stephen | JHB Luxury Textile Care",
+    "template_file": "interior_design_trade_campaign.html",
     "touch1": {
         "subject": "Specialist textile care partnership for {firm_name}",
         "body": """Hi {first_name},
@@ -125,13 +135,27 @@ SEQUENCES = {
 }
 
 
-def send_agentmail_email(to_email: str, subject: str, body: str, api_key: str, inbox_id: str):
+def load_html_template(template_file: str, variables: dict) -> str:
+    template_path = TEMPLATE_DIR / template_file
+    if not template_path.exists():
+        return ""
+    content = template_path.read_text(encoding="utf-8")
+    for k, v in variables.items():
+        content = content.replace(f"{{{{{k}}}}}", str(v))
+    return content
+
+
+def send_agentmail_email(to_email: str, subject: str, body: str, html_body: str, api_key: str, inbox_id: str):
     url = f"{AGENTMAIL_API_BASE}/inboxes/{urllib.parse.quote(inbox_id)}/messages/send"
-    payload = json.dumps({
+    payload_dict = {
         "to": [to_email],
         "subject": subject,
         "text": body
-    }).encode("utf-8")
+    }
+    if html_body:
+        payload_dict["html"] = html_body
+
+    payload = json.dumps(payload_dict).encode("utf-8")
 
     req = urllib.request.Request(
         url,
@@ -160,40 +184,41 @@ def log_dispatch(record: dict):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Dispatch B2B Outreach Sequences via AgentMail")
+    parser = argparse.ArgumentParser(description="Dispatch B2B Outreach Sequences via AgentMail with HTML Emailers")
     parser.add_argument("--sequence", choices=["hotel", "corporate", "designer"], required=True, help="Campaign sequence")
     parser.add_argument("--to", required=True, help="Recipient email address")
     parser.add_argument("--first-name", default="Manager", help="Prospect First Name")
     parser.add_argument("--company", default="your property", help="Hotel / Company / Firm name")
     parser.add_argument("--location", default="Johannesburg", help="City / Suburb (e.g. Sandton, Rosebank)")
     parser.add_argument("--step", choices=["touch1", "touch2_followup"], default="touch1", help="Sequence step")
+    parser.add_argument("--inbox", default=DEFAULT_INBOX_ID, help="AgentMail Inbox ID")
     parser.add_argument("--dry-run", action="store_true", help="Preview email without sending")
     args = parser.parse_args()
 
     seq_data = SEQUENCES[args.sequence]
     step_data = seq_data.get(args.step, seq_data.get("touch1"))
 
-    subject = step_data["subject"].format(
-        first_name=args.first_name,
-        hotel_name=args.company,
-        company_name=args.company,
-        firm_name=args.company,
-        location=args.location
-    )
-    body = step_data["body"].format(
-        first_name=args.first_name,
-        hotel_name=args.company,
-        company_name=args.company,
-        firm_name=args.company,
-        location=args.location
-    )
+    var_dict = {
+        "first_name": args.first_name,
+        "hotel_name": args.company,
+        "company_name": args.company,
+        "firm_name": args.company,
+        "location": args.location
+    }
+
+    subject = step_data["subject"].format(**var_dict)
+    text_body = step_data["body"].format(**var_dict)
+    html_body = load_html_template(seq_data.get("template_file", ""), var_dict)
 
     print(f"\n=======================================================")
     print(f"CAMPAIGN: {seq_data['name'].upper()} ({args.step.upper()})")
-    print(f"RECIPIENT: {args.to}")
-    print(f"SUBJECT:   {subject}")
+    print(f"SENDER:   {seq_data['sender_display']} <{args.inbox}>")
+    print(f"TAG:      {seq_data['mailbox_tag']}")
+    print(f"TO:       {args.to}")
+    print(f"SUBJECT:  {subject}")
+    print(f"HTML:     {'LOADED (' + str(len(html_body)) + ' bytes)' if html_body else 'PLAIN-TEXT ONLY'}")
     print(f"=======================================================\n")
-    print(body)
+    print(text_body)
     print("\n-------------------------------------------------------")
 
     if args.dry_run:
@@ -201,16 +226,18 @@ def main():
         return
 
     api_key = os.environ.get("AGENTMAIL_API_KEY", "am_us_inbox_5f01bf0cc1891d1454297ab473334f1628540b4e04cd6028c33702bb2fa636cf")
-    inbox_id = os.environ.get("AGENTMAIL_INBOX_ID", DEFAULT_INBOX_ID)
+    inbox_id = args.inbox
 
-    print(f"Dispatching via AgentMail ({inbox_id})...")
-    res = send_agentmail_email(args.to, subject, body, api_key, inbox_id)
+    print(f"Dispatching multipart HTML + Plaintext via AgentMail ({inbox_id})...")
+    res = send_agentmail_email(args.to, subject, text_body, html_body, api_key, inbox_id)
     print("Successfully dispatched:", res)
 
     log_record = {
         "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
         "sequence": args.sequence,
         "step": args.step,
+        "mailbox_tag": seq_data["mailbox_tag"],
+        "sender_display": seq_data["sender_display"],
         "recipient": args.to,
         "company": args.company,
         "location": args.location,

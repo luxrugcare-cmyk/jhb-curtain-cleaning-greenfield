@@ -11,5 +11,50 @@
       "message_id": "<010001a011d9f689-14b91ec3-317c-42d6-a97b-7b431545daa4-000000@email.amazonses.com>",
       "thread_id": "6154e63d-7d9a-491c-a6f3-a91615fe9a93"
     }
+  },
+  {
+    "timestamp": "2026-08-17T23:03:36.385775+00:00",
+    "sequence": "hotel",
+    "step": "touch1",
+    "mailbox_tag": "hospitality-campaign",
+    "sender_display": "Stephen | JHB Curtain Cleaning Hospitality",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "The Saxon Hotel",
+    "location": "Sandhurst, Sandton",
+    "subject": "Curtain cleaning without room downtime for The Saxon Hotel",
+    "agentmail_response": {
+      "message_id": "<010001a011f75085-e2f16d18-a371-488d-8c84-a56e73f79ace-000000@email.amazonses.com>",
+      "thread_id": "02ecd45e-f4a3-4fdf-a25c-de2d9ee5d0ef"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:03:54.504820+00:00",
+    "sequence": "corporate",
+    "step": "touch1",
+    "mailbox_tag": "corporate-campaign",
+    "sender_display": "Stephen | JHB Commercial Textile Care",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Discovery Place",
+    "location": "Sandton CBD",
+    "subject": "After-hours curtain & blind maintenance for Discovery Place",
+    "agentmail_response": {
+      "message_id": "<010001a011f7970e-5fa7208f-a4b8-4d91-b3ca-39b2c7263da7-000000@email.amazonses.com>",
+      "thread_id": "bbc1ec4e-1526-4c2b-84d1-053237d860c4"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:04:10.863991+00:00",
+    "sequence": "designer",
+    "step": "touch1",
+    "mailbox_tag": "designer-trade-campaign",
+    "sender_display": "Stephen | JHB Luxury Textile Care",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Studio Luxury Interiors",
+    "location": "Hyde Park",
+    "subject": "Specialist textile care partnership for Studio Luxury Interiors",
+    "agentmail_response": {
+      "message_id": "<010001a011f7d71d-9e4d8833-c0d6-4af3-89ef-a38ded7d7808-000000@email.amazonses.com>",
+      "thread_id": "d7708a1e-e645-4679-88a1-c4fadd7a500b"
+    }
   }
 ]
