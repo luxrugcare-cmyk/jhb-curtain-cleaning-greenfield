@@ -1120,3 +1120,167 @@ p {
 .upload-panel input {
   margin-top: 8px;
 }
+
+/* ==========================================================================
+   WHY NO PRICES MANIFESTO COMPONENT
+   ========================================================================== */
+.why-no-prices-container {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.pricing-manifesto-card {
+  background: #ffffff;
+  padding: 48px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--brand-line-gold);
+  box-shadow: var(--shadow-elite);
+}
+
+.pricing-lead {
+  font-size: 1.22rem;
+  color: var(--brand-charcoal);
+  font-weight: 500;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.pricing-quote {
+  border-left: 4px solid var(--brand-gold);
+  padding: 20px 26px;
+  background: var(--brand-surface-stone);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--brand-charcoal);
+  margin: 28px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.7;
+}
+
+.assessment-action-box {
+  background: var(--brand-charcoal);
+  color: #ffffff;
+  padding: 34px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brand-line-gold);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 28px;
+  margin-top: 36px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.badge-highlight {
+  display: inline-block;
+  background: rgba(212, 175, 55, 0.18);
+  color: var(--brand-gold-light);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+}
+
+.assessment-contacts p {
+  color: #e2e8f0;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.assessment-contacts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.assessment-contacts li {
+  font-size: 0.86rem;
+  color: #cbd5e1;
+}
+
+.assessment-contacts a {
+  color: var(--brand-gold-light);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.assessment-contacts a:hover {
+  color: var(--brand-gold-bright);
+}
+
+.factors-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.factor-card,
+.value-card {
+  background: #ffffff;
+  padding: 30px 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brand-line);
+  box-shadow: var(--shadow-elite);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.factor-card:hover,
+.value-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand-gold);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.factor-icon,
+.value-icon {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.factor-card h3,
+.value-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1050px) {
+  .factors-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .value-grid {
+    grid-template-columns: 1fr;
+  }
+  .assessment-action-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .pricing-manifesto-card {
+    padding: 28px 20px;
+  }
+  .factors-grid {
+    grid-template-columns: 1fr;
+  }
+  .assessment-contacts ul {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

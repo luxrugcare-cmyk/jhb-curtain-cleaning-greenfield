@@ -5,7 +5,7 @@ export const metadata = { title: "Advice & Textile Cleaning Guides", description
 
 const guides = [
   { href: "/advice/how-on-site-curtain-cleaning-works", title: "How professional on-site curtain cleaning works", body: "Assessment, fabric checks, treatment decisions, the cleaning sequence and when in-place treatment may not be suitable." },
-  { href: "/advice/curtain-cleaning-prices", title: "Curtain cleaning prices: what affects the cost?", body: "The practical factors that change a quotation, including fabric, size, condition, access and commercial scheduling." },
+  { href: "/advice/curtain-cleaning-prices", title: "Why we don't publish prices online", body: "Because 'one size fits all' doesn't work for curtains. Understand why Kathy personally visits for a free, detailed written assessment." },
   { href: "/advice/can-curtains-be-cleaned-without-taking-them-down", title: "Can curtains be cleaned without taking them down?", body: "When cleaning curtains in place is suitable, why it reduces disruption and when another method may be safer." },
   { href: "/advice/curtain-cleaning-vs-washing-vs-dry-cleaning", title: "Curtain cleaning vs washing vs dry cleaning", body: "Compare the main treatment routes and understand why fabric and construction should determine the method." },
   { href: "/advice/carpet-cleaning-guide", title: "Professional carpet cleaning guide", body: "Fibre, backing, traffic lanes, spots, drying and the variables that change a professional carpet-cleaning plan." },
