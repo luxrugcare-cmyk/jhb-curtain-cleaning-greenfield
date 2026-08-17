@@ -45,7 +45,15 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
   return <>
     <JsonLd data={serviceJsonLd(`Curtain & Textile Care in ${area.title}`, intent?.intro || area.summary, `/areas/${slug}`)}/>
     <JsonLd data={breadcrumbJsonLd([{name:"Home",path:"/"},{name:area.title,path:`/areas/${slug}`}])}/>
-    <Hero eyebrow="Service area" title={intent?.title || `On-site textile care in ${area.title}.`} body={intent?.intro || area.summary}/>
+    <Hero
+      eyebrow={`Johannesburg Service Area · ${area.title}`}
+      title={intent?.title || `On-site textile care in ${area.title}.`}
+      body={intent?.intro || area.summary}
+      imageSrc="/brand/stitch/curtain-cleaning-hero.png"
+      imageAlt={`Specialist on-site curtain and fabric care in ${area.title}`}
+      cardTitle={`${area.title} Service Area`}
+      cardSubtitle="Kathy Visits Within 48 Hours"
+    />
 
     {intent ? <section className="section section-soft"><div className="shell"><div className="section-heading"><p className="eyebrow">Local service planning</p><h2>What affects a textile-cleaning visit in {area.title}?</h2></div><div className="feature-grid">{intent.localFactors.map(item=><article key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></div></section> : null}
 

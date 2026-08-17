@@ -34,6 +34,20 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     url: siteConfig.url,
+    images: [
+      {
+        url: "/brand/stitch/social-card.png",
+        width: 1200,
+        height: 630,
+        alt: "JHB Curtain Cleaning - On-Site Luxury Fabric & Curtain Care Johannesburg",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: ["/brand/stitch/social-card.png"],
   },
   robots: { index: true, follow: true },
 };
