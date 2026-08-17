@@ -56,5 +56,95 @@
       "message_id": "<010001a011f7d71d-9e4d8833-c0d6-4af3-89ef-a38ded7d7808-000000@email.amazonses.com>",
       "thread_id": "d7708a1e-e645-4679-88a1-c4fadd7a500b"
     }
+  },
+  {
+    "timestamp": "2026-08-17T23:50:37.979511+00:00",
+    "sequence": "hotel",
+    "step": "touch1",
+    "mailbox_tag": "hospitality-campaign",
+    "sender_display": "Stephen | JHB Curtain Cleaning Hospitality",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "The Saxon Hotel, Villas & Spa",
+    "location": "Sandhurst, Sandton",
+    "subject": "Curtain cleaning without room downtime for The Saxon Hotel, Villas & Spa",
+    "agentmail_response": {
+      "message_id": "<010001a012225e77-9192587d-a69e-4bf2-b737-23c1482192bd-000000@email.amazonses.com>",
+      "thread_id": "84f98e08-0317-4adc-9210-8391b16a47ac"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:50:40.367623+00:00",
+    "sequence": "hotel",
+    "step": "touch1",
+    "mailbox_tag": "hospitality-campaign",
+    "sender_display": "Stephen | JHB Curtain Cleaning Hospitality",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Ten Bompas Boutique Hotel",
+    "location": "Dunkeld West, Rosebank",
+    "subject": "Curtain cleaning without room downtime for Ten Bompas Boutique Hotel",
+    "agentmail_response": {
+      "message_id": "<010001a01222673e-76390e0c-083e-4ed7-a5e5-de30c89b98e5-000000@email.amazonses.com>",
+      "thread_id": "222848a1-c7f6-4f11-b56a-ea78cea52849"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:50:42.299661+00:00",
+    "sequence": "corporate",
+    "step": "touch1",
+    "mailbox_tag": "corporate-campaign",
+    "sender_display": "Stephen | JHB Commercial Textile Care",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Sandton City Office Towers",
+    "location": "Sandton CBD",
+    "subject": "After-hours curtain & blind maintenance for Sandton City Office Towers",
+    "agentmail_response": {
+      "message_id": "<010001a012226f0f-3e58054d-7d0e-4d7d-b32a-d11a3c5c6a72-000000@email.amazonses.com>",
+      "thread_id": "a19bddc8-afe2-41f3-94ed-91f235b473e9"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:50:44.502915+00:00",
+    "sequence": "corporate",
+    "step": "touch1",
+    "mailbox_tag": "corporate-campaign",
+    "sender_display": "Stephen | JHB Commercial Textile Care",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Discovery Place Commercial Suites",
+    "location": "Sandton",
+    "subject": "After-hours curtain & blind maintenance for Discovery Place Commercial Suites",
+    "agentmail_response": {
+      "message_id": "<010001a0122277c9-d559335a-492b-401b-8f39-7835e1c8b98c-000000@email.amazonses.com>",
+      "thread_id": "35ee6b94-37e7-4dd9-9936-8a50473e3f19"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:50:46.858248+00:00",
+    "sequence": "designer",
+    "step": "touch1",
+    "mailbox_tag": "designer-trade-campaign",
+    "sender_display": "Stephen | JHB Luxury Textile Care",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Hyde Park Luxury Decor Studio",
+    "location": "Hyde Park",
+    "subject": "Specialist textile care partnership for Hyde Park Luxury Decor Studio",
+    "agentmail_response": {
+      "message_id": "<010001a0122280ab-613695ca-1da4-441e-8644-14f59b605518-000000@email.amazonses.com>",
+      "thread_id": "44236737-3dd5-4d97-8c49-063d156321c9"
+    }
+  },
+  {
+    "timestamp": "2026-08-17T23:50:48.568357+00:00",
+    "sequence": "designer",
+    "step": "touch1",
+    "mailbox_tag": "designer-trade-campaign",
+    "sender_display": "Stephen | JHB Luxury Textile Care",
+    "recipient": "info@jhbcurtaincleaning.co.za",
+    "company": "Dainfern Golf Estate Residences",
+    "location": "Fourways",
+    "subject": "Specialist textile care partnership for Dainfern Golf Estate Residences",
+    "agentmail_response": {
+      "message_id": "<010001a01222879c-9a152e98-60b7-48ee-8531-95dd69181c5f-000000@email.amazonses.com>",
+      "thread_id": "5c53f48d-daac-424e-be4d-52017ee6112d"
+    }
   }
 ]

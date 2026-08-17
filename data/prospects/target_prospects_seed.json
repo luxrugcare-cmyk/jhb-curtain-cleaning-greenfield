@@ -1,0 +1,44 @@
+[
+  {
+    "sequence": "hotel",
+    "email": "info@jhbcurtaincleaning.co.za",
+    "first_name": "General Manager",
+    "company": "The Saxon Hotel, Villas & Spa",
+    "location": "Sandhurst, Sandton"
+  },
+  {
+    "sequence": "hotel",
+    "email": "info@jhbcurtaincleaning.co.za",
+    "first_name": "Executive Housekeeper",
+    "company": "Ten Bompas Boutique Hotel",
+    "location": "Dunkeld West, Rosebank"
+  },
+  {
+    "sequence": "corporate",
+    "email": "info@jhbcurtaincleaning.co.za",
+    "first_name": "Facilities Director",
+    "company": "Sandton City Office Towers",
+    "location": "Sandton CBD"
+  },
+  {
+    "sequence": "corporate",
+    "email": "info@jhbcurtaincleaning.co.za",
+    "first_name": "Operations Manager",
+    "company": "Discovery Place Commercial Suites",
+    "location": "Sandton"
+  },
+  {
+    "sequence": "designer",
+    "email": "info@jhbcurtaincleaning.co.za",
+    "first_name": "Principal Designer",
+    "company": "Hyde Park Luxury Decor Studio",
+    "location": "Hyde Park"
+  },
+  {
+    "sequence": "designer",
+    "email": "info@jhbcurtaincleaning.co.za",
+    "first_name": "Estate Manager",
+    "company": "Dainfern Golf Estate Residences",
+    "location": "Fourways"
+  }
+]
