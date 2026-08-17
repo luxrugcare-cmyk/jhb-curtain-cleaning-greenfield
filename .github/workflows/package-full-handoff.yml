@@ -1,0 +1,72 @@
+name: Full Project Handoff Package
+
+on:
+  push:
+    branches:
+      - delivery/full-project-2026-08-17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build sanitized handoff package
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="JHB-Curtain-Cleaning-Full-Handoff-2026-08-17"
+          mkdir -p "dist/$ROOT/project"
+
+          rsync -a ./ "dist/$ROOT/project/" \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --exclude='.next/' \
+            --exclude='dist/' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='*.pem' \
+            --exclude='*.key' \
+            --exclude='credentials.json' \
+            --exclude='token.json'
+
+          git bundle create "dist/$ROOT/repository-history.bundle" --all
+
+          {
+            echo "JHB Curtain Cleaning — Full Project Handoff"
+            echo "Generated UTC: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "Repository: $GITHUB_REPOSITORY"
+            echo "Packaging branch: $GITHUB_REF_NAME"
+            echo "Packaging SHA: $GITHUB_SHA"
+            echo "Production baseline referenced by handoff: 04247efb9bf52afa4b8d3c2bcc4e752e20df19b7"
+            echo
+            echo "Contents:"
+            echo "- project/ : complete tracked source tree and committed assets/docs"
+            echo "- repository-history.bundle : full Git history and refs"
+            echo "- SHA256SUMS.txt : integrity hashes"
+            echo
+            echo "Security: live secrets, cookies, local environment files, private keys, and OAuth token caches are intentionally excluded."
+          } > "dist/$ROOT/PACKAGE-MANIFEST.txt"
+
+          (
+            cd "dist/$ROOT"
+            find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          )
+
+          cd dist
+          zip -r -9 "$ROOT.zip" "$ROOT"
+
+      - name: Upload handoff archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: JHB-Curtain-Cleaning-Full-Handoff-2026-08-17
+          path: dist/JHB-Curtain-Cleaning-Full-Handoff-2026-08-17.zip
+          if-no-files-found: error
+          retention-days: 30
