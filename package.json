@@ -19,6 +19,7 @@
     "@sanity/client": "^7.26.2",
     "@vercel/blob": "^2.6.1",
     "next": "latest",
+    "next-sanity": "^13.3.3",
     "react": "latest",
     "react-dom": "latest",
     "styled-components": "^6.1.15"

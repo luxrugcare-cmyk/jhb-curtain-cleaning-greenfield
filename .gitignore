@@ -18,3 +18,5 @@ credentials/
 *service-account*.json
 .DS_Store
 npm-debug.log*
+.sanity/
+dist/
