@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { TrackedContactLink } from "@/components/analytics/TrackedContactLink";
+import { whatsappLink } from "@/integrations/whatsapp/link";
+import { siteConfig } from "@/lib/site-config";
 
 export function WhyNoPrices() {
   return (
@@ -20,7 +22,7 @@ export function WhyNoPrices() {
           Publishing a price without seeing your curtains would mean either overcharging you or cutting corners — and we&rsquo;re not willing to do either.
         </p>
         <p>
-          Instead, we offer a completely free, no-obligation on-site assessment. <strong>Kathy personally visits</strong>, evaluates everything properly, and provides a detailed written quote you can trust.
+          Instead, we offer a completely free, no-obligation on-site assessment. <strong>Stephen personally visits</strong>, evaluates everything properly, and provides a detailed written quote you can trust.
         </p>
         <p>
           Most clients are genuinely surprised by how affordable professional on-site cleaning is compared to replacement or conventional services.
@@ -29,13 +31,26 @@ export function WhyNoPrices() {
         {/* Free Assessment Action Box */}
         <div className="assessment-action-box">
           <div className="assessment-details">
-            <span className="badge-highlight">Free · No obligation · Kathy visits within 48 hours</span>
+            <span className="badge-highlight">Free · No obligation · Stephen visits within 48 hours</span>
             <div className="assessment-contacts">
-              <p><strong>Direct Booking & Inquiries:</strong></p>
+              <p><strong>Direct Booking &amp; Quotes (Stephen):</strong></p>
               <ul>
-                <li>Main Line: <TrackedContactLink event="call_click" placement="pricing_guide" href="tel:+27750119200">+27 75 011 9200</TrackedContactLink></li>
-                <li>Kathy: <TrackedContactLink event="call_click" placement="pricing_guide" href="tel:0716226753">071 622 6753</TrackedContactLink></li>
-                <li>Office: <TrackedContactLink event="call_click" placement="pricing_guide" href="tel:0615222037">061 522 2037</TrackedContactLink></li>
+                <li>
+                  Call:{" "}
+                  <TrackedContactLink event="call_click" placement="pricing_guide" href={`tel:${siteConfig.phoneE164}`}>
+                    {siteConfig.phoneDisplay}
+                  </TrackedContactLink>
+                </li>
+                <li>
+                  WhatsApp:{" "}
+                  <TrackedContactLink
+                    event="whatsapp_click"
+                    placement="pricing_guide"
+                    href={whatsappLink("Hi Stephen, I'd like to book a free on-site curtain evaluation.")}
+                  >
+                    {siteConfig.whatsappDisplay}
+                  </TrackedContactLink>
+                </li>
               </ul>
             </div>
           </div>
@@ -82,7 +97,7 @@ export function WhyNoPrices() {
         <div className="section-heading">
           <p className="eyebrow">The On-Site Standard</p>
           <h2>What You Get Instead of a Price List</h2>
-          <p>When Kathy visits for your free assessment, you&rsquo;ll receive:</p>
+          <p>When Stephen visits for your free assessment, you&rsquo;ll receive:</p>
         </div>
         <div className="value-grid">
           <article className="value-card">
@@ -93,7 +108,7 @@ export function WhyNoPrices() {
           <article className="value-card">
             <span className="value-icon" role="img" aria-label="Honest Assessment">✅</span>
             <h3>Honest Assessment</h3>
-            <p>If something doesn’t need cleaning, Kathy will tell you. No upselling.</p>
+            <p>If something doesn’t need cleaning, Stephen will tell you. No upselling.</p>
           </article>
           <article className="value-card">
             <span className="value-icon" role="img" aria-label="Flexible Scheduling">⏱️</span>

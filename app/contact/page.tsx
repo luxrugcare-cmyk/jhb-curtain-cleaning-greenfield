@@ -9,7 +9,7 @@ import { TrackedContactLink } from "@/components/analytics/TrackedContactLink";
 export const metadata: Metadata = {
   title: "Contact JHB Curtain Cleaning | Direct Numbers & Assessment Booking",
   description:
-    "Contact JHB Curtain Cleaning. Call Kathy directly on 071 622 6753, the main line on +27 75 011 9200, or book a free on-site evaluation via WhatsApp.",
+    "Contact JHB Curtain Cleaning. Call or WhatsApp Stephen directly on +27 75 011 9200, or book a free on-site evaluation.",
   alternates: { canonical: "/contact" },
 };
 
@@ -19,28 +19,28 @@ export default function Contact() {
       <Hero
         eyebrow="Contact & Booking"
         title="Direct contact. Free on-site assessment."
-        body="Whether you need a quick quote from photos, a comprehensive on-site visit from Kathy, or a commercial facilities evaluation, choose the fastest route below."
+        body="Whether you need a quick quote from photos, a comprehensive on-site visit from Stephen, or a commercial facilities evaluation, choose the fastest route below."
         imageSrc="/brand/stitch/curtain-cleaning-hero.png"
         imageAlt="Contact JHB Curtain Cleaning Johannesburg"
-        cardTitle="Kathy Visits Within 48 Hours"
+        cardTitle="Stephen Visits Within 48 Hours"
         cardSubtitle="Free · No Obligation Assessment"
       />
 
       <section className="section">
         <div className="shell">
           <div className="section-heading">
-            <p className="eyebrow">Direct Contact Numbers</p>
-            <h2>Speak to our team immediately.</h2>
+            <p className="eyebrow">Direct Contact (Stephen)</p>
+            <h2>Speak to Stephen immediately.</h2>
             <p>
-              We provide fast phone consultations, photo quotes via WhatsApp, and on-site assessments across Johannesburg and surrounds.
+              We provide fast phone consultations, photo quotes via WhatsApp, and on-site assessments across Johannesburg and Gauteng.
             </p>
           </div>
 
-          <div className="factors-grid">
+          <div className="factors-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
             <article className="factor-card">
-              <span className="factor-icon" role="img" aria-label="Main Phone">📞</span>
-              <h3>Main Office Line</h3>
-              <p>For general enquiries, quotes, and area scheduling.</p>
+              <span className="factor-icon" role="img" aria-label="Direct Phone">📞</span>
+              <h3>Phone Call (Stephen)</h3>
+              <p>Direct contact for bookings, pricing philosophy, and scheduling.</p>
               <p>
                 <TrackedContactLink
                   event="call_click"
@@ -48,56 +48,35 @@ export default function Contact() {
                   className="card-link"
                   href={`tel:${siteConfig.phoneE164}`}
                 >
-                  {siteConfig.phoneDisplay} →
-                </TrackedContactLink>
-              </p>
-            </article>
-
-            <article className="factor-card">
-              <span className="factor-icon" role="img" aria-label="Kathy Direct">👩‍💼</span>
-              <h3>Kathy (Evaluations)</h3>
-              <p>Direct contact for on-site assessment booking and fabric advice.</p>
-              <p>
-                <TrackedContactLink
-                  event="call_click"
-                  placement="contact_kathy"
-                  className="card-link"
-                  href={`tel:${siteConfig.kathyPhoneE164}`}
-                >
-                  {siteConfig.kathyPhoneDisplay} →
-                </TrackedContactLink>
-              </p>
-            </article>
-
-            <article className="factor-card">
-              <span className="factor-icon" role="img" aria-label="Office Support">🏢</span>
-              <h3>Operations &amp; Billing</h3>
-              <p>For accounts, supplier queries, and commercial procurement.</p>
-              <p>
-                <TrackedContactLink
-                  event="call_click"
-                  placement="contact_office"
-                  className="card-link"
-                  href={`tel:${siteConfig.officePhoneE164}`}
-                >
-                  {siteConfig.officePhoneDisplay} →
+                  Call {siteConfig.phoneDisplay} →
                 </TrackedContactLink>
               </p>
             </article>
 
             <article className="factor-card">
               <span className="factor-icon" role="img" aria-label="WhatsApp Instant">💬</span>
-              <h3>WhatsApp Chat</h3>
+              <h3>WhatsApp Chat (Stephen)</h3>
               <p>Send photos of your curtains or drapes for a rapid estimate.</p>
               <p>
                 <TrackedContactLink
                   event="whatsapp_click"
                   placement="contact_page"
                   className="card-link"
-                  href={whatsappLink("Hi, I'd like to send photos of my curtains for a quote.")}
+                  href={whatsappLink("Hi Stephen, I'd like to send photos of my curtains for a quote.")}
                 >
-                  Chat on WhatsApp →
+                  WhatsApp {siteConfig.whatsappDisplay} →
                 </TrackedContactLink>
+              </p>
+            </article>
+
+            <article className="factor-card">
+              <span className="factor-icon" role="img" aria-label="Email Enquiry">✉️</span>
+              <h3>Email Enquiry</h3>
+              <p>For detailed scope specifications, billing, and formal tender requests.</p>
+              <p>
+                <a className="card-link" href={`mailto:${siteConfig.email}`}>
+                  {siteConfig.email} →
+                </a>
               </p>
             </article>
           </div>

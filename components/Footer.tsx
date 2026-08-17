@@ -55,22 +55,16 @@ export function Footer() {
           <Link href="/advice/curtain-cleaning-prices">Why No Prices Online</Link>
         </div>
         <div>
-          <h3>Direct Contact</h3>
+          <h3>Direct Contact (Stephen)</h3>
           <TrackedContactLink event="call_click" placement="footer" href={`tel:${siteConfig.phoneE164}`}>
-            Main: {siteConfig.phoneDisplay}
-          </TrackedContactLink>
-          <TrackedContactLink event="call_click" placement="footer_kathy" href={`tel:${siteConfig.kathyPhoneE164}`}>
-            Kathy: {siteConfig.kathyPhoneDisplay}
-          </TrackedContactLink>
-          <TrackedContactLink event="call_click" placement="footer_office" href={`tel:${siteConfig.officePhoneE164}`}>
-            Office: {siteConfig.officePhoneDisplay}
+            Call: {siteConfig.phoneDisplay}
           </TrackedContactLink>
           <TrackedContactLink
             event="whatsapp_click"
             placement="footer"
-            href={whatsappLink("Hi, I'd like to book an on-site curtain evaluation with Kathy.")}
+            href={whatsappLink("Hi Stephen, I'd like to book an on-site curtain evaluation.")}
           >
-            WhatsApp Booking
+            WhatsApp: {siteConfig.whatsappDisplay}
           </TrackedContactLink>
           <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
           <Link href="/quote" className="card-link">

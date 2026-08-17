@@ -14,7 +14,7 @@ import { serviceIntent } from "@/lib/growth/service-intent";
 const serviceGuides: Record<string, Array<{ href: string; title: string; body: string }>> = {
   "curtain-cleaning": [
     { href: "/advice/how-on-site-curtain-cleaning-works", title: "How on-site curtain cleaning works", body: "Understand assessment, suitability, treatment decisions and the in-place cleaning sequence." },
-    { href: "/advice/curtain-cleaning-prices", title: "Why we don't publish prices online", body: "Understand why Kathy provides free, no-obligation on-site evaluations instead of one-size-fits-all estimates." },
+    { href: "/advice/curtain-cleaning-prices", title: "Why we don't publish prices online", body: "Understand why Stephen provides free, no-obligation on-site evaluations instead of one-size-fits-all estimates." },
     { href: "/advice/can-curtains-be-cleaned-without-taking-them-down", title: "Cleaning without taking curtains down", body: "Learn when in-place curtain cleaning is suitable and when another route may be safer." },
   ],
   "blind-cleaning": [{ href: "/advice/blind-cleaning-guide", title: "Blind cleaning guide", body: "Compare material, mechanism and access considerations for fitted blinds." }],

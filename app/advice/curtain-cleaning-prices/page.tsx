@@ -9,7 +9,7 @@ import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
 const path = "/advice/curtain-cleaning-prices";
 const title = "Why We Don't Publish Prices Online | JHB Curtain Cleaning";
 const description =
-  "Discover why one size fits all doesn't work for curtain cleaning. Free, no-obligation on-site assessments in Johannesburg by Kathy with detailed written quotes.";
+  "Discover why one size fits all doesn't work for curtain cleaning. Free, no-obligation on-site assessments in Johannesburg by Stephen with detailed written quotes.";
 const published = "2026-08-14";
 
 export const metadata: Metadata = {
@@ -43,7 +43,7 @@ export default function CurtainCleaningPricesGuide() {
         imageSrc="/brand/stitch/curtain-cleaning-hero.png"
         imageAlt="Professional on-site curtain assessment in Johannesburg"
         cardTitle="Free On-Site Assessment"
-        cardSubtitle="Kathy visits within 48 hours"
+        cardSubtitle="Stephen visits within 48 hours"
       />
 
       <section className="section">
@@ -58,7 +58,7 @@ export default function CurtainCleaningPricesGuide() {
             <p className="eyebrow">Related Guidance</p>
             <h2>Understand the on-site cleaning method.</h2>
             <p>
-              Learn more about how Kathy evaluates your fabric and how our on-site cleaning sequence works without removing your curtains.
+              Learn more about how Stephen evaluates your fabric and how our on-site cleaning sequence works without removing your curtains.
             </p>
             <p>
               <Link href="/advice/how-on-site-curtain-cleaning-works">
