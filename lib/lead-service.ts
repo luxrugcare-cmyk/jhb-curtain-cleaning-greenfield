@@ -4,6 +4,7 @@ import { dispatchAgentMailLeadNotification } from "@/integrations/agentmail/clie
 import { archiveFailedLead } from "@/integrations/recovery/archive";
 import { dispatchLeadAutomation } from "@/integrations/n8n/client";
 import { metaCapi } from "@/lib/meta-capi";
+import { automationTriggers } from "@/lib/automation-triggers";
 import { LeadProcessingError, LeadValidationError } from "@/lib/errors";
 import type { LeadPayload } from "@/types/lead";
 
@@ -62,6 +63,24 @@ export async function acceptLead(raw: LeadPayload, dependencies: LeadDependencie
       ? dependencies.dispatchAgentMailLeadNotification(payload)
       : Promise.resolve({ ok: true, mode: "disabled" }),
   ]);
+
+  // Execute Automated Lifecycle Trigger Responses
+  try {
+    if (payload.sector?.includes("Trade Partner")) {
+      await automationTriggers.handleTradePartnerWelcome({
+        name: payload.name,
+        studioName: payload.organisation || "Trade Studio",
+        email: payload.email || "",
+        mobile: payload.mobile,
+      });
+    } else if (payload.kind === "commercial") {
+      await automationTriggers.handleCommercialProtocol(payload);
+    } else {
+      await automationTriggers.handleResidentialWelcome(payload);
+    }
+  } catch (err) {
+    console.error("Lifecycle automation trigger non-blocking error:", err);
+  }
 
   // Server-side Meta Conversions API (CAPI) event dispatch (Facebook & Instagram Ads)
   try {

@@ -12,7 +12,8 @@
     "test:crawl": "node scripts/test-full-crawler.mjs",
     "test:agentmail": "tsx scripts/test-agentmail.ts",
     "test:meta": "tsx scripts/test-meta-integrations.ts",
-    "test:all": "npm run audit:imports && npm run typecheck && npm run test:resilience && npm run test:agentmail && npm run test:meta",
+    "test:triggers": "tsx scripts/test-automation-triggers.ts",
+    "test:all": "npm run audit:imports && npm run typecheck && npm run test:resilience && npm run test:agentmail && npm run test:meta && npm run test:triggers",
     "sanity:dev": "sanity dev",
     "sanity:deploy": "sanity deploy"
   },
