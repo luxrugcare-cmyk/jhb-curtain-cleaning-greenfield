@@ -26,6 +26,48 @@ export function Footer() {
           <p>
             Premium on-site curtain, blind, upholstery, carpet, mattress and delicate rug care for luxury residences, hotels, corporate suites and healthcare facilities across Johannesburg and Gauteng.
           </p>
+          <div style={{ marginTop: "16px", display: "flex", gap: "10px", alignItems: "center" }}>
+            <a
+              href={siteConfig.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                background: "rgba(226, 190, 88, 0.1)",
+                border: "1px solid rgba(226, 190, 88, 0.3)",
+                borderRadius: "4px",
+                color: "#e2be58",
+                fontSize: "12px",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              <span>📷 Instagram (@curtaincleaningjhb)</span>
+            </a>
+            <a
+              href={siteConfig.social.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                borderRadius: "4px",
+                color: "#d4d4d4",
+                fontSize: "12px",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              <span>👍 Facebook Page</span>
+            </a>
+          </div>
         </div>
         <div>
           <h3>Services</h3>
@@ -52,7 +94,7 @@ export function Footer() {
               {a}
             </Link>
           ))}
-          <Link href="/advice/curtain-cleaning-prices">Why No Prices Online</Link>
+          <Link href="/trade">10% Trade Partner Hub</Link>
         </div>
         <div>
           <h3>Direct Contact (Stephen)</h3>
@@ -74,7 +116,7 @@ export function Footer() {
       </div>
       <div className="shell footer-bottom">
         <span>© 2026 JHB Curtain Cleaning. All rights reserved.</span>
-        <span>POPIA Section 69 Compliant · Certified On-Site Textile Care</span>
+        <span>Meta Business ID: {siteConfig.social.metaBusinessId} · POPIA Section 69 Compliant</span>
       </div>
     </footer>
   );

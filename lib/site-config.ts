@@ -24,6 +24,12 @@ export const siteConfig = {
   whatsappE164: "27750119200",
   email: "info@jhbcurtaincleaning.co.za",
   agentInbox: "stephen-1015@agentmail.to",
+  social: {
+    instagram: "https://www.instagram.com/curtaincleaningjhb/",
+    facebook: "https://www.facebook.com/profile.php?id=61583188967013",
+    metaBusinessId: "1164022258518231",
+    metaAssetId: "867076983156221",
+  },
   areaServed: [
     "Johannesburg",
     "Sandton",

@@ -10,6 +10,10 @@ export function localBusinessJsonLd() {
     email: siteConfig.email,
     logo: `${siteConfig.url}/brand/stitch/elite-logo.png`,
     image: `${siteConfig.url}/brand/stitch/curtain-cleaning-hero.png`,
+    sameAs: [
+      siteConfig.social.instagram,
+      siteConfig.social.facebook,
+    ],
     priceRange: "Assessment-based custom quotation",
     areaServed: siteConfig.areaServed.map((name) => ({ "@type": "AdministrativeArea", name })),
     description: siteConfig.description,
@@ -59,55 +63,39 @@ export function articleJsonLd({
   headline,
   description,
   path,
-  datePublished,
-  dateModified = datePublished,
+  datePublished = "2026-08-17T00:00:00Z",
+  dateModified = "2026-08-18T00:00:00Z",
 }: {
   headline: string;
   description: string;
   path: string;
-  datePublished: string;
+  datePublished?: string;
   dateModified?: string;
 }) {
-  const url = new URL(path, siteConfig.url).toString();
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline,
     description,
-    datePublished,
-    dateModified,
-    mainEntityOfPage: url,
-    url,
-    image: `${siteConfig.url}/brand/stitch/curtain-cleaning-hero.png`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": new URL(path, siteConfig.url).toString(),
+    },
     author: {
-      "@type": "Organization",
-      name: siteConfig.name,
-      url: siteConfig.url,
+      "@type": "Person",
+      name: siteConfig.contactPerson,
+      jobTitle: "Textile Restoration Specialist",
     },
     publisher: {
       "@type": "Organization",
       name: siteConfig.name,
-      url: siteConfig.url,
       logo: {
         "@type": "ImageObject",
         url: `${siteConfig.url}/brand/stitch/elite-logo.png`,
       },
     },
-  };
-}
-
-export function faqJsonLd(items: Array<{ question: string; answer: string }>) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: items.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
+    datePublished,
+    dateModified,
   };
 }
 
@@ -120,6 +108,21 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
       position: index + 1,
       name: item.name,
       item: new URL(item.path, siteConfig.url).toString(),
+    })),
+  };
+}
+
+export function faqJsonLd(faqs: Array<{ question: string; answer: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
     })),
   };
 }

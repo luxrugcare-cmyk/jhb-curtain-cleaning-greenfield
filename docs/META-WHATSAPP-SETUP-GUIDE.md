@@ -7,24 +7,16 @@
 
 ---
 
-## 1. Executive Summary
+## 1. Verified Meta Business Assets
 
-This architecture connects **Meta's Advertising Ecosystem (Facebook & Instagram Ads)** directly to **WhatsApp Business Cloud API** and our **Server-Side Conversions API (CAPI)**.
-
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        META & WHATSAPP UNIFIED LEAD FUNNEL                             │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-           ┌────────────────────────────────┴────────────────────────────────┐
-           │                                                                 │
-           ▼                                                                 ▼
-[FACEBOOK & INSTAGRAM ADS]                                        [WHATSAPP CLOUD API]
-• Click-to-WhatsApp (CTWA) Direct Ads                             • Number: +27 75 011 9200
-• Meta Pixel + Server-Side CAPI Tracking                          • Incoming Webhook: /api/webhooks/whatsapp
-• SHA-256 Hashed Customer Signals                                • Instant Interactive Greeting & Triage
-• Automatic Conversion Attribution                                • Immediate AgentMail Lead Notification
-```
+| Asset Name | Asset Type | ID / URL |
+|---|---|---|
+| **Meta Business Account** | Business Manager | `1164022258518231` |
+| **Meta Business Asset / Page** | Facebook Page Asset | `867076983156221` |
+| **Instagram Account** | Instagram Professional | `https://www.instagram.com/curtaincleaningjhb/` (`@curtaincleaningjhb`) |
+| **Facebook Page** | Facebook Public Profile | `https://www.facebook.com/profile.php?id=61583188967013` |
+| **WhatsApp Business Number** | WhatsApp Cloud Phone | `+27 75 011 9200` (`27750119200`) |
+| **Meta Business Suite URL** | Business Suite Dashboard | `https://business.facebook.com/latest/home?business_id=1164022258518231&asset_id=867076983156221` |
 
 ---
 
@@ -58,8 +50,8 @@ WHATSAPP_API_VERSION="v21.0"
 Server-side Conversions API bypasses iOS ad blockers and cookie restrictions by sending conversion events directly from our Next.js backend to Meta's servers.
 
 ### Step A: Generate System Access Token in Meta Events Manager
-1. Go to **[Meta Events Manager](https://business.facebook.com/events_manager2/)**.
-2. Select your Dataset / Pixel ID.
+1. Go to **[Meta Events Manager](https://business.facebook.com/events_manager2/)** (Under Business Account `1164022258518231`).
+2. Select your Dataset / Pixel ID (associated with Asset `867076983156221`).
 3. Go to **Settings** → Scroll to **Conversions API** → Click **Generate access token**.
 4. Copy the permanent access token.
 
@@ -82,14 +74,15 @@ All user identifiers (`email`, `phone`, `first_name`, `last_name`, `city`) are a
 To maximize conversion rate from Facebook & Instagram:
 
 1. **Campaign Objective:** Choose **Leads** or **Engagement** with conversion location set to **Messaging apps (WhatsApp)**.
-2. **Targeting:**
+2. **Connected Accounts:** Ensure Facebook Page (`61583188967013`) and Instagram (`@curtaincleaningjhb`) are linked to WhatsApp Business number `+27 75 011 9200` in Business Suite.
+3. **Targeting:**
    - Location: Sandton, Rosebank, Bryanston, Hyde Park, Fourways, Pretoria East (+15km radius).
    - High-Net-Worth Interests: Interior Design, Luxury Real Estate, Home Improvement, Architecture.
-3. **Ad Creative:**
+4. **Ad Creative:**
    - Use our Google Stitch metallic photo assets (`/brand/stitch/curtain-cleaning-hero.png`).
    - Headline: *Johannesburg's Specialist On-Site Curtain Cleaning (Zero Shrinkage).*
    - Call to Action: *Send WhatsApp Message*.
-4. **Pre-filled WhatsApp Message:**
+5. **Pre-filled WhatsApp Message:**
    - `"Hi Stephen, I saw your ad on Instagram. I'd like an on-site curtain cleaning estimate for my home/business."`
 
 ---
