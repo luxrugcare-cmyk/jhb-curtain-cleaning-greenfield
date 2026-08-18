@@ -1,4 +1,4 @@
-import { services, sectors, areas } from "@/lib/site-data";
+import { services, sectors, areas, verifiedCaseStudies } from "@/lib/site-data";
 import { sanityFetch } from "./client";
 
 export type PublishedCaseStudy = {
@@ -29,7 +29,7 @@ export async function getSector(slug:string){ return await sanityFetch<any>(`*[_
 export async function getArea(slug:string){ const live=await sanityFetch<any>(`*[_type=="area"&&slug.current==$slug][0]{title,"slug":slug.current,summary,seo}`,{slug}); if(live)return live; const title=areas.find(x=>x.toLowerCase().replaceAll(" ","-")===slug); return title?{title,slug,summary:`On-site textile care in ${title}.`}:null; }
 
 export async function getPublishedCaseStudies(): Promise<PublishedCaseStudy[]> {
-  return await sanityFetch<PublishedCaseStudy[]>(
+  const live = await sanityFetch<PublishedCaseStudy[]>(
     `*[_type == "caseStudy" && publicationStatus == "published" && publicationApproved == true] | order(coalesce(publishedAt, _createdAt) desc) {
       title,
       "slug": slug.current,
@@ -47,5 +47,7 @@ export async function getPublishedCaseStudies(): Promise<PublishedCaseStudy[]> {
       publishedAt,
       updatedAt
     }`,
-  ) || [];
+  );
+  if (live && live.length > 0) return live;
+  return [...verifiedCaseStudies];
 }
