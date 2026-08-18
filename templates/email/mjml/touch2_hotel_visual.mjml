@@ -1,0 +1,84 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-title>Hotel Drapery Care: Zero Room Downtime for {Company}</mj-title>
+    <mj-preview>Clean 20+ guest suites in-situ with zero room closures. Inspected on tracks.</mj-preview>
+    <mj-font name="Playfair Display" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" />
+    <mj-attributes>
+      <mj-all font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" />
+      <mj-text font-size="14px" line-height="22px" color="#c5c5c5" />
+      <mj-section background-color="#141414" padding="20px" />
+      <mj-button background-color="#c99c2d" color="#121212" font-size="14px" font-weight="700" border-radius="4px" padding="12px 24px" />
+    </mj-attributes>
+    <mj-style inline="inline">
+      .gold-text { color: #e2be58 !important; }
+      .box-card { background-color: #121212; border: 1px solid #333333; border-radius: 6px; padding: 16px; margin: 12px 0; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#0a0a0a" width="600px">
+    
+    <!-- Header -->
+    <mj-section padding="24px 20px 16px 20px" background-color="#141414">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="18px" font-weight="700" color="#fdf6df" letter-spacing="1.5px">
+          JHB CURTAIN CLEANING
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9e7514" letter-spacing="2px" padding-top="2px">
+          HOTEL &amp; HOSPITALITY TEXTILE OPERATIONS
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Hero Card -->
+    <mj-section background-color="#1a1a1a" padding="30px 24px">
+      <mj-column width="100%">
+        <mj-text font-size="12px" font-weight="700" color="#e2be58" letter-spacing="1px" padding-bottom="6px">
+          CASE EVIDENCE · SANDTON CBD
+        </mj-text>
+        <mj-text font-family="'Playfair Display', Georgia, serif" font-size="22px" font-weight="700" color="#ffffff" line-height="28px" padding-bottom="12px">
+          How The Leonardo Refreshed 24 Guest Suites With Zero Room Closures
+        </mj-text>
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-bottom="12px">
+          Hi {FirstName},<br/><br/>
+          Taking hotel curtains down for off-site dry cleaning risks fabric shrinkage, unhooking damage, and costs between <strong>R1,800 to R3,500 per suite</strong> in lost room revenue per night.
+        </mj-text>
+        
+        <mj-text padding="0">
+          <div class="box-card">
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ In-Situ Low Moisture Treatment</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Curtains cleaned directly hanging on motorized and ceiling tracks. Zero dismantling.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ 10:00 – 14:00 Checkout Window</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Suites dried and returned to revenue inventory the same afternoon.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ SANS 1423 Flame Retardant Preservation</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px;">Preserves backing coatings and manufacturer fire compliance ratings.</div>
+          </div>
+        </mj-text>
+
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-top="16px" padding-bottom="20px">
+          We would like to offer <strong>{Company}</strong> a complimentary 10-minute trial clean on a single vacant room during your morning turnover window.
+        </mj-text>
+
+        <mj-button href="https://wa.me/27750119200?text=Hi%20Stephen,%20let%27s%20schedule%20a%20hotel%20trial%20room%20clean" background-color="#c99c2d">
+          Book a 10-Minute Trial Room Clean
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section background-color="#141414" padding="24px 20px">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="12px" color="#737373" line-height="18px">
+          Stephen · Specialist Textile Care &amp; Operations<br/>
+          Direct Phone &amp; WhatsApp: +27 75 011 9200<br/>
+          JHB Curtain Cleaning · Sandton &amp; Greater Johannesburg
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#525252" padding-top="12px">
+          POPIA Compliant B2B Hospitality Communications.<br/>
+          To stop receiving hotel textile updates, reply "opt out".
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

@@ -1,0 +1,84 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-title>Corporate Boardroom &amp; Facilities Drape Care for {Company}</mj-title>
+    <mj-preview>After-hours deep extraction &amp; SANS 1423 flame retardant compliance.</mj-preview>
+    <mj-font name="Playfair Display" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" />
+    <mj-attributes>
+      <mj-all font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" />
+      <mj-text font-size="14px" line-height="22px" color="#c5c5c5" />
+      <mj-section background-color="#141414" padding="20px" />
+      <mj-button background-color="#c99c2d" color="#121212" font-size="14px" font-weight="700" border-radius="4px" padding="12px 24px" />
+    </mj-attributes>
+    <mj-style inline="inline">
+      .gold-text { color: #e2be58 !important; }
+      .box-card { background-color: #121212; border: 1px solid #333333; border-radius: 6px; padding: 16px; margin: 12px 0; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#0a0a0a" width="600px">
+    
+    <!-- Header -->
+    <mj-section padding="24px 20px 16px 20px" background-color="#141414">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="18px" font-weight="700" color="#fdf6df" letter-spacing="1.5px">
+          JHB CURTAIN CLEANING
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9e7514" letter-spacing="2px" padding-top="2px">
+          COMMERCIAL FACILITIES &amp; CORPORATE TEXTILE CARE
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Card -->
+    <mj-section background-color="#1a1a1a" padding="30px 24px">
+      <mj-column width="100%">
+        <mj-text font-size="12px" font-weight="700" color="#e2be58" letter-spacing="1px" padding-bottom="6px">
+          EXECUTIVE FACILITIES PROTOCOL
+        </mj-text>
+        <mj-text font-family="'Playfair Display', Georgia, serif" font-size="22px" font-weight="700" color="#ffffff" line-height="28px" padding-bottom="12px">
+          Boardroom Acoustic Drapes &amp; Roller Blinds Deep-Cleaned After-Hours
+        </mj-text>
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-bottom="12px">
+          Hi {FirstName},<br/><br/>
+          Maintaining high indoor air quality and immaculate boardroom acoustics shouldn't disrupt your daily office operations. We service commercial towers across Sandton, Rosebank, and Waterfall City on dedicated after-hours and weekend schedules.
+        </mj-text>
+        
+        <mj-text padding="0">
+          <div class="box-card">
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Zero Workplace Interruption</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Executed between 18:00–22:00 or weekends. Meeting spaces 100% ready for 08:00 meetings.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ SANS 1423 &amp; POPIA Compliance</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Full certificate of hygiene and flame-retardant compliance issued for insurance records.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Multi-Textile Commercial Coverage</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px;">Curtains, acoustic wall fabric panels, fitted roller blinds, and executive seating.</div>
+          </div>
+        </mj-text>
+
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-top="16px" padding-bottom="20px">
+          Would you like a line-item rate card and standard maintenance scope for {Company}?
+        </mj-text>
+
+        <mj-button href="https://wa.me/27750119200?text=Hi%20Stephen,%20please%20send%20commercial%20facilities%20rate%20card" background-color="#c99c2d">
+          Request Commercial Rate Card
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section background-color="#141414" padding="24px 20px">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="12px" color="#737373" line-height="18px">
+          Stephen · Commercial Facilities Lead<br/>
+          Direct Phone &amp; WhatsApp: +27 75 011 9200<br/>
+          JHB Curtain Cleaning · Sandton, Rosebank &amp; Greater Johannesburg
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#525252" padding-top="12px">
+          POPIA Compliant Commercial Operations.<br/>
+          To stop receiving commercial facility updates, reply "opt out".
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

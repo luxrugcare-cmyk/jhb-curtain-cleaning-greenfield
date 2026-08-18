@@ -1,0 +1,84 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-title>Bespoke Drapery Care &amp; Trade Partner Specifications for {Company}</mj-title>
+    <mj-preview>Double-volume 5m+ drops, interlined silks &amp; velvet pile care on-site.</mj-preview>
+    <mj-font name="Playfair Display" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" />
+    <mj-attributes>
+      <mj-all font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" />
+      <mj-text font-size="14px" line-height="22px" color="#c5c5c5" />
+      <mj-section background-color="#141414" padding="20px" />
+      <mj-button background-color="#c99c2d" color="#121212" font-size="14px" font-weight="700" border-radius="4px" padding="12px 24px" />
+    </mj-attributes>
+    <mj-style inline="inline">
+      .gold-text { color: #e2be58 !important; }
+      .box-card { background-color: #121212; border: 1px solid #333333; border-radius: 6px; padding: 16px; margin: 12px 0; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#0a0a0a" width="600px">
+    
+    <!-- Header -->
+    <mj-section padding="24px 20px 16px 20px" background-color="#141414">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="18px" font-weight="700" color="#fdf6df" letter-spacing="1.5px">
+          JHB CURTAIN CLEANING
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9e7514" letter-spacing="2px" padding-top="2px">
+          INTERIOR DESIGN &amp; BESPOKE TRADE PARTNERSHIP
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Card -->
+    <mj-section background-color="#1a1a1a" padding="30px 24px">
+      <mj-column width="100%">
+        <mj-text font-size="12px" font-weight="700" color="#e2be58" letter-spacing="1px" padding-bottom="6px">
+          TRADE PARTNER NETWORK
+        </mj-text>
+        <mj-text font-family="'Playfair Display', Georgia, serif" font-size="22px" font-weight="700" color="#ffffff" line-height="28px" padding-bottom="12px">
+          In-Situ Care for Double-Volume Drops &amp; Delicate Interlined Fabrics
+        </mj-text>
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-bottom="12px">
+          Hi {FirstName},<br/><br/>
+          When clients invest in high-end window treatments, off-site dry cleaning risks fabric shrinkage, distorted pleats, and damaged motorized track motors. We specialize in white-glove on-site care for luxury installations across Dainfern, Steyn City, Saddlebrook, and Sandhurst.
+        </mj-text>
+        
+        <mj-text padding="0">
+          <div class="box-card">
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Double-Volume Drops (5m – 7m)</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Cleaned in place on tracks using mobile staging. Zero unhooking or hardware stress.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Delicate Fabric Specialization</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Silk interlinings, velvet pile grooming, linen sheer anti-shrinkage protocols.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Trade Partner Benefits</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px;">Preferred scheduling, handover care guides for your clients, and trade pricing.</div>
+          </div>
+        </mj-text>
+
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-top="16px" padding-bottom="20px">
+          Let’s connect on WhatsApp to share our fabric care guide and trade partnership details.
+        </mj-text>
+
+        <mj-button href="https://wa.me/27750119200?text=Hi%20Stephen,%20let%27s%20discuss%20trade%20partnership%20for%20curtain%20care" background-color="#c99c2d">
+          Connect With Stephen on WhatsApp
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section background-color="#141414" padding="24px 20px">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="12px" color="#737373" line-height="18px">
+          Stephen · Trade &amp; Textile Specialist<br/>
+          Direct Phone &amp; WhatsApp: +27 75 011 9200<br/>
+          JHB Curtain Cleaning · Johannesburg &amp; Pretoria
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#525252" padding-top="12px">
+          POPIA Compliant Trade Communications.<br/>
+          To stop receiving trade design notes, reply "opt out".
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

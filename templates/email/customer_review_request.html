@@ -1,62 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank You from JHB Curtain Cleaning</title>
+  <title>How did Stephen and the team do?</title>
   <style>
-    body { margin: 0; padding: 0; background-color: #f4f0e8; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1d2329; -webkit-font-smoothing: antialiased; }
-    table { border-collapse: collapse; }
-    .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #dcd8cf; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-    .header { background-color: #1a1a1a; padding: 32px 28px; text-align: center; border-bottom: 3px solid #d4af37; }
-    .brand-title { color: #fdf6df; font-family: Georgia, serif; font-size: 22px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin: 0; }
-    .brand-subtitle { color: #d4af37; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 6px; }
-    .content { padding: 36px 32px; line-height: 1.65; font-size: 15px; color: #333333; text-align: center; }
-    .greeting { font-size: 20px; font-weight: bold; color: #1a1a1a; margin-bottom: 16px; }
-    .star-rating { font-size: 24px; color: #d4af37; letter-spacing: 4px; margin: 16px 0; }
-    .btn-container { text-align: center; margin: 28px 0 24px; }
-    .btn-primary { display: inline-block; background: linear-gradient(135deg, #fdf6df 0%, #e2be58 30%, #c99c2d 70%, #9e7514 100%); color: #1a1a1a !important; text-decoration: none; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; padding: 16px 32px; border-radius: 6px; box-shadow: 0 4px 12px rgba(201,156,45,0.3); }
-    .signature { margin-top: 32px; padding-top: 20px; border-top: 1px solid #eeeeee; font-size: 14px; color: #666666; text-align: left; }
-    .signature strong { color: #1a1a1a; }
-    .footer { background-color: #111827; color: #9ca3af; padding: 24px 28px; text-align: center; font-size: 12px; line-height: 1.5; }
-    .footer a { color: #d4af37; text-decoration: none; }
+    body { margin: 0; padding: 0; background-color: #0d0d0d; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e5e5e5; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #141414; border: 1px solid #262626; border-radius: 8px; overflow: hidden; }
+    .header { padding: 32px 24px 20px 24px; text-align: center; border-bottom: 1px solid #262626; background: linear-gradient(180deg, #1c1c1c 0%, #141414 100%); }
+    .brand-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #d4af37; margin-bottom: 8px; font-weight: 600; }
+    .brand-title { font-size: 22px; font-weight: 700; color: #f5f5f5; margin: 0; }
+    .content { padding: 32px 24px; line-height: 1.6; font-size: 15px; color: #cccccc; text-align: center; }
+    .gold-accent { color: #f3e5ab; font-weight: 600; }
+    .stars { font-size: 24px; color: #d4af37; letter-spacing: 4px; margin: 16px 0; }
+    .review-box { background-color: #1a1a1a; border: 1px solid #333333; border-radius: 6px; padding: 20px; margin: 24px 0; text-align: left; }
+    .cta-container { text-align: center; margin: 28px 0 16px 0; }
+    .cta-button { display: inline-block; background: linear-gradient(135deg, #fdf6df 0%, #e2be58 30%, #c99c2d 70%, #9e7514 100%); color: #121212; font-weight: 700; font-size: 15px; text-decoration: none; padding: 14px 32px; border-radius: 4px; letter-spacing: 0.5px; }
+    .footer { padding: 24px; border-top: 1px solid #222222; text-align: center; font-size: 12px; color: #737373; background-color: #0f0f0f; }
   </style>
 </head>
 <body>
-  <div class="email-container">
-    <!-- Header -->
-    <div class="header">
-      <p class="brand-title">JHB Curtain Cleaning</p>
-      <p class="brand-subtitle">Specialist On-Site Textile Care</p>
-    </div>
-
-    <!-- Content -->
-    <div class="content">
-      <p class="greeting">Thank you, {{name}}!</p>
-      <div class="star-rating">★★★★★</div>
-
-      <p style="text-align: left;">Thank you for trusting <strong>JHB Curtain Cleaning</strong> with your <strong>{{service}}</strong> today. We take immense pride in our on-site craftsmanship and hope everything in your space looks refreshed, pristine, and beautifully restored.</p>
-
-      <p style="text-align: left;">Customer feedback is vital to our team. If you have 30 seconds, we would genuinely appreciate it if you could share a brief review of your experience on our Google Business Profile:</p>
-
-      <div class="btn-container">
-        <a href="https://g.page/r/CbZEjFiE3HjZEBM/review" class="btn-primary">Leave a Google Review →</a>
+  <div style="padding: 24px 12px;">
+    <div class="container">
+      <div class="header">
+        <div class="brand-eyebrow">Customer Care &amp; Service Quality</div>
+        <h1 class="brand-title">Thank You For Choosing Us</h1>
       </div>
+      <div class="content">
+        <p>Dear <span class="gold-accent">{{recipient_name}}</span>,</p>
+        <p>Thank you for trusting Stephen and our specialist team with your textile care service at <strong>{{property_location}}</strong>.</p>
+        
+        <div class="stars">★★★★★</div>
 
-      <p style="font-size: 13px; color: #777777; text-align: left;">If there is any aspect of your service that requires follow-up or attention, please reply directly to this email or reach Stephen on WhatsApp at <strong>+27 75 011 9200</strong>.</p>
+        <p>As a local South African specialist service, your feedback helps other homeowners, hotel managers, and interior designers discover reliable on-site curtain and textile care.</p>
 
-      <div class="signature">
-        <strong>Stephen</strong><br>
-        <strong>JHB Curtain Cleaning</strong><br>
-        Phone / WhatsApp: <a href="tel:+27750119200" style="color:#c99c2d; text-decoration:underline;">+27 75 011 9200</a><br>
-        Website: <a href="https://www.jhbcurtaincleaning.co.za" style="color:#c99c2d; text-decoration:underline;">www.jhbcurtaincleaning.co.za</a>
+        <div class="cta-container">
+          <a href="https://g.page/r/CbZEjFiE3HjZEBM/review" class="cta-button">Leave a 5-Star Google Review</a>
+        </div>
+
+        <p style="font-size: 13px; color: #888888; margin-top: 20px;">It takes less than 30 seconds and means the world to our team.</p>
       </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <p>© 2026 JHB Curtain Cleaning · Florida, Roodepoort &amp; Sandton Dispatch</p>
-      <p>Direct Link: <a href="https://g.page/r/CbZEjFiE3HjZEBM/review">https://g.page/r/CbZEjFiE3HjZEBM/review</a></p>
+      <div class="footer">
+        <p style="margin: 0 0 8px 0;"><strong>Stephen &amp; The JHB Curtain Cleaning Team</strong></p>
+        <p style="margin: 0 0 12px 0;">WhatsApp: +27 75 011 9200 | Website: jhbcurtaincleaning.co.za</p>
+        <p style="margin: 0 0 8px 0; color: #525252; font-size: 11px;">JHB Curtain Cleaning · Sandton, Rosebank &amp; Greater Johannesburg, South Africa</p>
+        <p style="margin: 0; color: #525252; font-size: 11px;">To opt out of future customer follow-ups, reply "opt out" to this email.</p>
+      </div>
     </div>
   </div>
 </body>

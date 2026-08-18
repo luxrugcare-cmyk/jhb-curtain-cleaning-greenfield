@@ -1,81 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Specialist Textile Care Trade Partnership</title>
+  <title>Trade Partnership: Specialist In-Situ Drapery Care</title>
   <style>
-    body { margin: 0; padding: 0; background-color: #f4f0e8; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1d2329; -webkit-font-smoothing: antialiased; }
-    table { border-collapse: collapse; }
-    .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #dcd8cf; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-    .header { background-color: #1a1a1a; padding: 32px 28px; text-align: center; border-bottom: 3px solid #d4af37; }
-    .brand-title { color: #fdf6df; font-family: Georgia, serif; font-size: 22px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin: 0; }
-    .brand-subtitle { color: #d4af37; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 6px; }
-    .content { padding: 36px 32px; line-height: 1.65; font-size: 15px; color: #333333; }
-    .greeting { font-size: 18px; font-weight: bold; color: #1a1a1a; margin-bottom: 16px; }
-    .highlight-box { background-color: #fcf9f2; border-left: 4px solid #b45309; padding: 18px 20px; margin: 22px 0; border-radius: 0 8px 8px 0; }
-    .highlight-box strong { color: #78350f; }
-    .feature-list { margin: 20px 0; padding-left: 20px; }
-    .feature-list li { margin-bottom: 10px; color: #444444; }
-    .btn-container { text-align: center; margin: 32px 0 24px; }
-    .btn-primary { display: inline-block; background: linear-gradient(135deg, #fdf6df 0%, #e2be58 30%, #c99c2d 70%, #9e7514 100%); color: #1a1a1a !important; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; padding: 14px 28px; border-radius: 6px; box-shadow: 0 4px 12px rgba(201,156,45,0.3); }
-    .signature { margin-top: 32px; padding-top: 20px; border-top: 1px solid #eeeeee; font-size: 14px; color: #666666; }
-    .signature strong { color: #1a1a1a; }
-    .footer { background-color: #111827; color: #9ca3af; padding: 24px 28px; text-align: center; font-size: 12px; line-height: 1.5; }
-    .footer a { color: #d4af37; text-decoration: none; }
-    .badge { display: inline-block; background-color: rgba(180,83,9,0.12); color: #b45309; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 12px; border: 1px solid rgba(180,83,9,0.3); }
+    body { margin: 0; padding: 0; background-color: #0d0d0d; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e5e5e5; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #141414; border: 1px solid #262626; border-radius: 8px; overflow: hidden; }
+    .header { padding: 32px 24px 20px 24px; text-align: center; border-bottom: 1px solid #262626; background: linear-gradient(180deg, #1c1c1c 0%, #141414 100%); }
+    .brand-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #d4af37; margin-bottom: 8px; font-weight: 600; }
+    .brand-title { font-size: 22px; font-weight: 700; color: #f5f5f5; margin: 0; }
+    .content { padding: 32px 24px; line-height: 1.6; font-size: 15px; color: #cccccc; }
+    .gold-accent { color: #f3e5ab; font-weight: 600; }
+    .feature-box { background-color: #1a1a1a; border: 1px solid #333333; border-left: 3px solid #d4af37; border-radius: 4px; padding: 18px 20px; margin: 24px 0; }
+    .feature-title { color: #ffffff; font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+    .feature-desc { color: #a3a3a3; font-size: 13px; margin: 0; }
+    .cta-container { text-align: center; margin: 32px 0 16px 0; }
+    .cta-button { display: inline-block; background: linear-gradient(135deg, #fdf6df 0%, #e2be58 30%, #c99c2d 70%, #9e7514 100%); color: #121212; font-weight: 700; font-size: 14px; text-decoration: none; padding: 14px 28px; border-radius: 4px; letter-spacing: 0.5px; }
+    .footer { padding: 24px; border-top: 1px solid #222222; text-align: center; font-size: 12px; color: #737373; background-color: #0f0f0f; }
   </style>
 </head>
 <body>
-  <div class="email-container">
-    <!-- Header -->
-    <div class="header">
-      <p class="brand-title">JHB Curtain Cleaning</p>
-      <p class="brand-subtitle">Luxury Fabric Care &amp; Trade Partner Network</p>
-    </div>
-
-    <!-- Content -->
-    <div class="content">
-      <span class="badge">✦ Interior Design &amp; Architectural Trade Partner</span>
-      <p class="greeting">Hi {{first_name}},</p>
-
-      <p>I hope you're well.</p>
-
-      <p>I am reaching out from <strong>JHB Curtain Cleaning</strong>. We collaborate with leading Gauteng interior designers, decorators, and high-end estate managers in <strong>{{location}}</strong> to deliver white-glove textile maintenance for bespoke drapery, silk interlinings, velvet drapes, and luxury upholstery.</p>
-
-      <div class="highlight-box">
-        <strong>Protecting Custom Installations:</strong><br>
-        When clients invest substantially in custom designer curtains, standard dry cleaning poses acute risks of fabric shrinkage, heading distortion, or track damage. We clean high-end drapes <strong>in-situ while hanging</strong>, protecting pleat memory and delicate hems.
+  <div style="padding: 24px 12px;">
+    <div class="container">
+      <div class="header">
+        <div class="brand-eyebrow">Interior Design &amp; Trade Partnership</div>
+        <h1 class="brand-title">White-Glove In-Situ Drapery Care</h1>
       </div>
+      <div class="content">
+        <p>Dear <span class="gold-accent">{{recipient_name}}</span>,</p>
+        <p>When clients invest in bespoke double-volume drapes, interlined silks, and imported velvets, taking them down for traditional dry cleaning poses severe shrinkage and damage risks.</p>
+        
+        <div class="feature-box">
+          <div class="feature-title">Double-Volume &amp; Motorized Drops (Up to 6m)</div>
+          <p class="feature-desc">We clean luxury window treatments hanging on tracks without removing fabric or straining motorized hardware.</p>
+        </div>
 
-      <p>Our trade partner capabilities include:</p>
+        <div class="feature-box">
+          <div class="feature-title">Trade Partner Benefits &amp; Pricing</div>
+          <p class="feature-desc">Exclusive designer trade discounts, priority booking windows, and post-installation client care handover packs.</p>
+        </div>
 
-      <ul class="feature-list">
-        <li><strong>On-Site Drapery Care:</strong> Safe treatment for sheer, lined, blackout, silk, and wool drapes.</li>
-        <li><strong>Pre-Handover Clean &amp; Steam:</strong> Preparing newly installed drapery for client reveal.</li>
-        <li><strong>Stain &amp; Fabric Protection:</strong> Application of breathable nano-sealants against spills and UV degradation.</li>
-        <li><strong>Discreet Estate Protocol:</strong> White-glove service trusted in Dainfern, Steyn City, Waterfall, and Hyde Park.</li>
-      </ul>
+        <p>We’d love to connect with <strong>{{company_name}}</strong> to share our designer textile care manual and trade partner rates.</p>
 
-      <p>I would love to introduce our trade partner program and discuss how we can support your upcoming residential handovers.</p>
-
-      <div class="btn-container">
-        <a href="https://www.jhbcurtaincleaning.co.za/services/curtain-cleaning" class="btn-primary">Explore Service Craftsmanship →</a>
+        <div class="cta-container">
+          <a href="{{cta_url}}" class="cta-button">Connect With Stephen on WhatsApp</a>
+        </div>
       </div>
-
-      <div class="signature">
-        <strong>Stephen</strong><br>
-        Trade Partnerships &amp; Textile Care<br>
-        <strong>JHB Curtain Cleaning</strong><br>
-        Direct Phone / WhatsApp: <a href="tel:+27750119200" style="color:#c99c2d; text-decoration:underline;">+27 75 011 9200</a><br>
-        Trade Inquiries: <a href="mailto:info@jhbcurtaincleaning.co.za" style="color:#c99c2d; text-decoration:underline;">info@jhbcurtaincleaning.co.za</a>
+      <div class="footer">
+        <p style="margin: 0 0 8px 0;"><strong>Stephen · Trade Partner Lead</strong></p>
+        <p style="margin: 0 0 12px 0;">Direct &amp; WhatsApp: +27 75 011 9200 | Email: info@jhbcurtaincleaning.co.za</p>
+        <p style="margin: 0 0 8px 0; color: #525252; font-size: 11px;">JHB Curtain Cleaning · Sandton, Rosebank &amp; Greater Johannesburg, South Africa</p>
+        <p style="margin: 0; color: #525252; font-size: 11px;">POPIA Compliant Designer Communications. To opt out, reply "opt out" to this email.</p>
       </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <p>© 2026 JHB Curtain Cleaning · Specialist Textile Care</p>
-      <p>Certified High-End Drapery &amp; Upholstery Maintenance</p>
     </div>
   </div>
 </body>
