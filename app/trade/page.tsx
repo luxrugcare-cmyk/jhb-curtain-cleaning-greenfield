@@ -5,6 +5,10 @@ import Link from "next/link";
 import { Hero } from "@/components/Hero";
 import { CTASection } from "@/components/CTASection";
 
+function formatZar(val: number): string {
+  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 export default function TradePartnerPage() {
   const [referralCount, setReferralCount] = useState<number>(4);
   const [avgJobValue, setAvgJobValue] = useState<number>(8500);
@@ -95,7 +99,7 @@ export default function TradePartnerPage() {
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                     <label style={{ fontSize: "14px", fontWeight: 600, color: "#d4d4d4" }}>Average Project Invoice Value:</label>
-                    <span style={{ fontSize: "16px", fontWeight: 700, color: "#e2be58" }}>R{avgJobValue.toLocaleString()}</span>
+                    <span style={{ fontSize: "16px", fontWeight: 700, color: "#e2be58" }}>R{formatZar(avgJobValue)}</span>
                   </div>
                   <input
                     type="range"
@@ -120,11 +124,11 @@ export default function TradePartnerPage() {
                   Estimated 10% Partner Payout
                 </div>
                 <div style={{ fontSize: "36px", fontWeight: 800, color: "#ffffff", margin: "12px 0 4px 0", fontFamily: "'Playfair Display', Georgia, serif" }}>
-                  R{monthlyEarnings.toLocaleString()}
+                  R{formatZar(monthlyEarnings)}
                   <span style={{ fontSize: "16px", color: "#a3a3a3", fontWeight: 400 }}> / month</span>
                 </div>
                 <div style={{ fontSize: "15px", color: "#34d399", fontWeight: 600, marginBottom: "16px" }}>
-                  = R{annualEarnings.toLocaleString()} / year in passive revenue
+                  = R{formatZar(annualEarnings)} / year in passive revenue
                 </div>
                 <div style={{ fontSize: "12px", color: "#737373", lineHeight: 1.4 }}>
                   Paid automatically via direct EFT within 48 hours of client invoice settlement.
