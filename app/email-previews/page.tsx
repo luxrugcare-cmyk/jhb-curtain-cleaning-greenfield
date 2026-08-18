@@ -16,6 +16,26 @@ type TemplateMeta = {
 
 const TEMPLATES: TemplateMeta[] = [
   {
+    id: "trade-commission-visual",
+    name: "10% Trade Referral Partnership",
+    category: "Decorators & Workrooms",
+    touch: "Touch 2 (Day 4)",
+    format: "Google Stitch MJML HTML",
+    description: "Pitching 10% recurring EFT commission, zero fabric shrinkage guarantee, and digital client handover care cards.",
+    subject: "10% Referral Commission & Drapery Protection for Hyde Park Interiors",
+    spamScore: 100
+  },
+  {
+    id: "trade-commission-plain-touch1",
+    name: "10% Trade Partner (Plain Text)",
+    category: "Decorators & Workrooms",
+    touch: "Touch 1 (Day 1)",
+    format: "Plain-Text-First",
+    description: "Conversational peer inquiry asking what workrooms recommend when clients ask how to clean custom drapes.",
+    subject: "10% referral partnership for Hyde Park Interiors curtain clients",
+    spamScore: 100
+  },
+  {
     id: "hotel-visual",
     name: "Hotel & Hospitality Drapery Care",
     category: "Hospitality & Lodges",
@@ -98,11 +118,11 @@ const TEMPLATES: TemplateMeta[] = [
 ];
 
 export default function EmailPreviewsPage() {
-  const [selectedId, setSelectedId] = useState<string>("hotel-visual");
+  const [selectedId, setSelectedId] = useState<string>("trade-commission-visual");
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
 
-  const categories = ["All", "Hospitality & Lodges", "Corporate Facilities", "Trade & Designers", "Customer Care"];
+  const categories = ["All", "Decorators & Workrooms", "Hospitality & Lodges", "Corporate Facilities", "Trade & Designers", "Customer Care"];
 
   const filteredTemplates = categoryFilter === "All"
     ? TEMPLATES
@@ -179,6 +199,22 @@ export default function EmailPreviewsPage() {
           >
             <span>Open in New Tab ↗</span>
           </a>
+
+          <Link
+            href="/trade"
+            style={{
+              padding: "8px 16px",
+              background: "#1f1a0e",
+              color: "#e2be58",
+              border: "1px solid #c99c2d",
+              borderRadius: "6px",
+              fontSize: "12px",
+              fontWeight: 600,
+              textDecoration: "none"
+            }}
+          >
+            View /trade Portal
+          </Link>
 
           <Link
             href="/"

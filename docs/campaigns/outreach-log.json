@@ -146,5 +146,77 @@
       "message_id": "<010001a01222879c-9a152e98-60b7-48ee-8531-95dd69181c5f-000000@email.amazonses.com>",
       "thread_id": "5c53f48d-daac-424e-be4d-52017ee6112d"
     }
+  },
+  {
+    "timestamp": "2026-08-18T04:00:49.628161+00:00",
+    "segment": "hotel",
+    "touch": 1,
+    "recipient_email": "housekeeping@theleonardo.co.za",
+    "recipient_name": "Executive Housekeeping Operations (The Leonardo Sandton)",
+    "company": "The Leonardo Sandton",
+    "subject": "quick question about The Leonardo Sandton curtain maintenance",
+    "mode": "dry-run",
+    "status": "SENT",
+    "message_id": "dryrun-1787025649628"
+  },
+  {
+    "timestamp": "2026-08-18T04:00:49.641751+00:00",
+    "segment": "hotel",
+    "touch": 1,
+    "recipient_email": "rooms@themaslow.co.za",
+    "recipient_name": "Rooms Division Director (The Maslow Sandton)",
+    "company": "The Maslow Sandton",
+    "subject": "quick question about The Maslow Sandton curtain maintenance",
+    "mode": "dry-run",
+    "status": "SENT",
+    "message_id": "dryrun-1787025649641"
+  },
+  {
+    "timestamp": "2026-08-18T04:00:49.958639+00:00",
+    "segment": "hotel",
+    "touch": 2,
+    "recipient_email": "housekeeping@theleonardo.co.za",
+    "recipient_name": "Executive Housekeeping Operations (The Leonardo Sandton)",
+    "company": "The Leonardo Sandton",
+    "subject": "Hotel Drapery Care: Zero Room Downtime for The Leonardo Sandton",
+    "mode": "dry-run",
+    "status": "SENT",
+    "message_id": "dryrun-1787025649958"
+  },
+  {
+    "timestamp": "2026-08-18T04:00:49.968662+00:00",
+    "segment": "hotel",
+    "touch": 2,
+    "recipient_email": "rooms@themaslow.co.za",
+    "recipient_name": "Rooms Division Director (The Maslow Sandton)",
+    "company": "The Maslow Sandton",
+    "subject": "Hotel Drapery Care: Zero Room Downtime for The Maslow Sandton",
+    "mode": "dry-run",
+    "status": "SENT",
+    "message_id": "dryrun-1787025649968"
+  },
+  {
+    "timestamp": "2026-08-18T04:00:50.157750+00:00",
+    "segment": "hotel",
+    "touch": 3,
+    "recipient_email": "housekeeping@theleonardo.co.za",
+    "recipient_name": "Executive Housekeeping Operations (The Leonardo Sandton)",
+    "company": "The Leonardo Sandton",
+    "subject": "closing the loop regarding The Leonardo Sandton curtain care",
+    "mode": "dry-run",
+    "status": "SENT",
+    "message_id": "dryrun-1787025650157"
+  },
+  {
+    "timestamp": "2026-08-18T04:00:50.169217+00:00",
+    "segment": "hotel",
+    "touch": 3,
+    "recipient_email": "rooms@themaslow.co.za",
+    "recipient_name": "Rooms Division Director (The Maslow Sandton)",
+    "company": "The Maslow Sandton",
+    "subject": "closing the loop regarding The Maslow Sandton curtain care",
+    "mode": "dry-run",
+    "status": "SENT",
+    "message_id": "dryrun-1787025650169"
   }
 ]

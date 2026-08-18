@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/residential",
     "/commercial",
+    "/trade",
     "/services",
     "/results",
     "/advice",
@@ -41,7 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority:
       path === ""
         ? 1
-        : path === "/services" || path.startsWith("/services/") || path.startsWith("/commercial/")
+        : path === "/services" || path.startsWith("/services/") || path.startsWith("/commercial/") || path === "/trade"
           ? 0.8
           : path.startsWith("/advice/")
             ? 0.7

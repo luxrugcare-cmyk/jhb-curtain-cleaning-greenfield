@@ -1,0 +1,84 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-title>10% Referral Commission &amp; Drapery Protection for {Company}</mj-title>
+    <mj-preview>Earn 10% recurring EFT payouts while protecting your custom curtains from shrinkage.</mj-preview>
+    <mj-font name="Playfair Display" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" />
+    <mj-attributes>
+      <mj-all font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" />
+      <mj-text font-size="14px" line-height="22px" color="#c5c5c5" />
+      <mj-section background-color="#141414" padding="20px" />
+      <mj-button background-color="#c99c2d" color="#121212" font-size="14px" font-weight="700" border-radius="4px" padding="12px 24px" />
+    </mj-attributes>
+    <mj-style inline="inline">
+      .gold-text { color: #e2be58 !important; }
+      .box-card { background-color: #121212; border: 1px solid #333333; border-radius: 6px; padding: 16px; margin: 12px 0; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#0a0a0a" width="600px">
+    
+    <!-- Header -->
+    <mj-section padding="24px 20px 16px 20px" background-color="#141414">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="18px" font-weight="700" color="#fdf6df" letter-spacing="1.5px">
+          JHB CURTAIN CLEANING
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9e7514" letter-spacing="2px" padding-top="2px">
+          TRADE PARTNER NETWORK · DECORATORS &amp; WORKSHOPS
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Main Card -->
+    <mj-section background-color="#1a1a1a" padding="30px 24px">
+      <mj-column width="100%">
+        <mj-text font-size="12px" font-weight="700" color="#e2be58" letter-spacing="1px" padding-bottom="6px">
+          TRADE COMMISSION PROGRAM
+        </mj-text>
+        <mj-text font-family="'Playfair Display', Georgia, serif" font-size="22px" font-weight="700" color="#ffffff" line-height="28px" padding-bottom="12px">
+          Earn 10% Recurring Commission on Every Curtain Cleaning Referral
+        </mj-text>
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-bottom="12px">
+          Hi {FirstName},<br/><br/>
+          When your clients ask how to clean their custom curtains, double-volume drapes, or delicate sheers, taking them down for traditional dry cleaning poses severe shrinkage and damage risks.
+        </mj-text>
+        
+        <mj-text padding="0">
+          <div class="box-card">
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ 10% Recurring Referral Commission</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">Earn 10% on every initial and annual repeat clean. Paid via direct EFT within 48 hours of invoice settlement.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Zero Fabric Shrinkage Guarantee</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px; margin-bottom: 10px;">In-situ low moisture dry extraction protects your custom headings, interlined silks, and delicate velvets.</div>
+            
+            <div style="font-size: 13px; color: #e2be58; font-weight: 600; margin-bottom: 4px;">✓ Client Handover Care Cards</div>
+            <div style="font-size: 12px; color: #a3a3a3; line-height: 18px;">We provide custom-branded textile care cards for your project handover packages.</div>
+          </div>
+        </mj-text>
+
+        <mj-text color="#d4d4d4" font-size="14px" line-height="22px" padding-top="16px" padding-bottom="20px">
+          Join the <strong>{Company}</strong> trade partnership or calculate your monthly referral earnings online.
+        </mj-text>
+
+        <mj-button href="https://www.jhbcurtaincleaning.co.za/trade" background-color="#c99c2d">
+          View Trade Partner Program &amp; Calculator
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section background-color="#141414" padding="24px 20px">
+      <mj-column width="100%">
+        <mj-text align="center" font-size="12px" color="#737373" line-height="18px">
+          Stephen · Trade &amp; Workshop Partner Lead<br/>
+          Direct Phone &amp; WhatsApp: +27 75 011 9200<br/>
+          JHB Curtain Cleaning · Sandton &amp; Greater Johannesburg, South Africa
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#525252" padding-top="12px">
+          POPIA Compliant Trade Partnership Communications.<br/>
+          To stop receiving trade partner updates, reply "opt out".
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

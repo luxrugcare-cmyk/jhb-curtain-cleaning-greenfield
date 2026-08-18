@@ -3,6 +3,15 @@ import fs from "node:fs";
 import path from "node:path";
 
 const TEMPLATES: Record<string, { file: string; isPlain?: boolean; title: string }> = {
+  "trade-commission-visual": {
+    file: "templates/email/compiled_html/touch2_trade_commission_visual.html",
+    title: "10% Trade Referral Partnership (Touch 2 Visual)"
+  },
+  "trade-commission-plain-touch1": {
+    file: "templates/email/plain_text/touch1_trade_commission_plain.txt",
+    isPlain: true,
+    title: "10% Trade Referral Partnership (Touch 1 Plain Text)"
+  },
   "hotel-visual": {
     file: "templates/email/compiled_html/touch2_hotel_visual.html",
     title: "Hotel & Hospitality Drapery Care (Touch 2 Visual)"
@@ -73,16 +82,16 @@ export async function GET(
 
   // Populate dynamic placeholders with realistic sample lead data
   const sampleData: Record<string, string> = {
-    "{FirstName}": "David",
-    "{recipient_name}": "David",
-    "{{recipient_name}}": "David",
-    "{Company}": "The Leonardo Sandton",
-    "{company_name}": "The Leonardo Sandton",
-    "{{company_name}}": "The Leonardo Sandton",
-    "{Location}": "Sandton CBD",
+    "{FirstName}": "Claire",
+    "{recipient_name}": "Claire",
+    "{{recipient_name}}": "Claire",
+    "{Company}": "Hyde Park Interiors & Workroom",
+    "{company_name}": "Hyde Park Interiors & Workroom",
+    "{{company_name}}": "Hyde Park Interiors & Workroom",
+    "{Location}": "Sandton & Rosebank",
     "{property_location}": "Sandhurst, Sandton",
     "{{property_location}}": "Sandhurst, Sandton",
-    "{{cta_url}}": "https://wa.me/27750119200?text=Hi%20Stephen,%20enquiring%20about%20curtain%20cleaning"
+    "{{cta_url}}": "https://wa.me/27750119200?text=Hi%20Stephen,%20enquiring%20about%2010%%20trade%20partnership"
   };
 
   for (const [key, val] of Object.entries(sampleData)) {
