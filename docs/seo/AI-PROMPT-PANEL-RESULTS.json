@@ -1,0 +1,278 @@
+{
+  "timestamp": "2026-08-18T13:34:11.084347",
+  "totalPrompts": 30,
+  "coveredIntents": 30,
+  "overallCoveragePercent": 100,
+  "results": [
+    {
+      "id": "P01",
+      "category": "Definitional",
+      "prompt": "What is on-site curtain cleaning?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/services/curtain-cleaning",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P02",
+      "category": "Definitional",
+      "prompt": "How does in-situ drapery cleaning work without taking curtains down?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/zero-shrinkage-curtain-cleaning",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P03",
+      "category": "Definitional",
+      "prompt": "What is SANS 1423 fire retardancy for curtains in South Africa?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/sans-1423-fire-retardant-curtain-care",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P04",
+      "category": "Problem-Solving",
+      "prompt": "How to clean double volume 5m curtains without taking them down in Sandton?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/services/double-volume",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P05",
+      "category": "Problem-Solving",
+      "prompt": "How to remove Highveld winter dust and silica soot from curtain linings?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/highveld-dust-season-curtain-care",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P06",
+      "category": "Problem-Solving",
+      "prompt": "How to clean delicate velvet curtains safely without fabric crushing?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/velvet-silk-curtain-restoration",
+      "readinessScore": 90,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P07",
+      "category": "Problem-Solving",
+      "prompt": "How to clean blackout curtains without melting the rubber lining?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/services/blackout-curtains",
+      "readinessScore": 85,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P08",
+      "category": "Problem-Solving",
+      "prompt": "How to fix sun-damaged or mouldy curtain linings in Johannesburg?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/curtain-mould-sun-damage-prevention",
+      "readinessScore": 72,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P09",
+      "category": "Problem-Solving",
+      "prompt": "How to clean motorized Somfy curtain tracks without electrical damage?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/motorized-curtain-track-cleaning",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P10",
+      "category": "Recommendation",
+      "prompt": "Best curtain cleaning service in Sandton with zero shrinkage guarantee",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/areas/sandton",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P11",
+      "category": "Recommendation",
+      "prompt": "Curtain cleaners in Bryanston that clean on the rail",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/areas/bryanston",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P12",
+      "category": "Recommendation",
+      "prompt": "Who cleans luxury curtains in Hyde Park and Houghton?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/areas/hyde-park",
+      "readinessScore": 60,
+      "status": "MODERATE",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P13",
+      "category": "Recommendation",
+      "prompt": "Curtain and blind cleaning service in Waterfall Estate Midrand",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/areas/waterfall-estate",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P14",
+      "category": "Recommendation",
+      "prompt": "Specialist curtain cleaners in Pretoria East and Waterkloof",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/areas/pretoria-east",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P15",
+      "category": "Recommendation",
+      "prompt": "On-site curtain cleaner in Fourways Gardens and Dainfern",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/areas/fourways",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P16",
+      "category": "Commercial",
+      "prompt": "Hotel curtain cleaning with zero room downtime in Johannesburg",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/sectors/hotels",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P17",
+      "category": "Commercial",
+      "prompt": "How to clean 24 hotel guest suite drapes between 10am check-out and 2pm check-in?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/hotel-turnaround-curtain-care",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P18",
+      "category": "Commercial",
+      "prompt": "Corporate boardroom curtain and motorized blind cleaning Sandton CBD",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/sectors/corporate-offices",
+      "readinessScore": 85,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P19",
+      "category": "Commercial",
+      "prompt": "SANS 1423 flame retardant re-treatment certificate for commercial buildings Gauteng",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/services/commercial",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P20",
+      "category": "Commercial",
+      "prompt": "Guesthouse and boutique lodge drapery maintenance service Johannesburg",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/sectors/hotels",
+      "readinessScore": 85,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P21",
+      "category": "Commercial",
+      "prompt": "Emergency after-hours curtain odor and smoke restoration Johannesburg",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/contact",
+      "readinessScore": 80,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P22",
+      "category": "Comparison",
+      "prompt": "On-site curtain cleaning vs dry cleaning shrinkage risk comparison",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/guides/zero-shrinkage-curtain-cleaning",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P23",
+      "category": "Comparison",
+      "prompt": "Steam cleaning curtains vs low-moisture solvent extraction",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/pricing",
+      "readinessScore": 80,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P24",
+      "category": "Trade",
+      "prompt": "10% referral commission partnership for interior decorators curtain cleaning",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/trade",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P25",
+      "category": "Trade",
+      "prompt": "Curtain manufacturing workshop client aftercare handover program Johannesburg",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/trade",
+      "readinessScore": 75,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P26",
+      "category": "Comparison",
+      "prompt": "Cost of on-site curtain cleaning in Johannesburg per drop vs dry cleaners",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/pricing",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P27",
+      "category": "Brand-Accuracy",
+      "prompt": "What services does JHB Curtain Cleaning offer?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/",
+      "readinessScore": 60,
+      "status": "MODERATE",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P28",
+      "category": "Brand-Accuracy",
+      "prompt": "Does JHB Curtain Cleaning clean double-volume curtains on-site?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/services/double-volume",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P29",
+      "category": "Brand-Accuracy",
+      "prompt": "Is JHB Curtain Cleaning verified with zero fabric shrinkage?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/about",
+      "readinessScore": 96,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    },
+    {
+      "id": "P30",
+      "category": "Brand-Accuracy",
+      "prompt": "Who is the lead specialist at JHB Curtain Cleaning?",
+      "targetUrl": "https://www.jhbcurtaincleaning.co.za/about",
+      "readinessScore": 100,
+      "status": "HIGH CITATION PROBABILITY",
+      "sentiment": "Authoritative / Specialist"
+    }
+  ]
+}

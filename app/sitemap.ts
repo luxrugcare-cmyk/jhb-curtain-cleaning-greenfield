@@ -9,6 +9,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/residential",
     "/commercial",
     "/trade",
+    "/case-studies",
+    "/master-operations-deck",
     "/services",
     "/results",
     "/advice",
@@ -38,11 +40,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [...staticPaths, ...dynamicPaths].map(path => ({
     url: new URL(path || "/", siteConfig.url).toString(),
     lastModified: now,
-    changeFrequency: path === "" || path.startsWith("/advice/") ? "weekly" : "monthly",
+    changeFrequency: path === "" || path.startsWith("/advice/") || path === "/case-studies" ? "weekly" : "monthly",
     priority:
       path === ""
         ? 1
-        : path === "/services" || path.startsWith("/services/") || path.startsWith("/commercial/") || path === "/trade"
+        : path === "/services" || path.startsWith("/services/") || path.startsWith("/commercial/") || path === "/trade" || path === "/case-studies"
           ? 0.8
           : path.startsWith("/advice/")
             ? 0.7

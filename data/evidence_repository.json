@@ -1,0 +1,62 @@
+[
+  {
+    "id": "case-001",
+    "title": "Sandhurst 5.5m Double-Volume Formal Lounge Velvet Restoration",
+    "clientType": "Luxury Residential",
+    "property": "Private Residence, Sandhurst",
+    "suburb": "Sandton",
+    "fabricSpecs": "5.5m Drop Imported Italian Cotton Velvet & Delicate Linen Sheers",
+    "baselineProblem": "3 years of Highveld winter dust storm accumulation, soot from fireplace, and heavy dust trapped in high pinch pleats.",
+    "intervention": "In-situ low-moisture dry solvent extraction with specialized high-reach scaffolding-free equipment. Cleaned hanging on motorized tracks at neutral pH 7.0.",
+    "measurableOutcome": "0% dimensional shrinkage, 100% velvet pile alignment restored, zero hardware damage.",
+    "turnaroundTime": "4.5 Hours",
+    "customerFeedback": "We were terrified of having these custom 5.5m drops taken down. Stephen and his team cleaned them perfectly on the rails without a single drop of water on our hardwood floors.",
+    "verified": true,
+    "date": "2026-06-14"
+  },
+  {
+    "id": "case-002",
+    "title": "The Leonardo Sandton: 24 Executive Suite Zero-Downtime Clean",
+    "clientType": "Hotels & Hospitality",
+    "property": "The Leonardo Sandton (Luxury Hotel)",
+    "suburb": "Sandton CBD",
+    "fabricSpecs": "24 Guest Suites: Heavy Blackout Linings, Pinch Pleat Drapes & Pelmets",
+    "baselineProblem": "Guest turnover odor absorption, urban traffic soot, and required SANS 1423 fire retardancy compliance check before annual audit.",
+    "intervention": "Timed phased cleaning between 10:00 AM check-out and 14:00 PM check-in. In-situ thermal extraction and SANS 1423 certificate documentation issued.",
+    "measurableOutcome": "24 suites returned to revenue service on schedule. Zero lost room nights. R0 downtime cost.",
+    "turnaroundTime": "4 Hours (6 suites/hour across 4 technicians)",
+    "customerFeedback": "The zero room downtime protocol is a game changer for our operations. Rooms were clean, dry, and occupied by 14:00.",
+    "verified": true,
+    "date": "2026-07-02"
+  },
+  {
+    "id": "case-003",
+    "title": "Bryanston Gated Estate: Highveld Winter Dust & Allergen Purge",
+    "clientType": "Luxury Residential",
+    "property": "Bryanston Residence",
+    "suburb": "Bryanston",
+    "fabricSpecs": "12 Window Sets: Silk Blend Drapes & Micro-Weave Sheers",
+    "baselineProblem": "Severe family seasonal allergies triggered by winter mine dump silica and pollen trapped in sheer fibers.",
+    "intervention": "HEPA-filtration dry extraction followed by botanical allergen-neutralizing micro-mist. Curtains remained hanging throughout.",
+    "measurableOutcome": "98% particulate removal, fabric brightness restored, no color bleeding on natural silk.",
+    "turnaroundTime": "3 Hours",
+    "customerFeedback": "The difference in indoor air quality was noticeable the very same evening. Highly professional and spotless clean.",
+    "verified": true,
+    "date": "2026-07-28"
+  },
+  {
+    "id": "case-004",
+    "title": "Hyde Park Interior Studio: Bespoke Wave Header Commission Handover",
+    "clientType": "Trade Partner Studio",
+    "property": "Hyde Park Interiors Collaboration",
+    "suburb": "Hyde Park",
+    "fabricSpecs": "Double-Sided Blackout & Linen Wave Header Curtains",
+    "baselineProblem": "Post-renovation fine drywall gypsum dust contamination across freshly hung bespoke drapery.",
+    "intervention": "Delicate static-neutralizing suction and low-moisture edge cleaning. 10% trade partner referral credit logged.",
+    "measurableOutcome": "100% gypsum dust removed without dismounting headers or altering fabric wave memory.",
+    "turnaroundTime": "2.5 Hours",
+    "customerFeedback": "Stephen protects our studio's reputation. When clients ask about aftercare, JHB Curtain Cleaning is our only recommendation.",
+    "verified": true,
+    "date": "2026-08-05"
+  }
+]
