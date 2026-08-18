@@ -18,7 +18,7 @@ export const sectors = [
   { slug: "property-facilities", title: "Property & Facilities Management", summary: "Repeatable service across properties, portfolios and managed sites." }
 ] as const;
 
-export const areas = ["Johannesburg", "Sandton", "Randburg", "Roodepoort", "Fourways", "Midrand"] as const;
+export const areas = ["Johannesburg", "Sandton", "Randburg", "Roodepoort", "Fourways", "Midrand", "Rosebank", "Bryanston", "Pretoria"] as const;
 
 export const processSteps = [
   ["01", "Assess", "Inspect fabric, environment and service requirements."],

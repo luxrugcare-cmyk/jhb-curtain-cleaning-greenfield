@@ -42,6 +42,9 @@ const routes = [
   "/areas/roodepoort",
   "/areas/fourways",
   "/areas/midrand",
+  "/areas/rosebank",
+  "/areas/bryanston",
+  "/areas/pretoria",
 ];
 
 const BASE = "http://localhost:9999";
