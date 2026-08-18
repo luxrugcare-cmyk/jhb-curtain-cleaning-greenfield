@@ -10,6 +10,9 @@ const routes = [
   "/quote",
   "/commercial-assessment",
   "/privacy",
+  "/advice/how-often-should-curtains-be-cleaned",
+  "/advice/cleaning-blackout-lined-delicate-curtains",
+  "/advice/hotel-curtain-cleaning-maintenance-guide",
   "/advice/curtain-cleaning-prices",
   "/advice/how-on-site-curtain-cleaning-works",
   "/advice/can-curtains-be-cleaned-without-taking-them-down",
@@ -60,15 +63,13 @@ async function main() {
         failed++;
       }
     } catch (err) {
-      console.error(`✗ [ERROR] ${path}:`, err.message);
+      console.error(`✗ [ERROR] ${path}: ${err.message}`);
       failed++;
     }
   }
 
-  console.log(`\nResults: ${passed} passed, ${failed} failed out of ${routes.length} routes.`);
-  if (failed > 0) {
-    process.exit(1);
-  }
+  console.log(`\nAudit Complete: ${passed}/${routes.length} passed, ${failed} failed.`);
+  if (failed > 0) process.exit(1);
 }
 
 main();
