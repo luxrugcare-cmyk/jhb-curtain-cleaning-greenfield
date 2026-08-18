@@ -3,6 +3,7 @@ import { sendInternalLeadNotification, sendLeadAcknowledgement } from "@/integra
 import { dispatchAgentMailLeadNotification } from "@/integrations/agentmail/client";
 import { archiveFailedLead } from "@/integrations/recovery/archive";
 import { dispatchLeadAutomation } from "@/integrations/n8n/client";
+import { metaCapi } from "@/lib/meta-capi";
 import { LeadProcessingError, LeadValidationError } from "@/lib/errors";
 import type { LeadPayload } from "@/types/lead";
 
@@ -61,6 +62,29 @@ export async function acceptLead(raw: LeadPayload, dependencies: LeadDependencie
       ? dependencies.dispatchAgentMailLeadNotification(payload)
       : Promise.resolve({ ok: true, mode: "disabled" }),
   ]);
+
+  // Server-side Meta Conversions API (CAPI) event dispatch (Facebook & Instagram Ads)
+  try {
+    const [firstName, ...rest] = (payload.name || "").split(" ");
+    await metaCapi.trackEvent({
+      eventName: "Lead",
+      userData: {
+        email: payload.email,
+        phone: payload.mobile,
+        firstName,
+        lastName: rest.join(" "),
+        city: payload.location,
+        country: "za"
+      },
+      customData: {
+        lead_type: payload.kind,
+        sector: payload.sector,
+        service_scope: payload.scope
+      }
+    });
+  } catch (err) {
+    console.error("Meta CAPI event dispatch non-blocking error:", err);
+  }
 
   const failures: string[] = [];
   if (crmResult.status === "rejected") failures.push(`crm: ${crmResult.reason instanceof Error ? crmResult.reason.message : "unknown error"}`);

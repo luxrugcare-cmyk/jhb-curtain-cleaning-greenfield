@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Analytics } from "@/components/analytics/Analytics";
+import { MetaPixel } from "@/components/MetaPixel";
 import { TrackedContactLink } from "@/components/analytics/TrackedContactLink";
 import { JsonLd } from "@/components/JsonLd";
 import { localBusinessJsonLd } from "@/lib/seo/jsonld";
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body>
         <Analytics />
+        <MetaPixel />
         <JsonLd data={localBusinessJsonLd()} />
         <Header />
         <main>{children}</main>
