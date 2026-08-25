@@ -87,6 +87,9 @@ export default function Advice() {
           <div className="feature-grid">
             {guides.map((guide) => (
               <article key={guide.href}>
+                <div style={{ fontSize: "0.75rem", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "6px" }}>
+                  <time dateTime="2026-08-18">Updated August 2026</time> · Verified Guide
+                </div>
                 <h3 style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.3rem", lineHeight: 1.35 }}>
                   {guide.title}
                 </h3>

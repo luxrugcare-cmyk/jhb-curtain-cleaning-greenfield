@@ -25,6 +25,7 @@ export function Header() {
           <Link href="/commercial">Commercial</Link>
           <Link href="/services">Services</Link>
           <Link href="/results">Results</Link>
+          <Link href="/trade">Trade</Link>
           <Link href="/areas/johannesburg">Areas</Link>
           <Link href="/advice">Advice</Link>
           <Link href="/about">About</Link>

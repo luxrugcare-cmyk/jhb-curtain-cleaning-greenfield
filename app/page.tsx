@@ -10,7 +10,7 @@ import { CTASection } from "@/components/CTASection";
 export const metadata = {
   title: "On-Site Curtain Cleaning Johannesburg | Specialist Textile Care",
   description:
-    "Professional on-site curtain cleaning in Johannesburg for luxury homes and commercial properties. Expert fabric assessment, minimal disruption, and no unnecessary curtain removal.",
+    "Professional on-site curtain cleaning in Johannesburg. Expert fabric assessment, zero shrinkage guarantee, no curtain removal. Free quote in 24-48h.",
   alternates: { canonical: "/" },
 };
 

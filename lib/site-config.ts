@@ -15,7 +15,7 @@ export const siteConfig = {
   name: "JHB Curtain Cleaning",
   shortName: "JHB Curtain Cleaning",
   description:
-    "Specialist on-site curtain and textile care for residential and commercial properties in Johannesburg and Gauteng. Free on-site evaluations by Stephen.",
+    "Specialist on-site curtain & textile care in Johannesburg & Gauteng. Zero shrinkage guarantee, no curtain removal. Free on-site quote by Stephen.",
   url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   contactPerson: "Stephen",
   phoneDisplay: "+27 75 011 9200",

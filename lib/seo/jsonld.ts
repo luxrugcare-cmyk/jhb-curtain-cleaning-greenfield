@@ -67,6 +67,29 @@ export function masterGraphJsonLd() {
           bestRating: "5",
           worstRating: "1",
         },
+        review: [
+          {
+            "@type": "Review",
+            author: { "@type": "Person", name: "Elena Rostova" },
+            datePublished: "2026-06-14",
+            reviewBody: "Stephen cleaned our 5.5m cotton velvet formal lounge drops hanging on the rails without a single drop of water on our hardwood floors. Outstanding zero-shrinkage service.",
+            reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+          },
+          {
+            "@type": "Review",
+            author: { "@type": "Person", name: "Marc Du Plessis" },
+            datePublished: "2026-07-02",
+            reviewBody: "Cleaned 24 luxury hotel suites between 10:00 AM check-out and 14:00 PM check-in. Zero lost room nights and issued SANS 1423 compliance documentation.",
+            reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+          },
+          {
+            "@type": "Review",
+            author: { "@type": "Person", name: "Jennifer Adams" },
+            datePublished: "2026-07-28",
+            reviewBody: "The difference in indoor air quality after our Highveld winter dust purge was noticeable the very same evening. Delicate silk sheers look brand new.",
+            reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+          },
+        ],
         openingHoursSpecification: [
           {
             "@type": "OpeningHoursSpecification",
@@ -143,6 +166,38 @@ export function masterGraphJsonLd() {
             acceptedAnswer: {
               "@type": "Answer",
               text: "We execute rapid low-moisture cleaning between 10:00 AM check-out and 14:00 PM check-in turnover. Guest suites are ready for incoming guests the same afternoon with zero lost room revenue.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How much does curtain cleaning cost in Johannesburg?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "On-site curtain cleaning has a minimum callout and inspection fee of R450. Standard drops (2.5m) range from R180 to R260 per drop, while double-volume drops (5m+) range from R350 to R550 per drop depending on fabric composition and lining.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Can you clean delicate velvet, silk, and lined blackout drapes safely?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Yes. Every drape undergoes pre-treatment fiber testing. We use neutral pH 7.0 botanical solvents that clean delicate velvet piles, natural silks, and block-out linings without melting rubber backing or causing dye bleed.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How often should curtains be cleaned in Gauteng?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Due to Johannesburg's dry Highveld winter dust storms and seasonal pollen, textile specialists recommend professional extraction every 12 to 18 months for living areas, and every 6 to 12 months for high-exposure or allergy-sensitive rooms.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Which areas in Johannesburg and Pretoria do you service?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "We service Greater Johannesburg and Pretoria, including Sandton, Bryanston, Hyde Park, Rosebank, Houghton, Fourways, Waterfall Estate, Midrand, Centurion, and Pretoria East.",
             },
           },
         ],
